@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dojo Fitness Club × Inteligência de Dados — Proposta</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Sora:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+/* ============================================================
+   TEMA — para reaproveitar este deck com outro cliente,
+   troque apenas os tokens abaixo (cores + fontes) e o logo.
+   ============================================================ */
+:root{
+  --ink:#0B0F0E;        /* fundo */
+  --surface:#141A18;
+  --card:#171E1B;
+  --line:#26332C;
+  --text:#EEF4F1;
+  --muted:#8FA39B;
+  --mar:#2BE0C8;        /* accent primário  — mar de Ilhabela */
+  --coral:#FF6A4D;      /* accent secundário — pôr do sol     */
+  --whats:#25D366;
+  --grad:linear-gradient(90deg,var(--mar),var(--coral));
+  --f-display:'Archivo Black',sans-serif;
+  --f-body:'Sora',sans-serif;
+  --f-mono:'IBM Plex Mono',monospace;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} }
+body{
+  background:var(--ink);
+  color:var(--text);
+  font-family:var(--f-body);
+}
+::selection{background:var(--mar);color:var(--ink)}
+
+/* ---------- barra de progresso (faixa) ---------- */
+.belt{position:fixed;top:0;left:0;height:5px;width:100%;background:#1a2320;z-index:60}
+.belt-fill{height:100%;width:0;background:var(--grad)}
+
+/* ---------- navegação lateral por pontos ---------- */
+.dots{
+  position:fixed;right:18px;top:50%;transform:translateY(-50%);
+  display:flex;flex-direction:column;gap:12px;z-index:60;
+}
+.dots a{
+  width:9px;height:9px;border-radius:50%;background:var(--line);
+  display:block;position:relative;transition:background .25s,transform .25s;
+}
+.dots a.on{background:var(--mar);transform:scale(1.35)}
+.dots a:hover{background:var(--muted)}
+.dots a .tip{
+  position:absolute;right:20px;top:50%;transform:translateY(-50%);
+  background:var(--surface);border:1px solid var(--line);border-radius:8px;
+  padding:4px 10px;font-family:var(--f-mono);font-size:11px;color:var(--muted);
+  white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s;
+}
+.dots a:hover .tip{opacity:1}
+.dots a:focus-visible{outline:2px solid var(--mar);outline-offset:3px}
+@media(max-width:760px){.dots{display:none}}
+
+.hint{
+  position:fixed;bottom:20px;left:22px;font-family:var(--f-mono);
+  font-size:11px;color:var(--muted);z-index:60;letter-spacing:.08em;
+  display:flex;align-items:center;gap:8px;
+}
+.hint .arr{animation:bob 1.6s ease-in-out infinite;display:inline-block}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
+@media (prefers-reduced-motion: reduce){.hint .arr{animation:none}}
+@media(max-width:760px){.hint{display:none}}
+
+/* ---------- seções ---------- */
+section{
+  min-height:100svh;
+  padding:clamp(72px,10vh,120px) clamp(20px,7vw,110px);
+  display:flex;flex-direction:column;justify-content:center;
+  max-width:1440px;margin:0 auto;
+  border-bottom:1px solid rgba(38,51,44,.5);
+}
+section:last-of-type{border-bottom:none}
+.eyebrow{
+  font-family:var(--f-mono);font-size:12px;letter-spacing:.28em;
+  text-transform:uppercase;color:var(--mar);margin-bottom:18px;
+}
+h1{font-family:var(--f-display);font-size:clamp(38px,6.2vw,82px);line-height:1.02;letter-spacing:-.01em}
+h2{font-family:var(--f-display);font-size:clamp(28px,3.8vw,50px);line-height:1.06;margin-bottom:22px}
+h3{font-weight:700;font-size:clamp(15px,1.5vw,19px)}
+p.lead{font-size:clamp(15px,1.4vw,18px);color:var(--muted);max-width:66ch;line-height:1.65}
+.accent{color:var(--mar)}
+.accent2{color:var(--coral)}
+.mono{font-family:var(--f-mono)}
+
+/* ---------- reveal on scroll ---------- */
+.rv{opacity:0;transform:translateY(26px);transition:opacity .6s ease,transform .6s ease}
+.rv.d1{transition-delay:.08s}.rv.d2{transition-delay:.16s}.rv.d3{transition-delay:.24s}.rv.d4{transition-delay:.32s}
+section.inview .rv{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){
+  .rv{opacity:1;transform:none;transition:none}
+}
+
+/* ---------- capa ---------- */
+.cover{position:relative;overflow:hidden}
+.cover .waves{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.55}
+.cover-tag{
+  display:inline-flex;align-items:center;gap:10px;margin-bottom:28px;
+  font-family:var(--f-mono);font-size:12px;letter-spacing:.2em;color:var(--muted);
+}
+.cover-tag .dot{width:8px;height:8px;border-radius:50%;background:var(--mar)}
+.cover h1 .line2{display:block;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cover .sub{margin-top:26px;font-size:clamp(15px,1.5vw,19px);color:var(--muted);max-width:58ch;line-height:1.6}
+.byline{margin-top:44px;font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.byline strong{color:var(--text)}
+
+/* ---------- grids e cartões ---------- */
+.grid{display:grid;gap:16px;margin-top:26px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:940px){.g4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.g2,.g4{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
+.card h3{margin-bottom:8px}
+.card p{color:var(--muted);font-size:14px;line-height:1.6}
+.stat .num{font-family:var(--f-display);font-size:clamp(30px,3.4vw,44px);color:var(--mar);line-height:1}
+.stat .num.c2{color:var(--coral)}
+.stat .lbl{margin-top:8px;color:var(--muted);font-size:13px;line-height:1.5}
+
+.leak{border-left:3px solid var(--coral)}
+.leak .tag{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;color:var(--coral);text-transform:uppercase}
+.leak h3{margin-top:6px}
+
+.foot-note{margin-top:24px;color:var(--muted);font-size:13.5px;max-width:74ch;line-height:1.65}
+.foot-note b{color:var(--text)}
+
+/* ---------- diagrama ---------- */
+.flow{display:flex;align-items:stretch;gap:0;margin-top:34px;flex-wrap:wrap}
+.fbox{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;flex:1;min-width:220px}
+.fbox .k{font-family:var(--f-mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.fbox h3{margin-bottom:8px}
+.fbox p{color:var(--muted);font-size:13.5px;line-height:1.6}
+.fbox.core{border-color:var(--mar);box-shadow:0 0 44px rgba(43,224,200,.12)}
+.fbox.core .k{color:var(--mar)}
+.farrow{display:flex;align-items:center;justify-content:center;min-width:56px;color:var(--mar);font-size:26px;font-family:var(--f-mono)}
+.fouts{display:flex;flex-direction:column;gap:12px;flex:1.2;min-width:240px}
+.fout{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;display:flex;gap:12px;align-items:center}
+.fout .ic{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;background:rgba(43,224,200,.12);flex-shrink:0}
+.fout div b{display:block;font-size:14.5px}
+.fout div span{color:var(--muted);font-size:12.5px}
+@media(max-width:940px){.farrow{width:100%;min-height:44px;transform:rotate(90deg)}}
+
+/* ---------- pilar whatsapp ---------- */
+.split{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(24px,4vw,64px);align-items:center;margin-top:8px}
+@media(max-width:940px){.split{grid-template-columns:1fr}}
+.feat{display:flex;gap:14px;padding:13px 0;border-bottom:1px solid var(--line)}
+.feat:last-child{border-bottom:none}
+.feat .ic{width:36px;height:36px;border-radius:10px;background:rgba(43,224,200,.12);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.feat b{display:block;font-size:15px;margin-bottom:3px}
+.feat span{color:var(--muted);font-size:13.5px;line-height:1.55}
+
+.scenes{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.scenes button{
+  font-family:var(--f-mono);font-size:12px;letter-spacing:.06em;
+  padding:8px 14px;border-radius:999px;border:1px solid var(--line);
+  background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;
+}
+.scenes button.on{background:var(--mar);border-color:var(--mar);color:var(--ink);font-weight:500}
+.scenes button:focus-visible{outline:2px solid var(--mar);outline-offset:2px}
+
+.phone{
+  width:min(330px,100%);margin:0 auto;background:#0d1412;border:1px solid var(--line);
+  border-radius:34px;padding:12px;box-shadow:0 30px 80px rgba(0,0,0,.5);
+}
+.ph-screen{background:#0a100e;border-radius:24px;overflow:hidden;display:flex;flex-direction:column;height:520px}
+.ph-head{background:#132019;padding:12px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #1c2a22}
+.ph-ava{width:36px;height:36px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-family:var(--f-display);color:var(--ink);font-size:15px}
+.ph-head b{font-size:14px;display:block}
+.ph-head span{font-size:11px;color:var(--whats)}
+.ph-chat{flex:1;padding:14px 12px;display:flex;flex-direction:column;gap:8px;overflow-y:auto;background:
+  radial-gradient(circle at 20% 10%,rgba(43,224,200,.05),transparent 40%),#0a100e}
+.bub{
+  max-width:82%;padding:9px 12px;border-radius:14px;font-size:13px;line-height:1.5;
+  opacity:0;transform:translateY(10px);transition:opacity .35s ease,transform .35s ease;
+}
+.bub.show{opacity:1;transform:none}
+.bub.bot{background:#15251d;border:1px solid #1e3328;align-self:flex-start;border-bottom-left-radius:4px}
+.bub.user{background:#1f3a2e;align-self:flex-end;border-bottom-right-radius:4px}
+.bub .t{display:block;text-align:right;font-size:10px;color:var(--muted);margin-top:4px;font-family:var(--f-mono)}
+.bub .pix{
+  margin-top:8px;background:#0e1a15;border:1px dashed var(--whats);border-radius:10px;
+  padding:8px 10px;font-size:12px;color:var(--whats);font-family:var(--f-mono);
+}
+@media (prefers-reduced-motion: reduce){.bub{transition:none;opacity:1;transform:none}}
+
+/* ---------- pilar turista ---------- */
+.steps{display:flex;gap:14px;margin-top:28px;flex-wrap:wrap}
+.step{flex:1;min-width:210px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+.step .n{font-family:var(--f-mono);color:var(--coral);font-size:12px;letter-spacing:.14em;margin-bottom:10px}
+.step p{color:var(--muted);font-size:13.5px;line-height:1.6;margin-top:6px}
+
+/* ---------- inteligência ---------- */
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:24px 0 8px}
+@media(max-width:940px){.kpis{grid-template-columns:1fr}}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;display:flex;align-items:baseline;gap:12px}
+.kpi .v{font-family:var(--f-display);font-size:clamp(20px,2vw,26px);color:var(--mar);white-space:nowrap}
+.kpi .v.c2{color:var(--coral)}
+.kpi span{color:var(--muted);font-size:12.5px;line-height:1.45}
+
+.dash{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:16px}
+@media(max-width:940px){.dash{grid-template-columns:1fr}}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+.panel.wide{grid-column:1/-1}
+.panel h3{font-size:14px;margin-bottom:4px}
+.panel .sub{font-size:12px;color:var(--muted);margin-bottom:12px}
+.chart-wrap{position:relative;height:230px}
+.chart-wrap.tall{height:260px}
+.heat{display:grid;grid-template-columns:52px repeat(6,1fr);gap:4px;font-family:var(--f-mono);font-size:10.5px}
+.heat .hl{color:var(--muted);display:flex;align-items:center}
+.heat .hd{color:var(--muted);text-align:center;padding-bottom:2px}
+.heat .cell{height:22px;border-radius:5px;background:var(--surface)}
+.legend{display:flex;gap:14px;margin-top:10px;font-size:11px;color:var(--muted);font-family:var(--f-mono);align-items:center;flex-wrap:wrap}
+.legend .sw{width:14px;height:10px;border-radius:3px;display:inline-block;margin-right:5px;vertical-align:-1px}
+
+/* ---------- ROI ---------- */
+.roi{display:grid;grid-template-columns:1fr 1fr;gap:clamp(20px,3vw,48px);margin-top:14px;align-items:start}
+@media(max-width:940px){.roi{grid-template-columns:1fr}}
+.ctrl{margin-bottom:20px}
+.ctrl label{display:flex;justify-content:space-between;font-size:14px;margin-bottom:8px}
+.ctrl label b{font-family:var(--f-mono);color:var(--mar)}
+input[type=range]{width:100%;appearance:none;-webkit-appearance:none;height:6px;border-radius:3px;background:var(--line);outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--mar);cursor:pointer;border:3px solid var(--ink);box-shadow:0 0 0 1px var(--mar)}
+input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--mar);cursor:pointer;border:3px solid var(--ink);box-shadow:0 0 0 1px var(--mar)}
+input[type=range]:focus-visible{outline:2px solid var(--mar);outline-offset:4px}
+.roi-out{display:flex;flex-direction:column;gap:12px}
+.roi-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.roi-card .l b{display:block;font-size:14.5px}
+.roi-card .l span{font-size:12px;color:var(--muted)}
+.roi-card .v{font-family:var(--f-display);font-size:clamp(20px,2.4vw,30px);white-space:nowrap}
+.roi-card.bad .v{color:var(--coral)}
+.roi-card.good .v{color:var(--mar)}
+.roi-card.big{border-color:var(--mar);background:linear-gradient(135deg,rgba(43,224,200,.09),rgba(255,106,77,.06))}
+.roi-card.big .v{font-size:clamp(30px,3.6vw,44px);background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.premissas{margin-top:14px;font-size:11.5px;color:var(--muted);font-family:var(--f-mono);line-height:1.7}
+.ctrl-hint{font-size:11px;color:var(--muted);margin-top:7px;font-family:var(--f-mono)}
+.compare{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 20px;display:flex;flex-direction:column;gap:10px}
+.cmp-row{display:grid;grid-template-columns:96px 1fr auto;gap:10px;align-items:center;font-size:11.5px;font-family:var(--f-mono);color:var(--muted)}
+.cmp-bar{height:14px;border-radius:7px;background:var(--surface);overflow:hidden}
+.cmp-fill{height:100%;border-radius:7px;transition:width .4s ease;min-width:4px}
+.cmp-fill.cost{background:#5c6f68}
+.cmp-fill.gain{background:var(--grad)}
+.cmp-val{white-space:nowrap;color:var(--text)}
+
+/* ---------- roadmap ---------- */
+.road{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+.phase{flex:1;min-width:240px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;border-top:4px solid var(--mar)}
+.phase:nth-child(2){border-top-color:#8ed8b8}
+.phase:nth-child(3){border-top-color:var(--coral)}
+.phase .when{font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;color:var(--muted);text-transform:uppercase}
+.phase h3{margin:8px 0 12px}
+.phase ul{list-style:none}
+.phase li{color:var(--muted);font-size:13.5px;line-height:1.55;padding:5px 0 5px 18px;position:relative}
+.phase li::before{content:'▸';position:absolute;left:0;color:var(--mar)}
+.phase:nth-child(3) li::before{color:var(--coral)}
+
+/* ---------- planos ---------- */
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:30px}
+@media(max-width:940px){.plans{grid-template-columns:1fr;margin-top:22px}}
+.plan{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px;display:flex;flex-direction:column}
+.plan.reco{border-color:var(--coral);position:relative;box-shadow:0 0 60px rgba(255,106,77,.10)}
+.plan .badge{
+  position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+  background:var(--coral);color:var(--ink);font-family:var(--f-mono);
+  font-size:11px;letter-spacing:.1em;padding:4px 14px;border-radius:999px;font-weight:500;white-space:nowrap;
+}
+.plan h3{font-size:18px}
+.plan .price{margin:14px 0 4px;font-family:var(--f-display);font-size:clamp(26px,2.6vw,34px)}
+.plan .price small{font-family:var(--f-body);font-size:13px;color:var(--muted);font-weight:400}
+.plan .setup{font-family:var(--f-mono);font-size:12px;color:var(--muted);margin-bottom:16px}
+.plan ul{list-style:none;flex:1}
+.plan li{font-size:13.5px;color:var(--muted);padding:6px 0 6px 22px;position:relative;line-height:1.5}
+.plan li::before{content:'✓';position:absolute;left:0;color:var(--mar);font-weight:700}
+.plan li.no{opacity:.35}
+.plan li.no::before{content:'—';color:var(--muted)}
+.plan .rule{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+
+/* ---------- final ---------- */
+.next-steps{margin-top:28px;display:flex;flex-direction:column;max-width:740px}
+.ns{display:flex;gap:18px;padding:18px 0;border-bottom:1px solid var(--line);align-items:flex-start}
+.ns:last-child{border-bottom:none}
+.ns .n{font-family:var(--f-display);color:var(--mar);font-size:22px;line-height:1;min-width:34px}
+.ns b{display:block;margin-bottom:3px;font-size:15.5px}
+.ns span{color:var(--muted);font-size:13.5px;line-height:1.55}
+.cta-line{margin-top:34px;font-size:clamp(16px,1.8vw,21px);max-width:58ch;line-height:1.55}
+.cta-line b{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+</style>
+</head>
+<body>
+
+<div class="belt"><div class="belt-fill" id="beltFill"></div></div>
+<nav class="dots" id="dots" aria-label="Navegação entre seções"></nav>
+<div class="hint"><span class="arr">↓</span> role ou use as setas para navegar</div>
+
+<!-- 1 · CAPA -->
+<section class="cover" id="s0" data-label="Capa">
+  <svg class="waves" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <path d="M-50 560 Q 200 500 450 560 T 950 560 T 1450 560" fill="none" stroke="#2BE0C8" stroke-opacity=".14" stroke-width="2"/>
+    <path d="M-50 600 Q 200 545 450 600 T 950 600 T 1450 600" fill="none" stroke="#2BE0C8" stroke-opacity=".09" stroke-width="2"/>
+    <path d="M-50 640 Q 200 590 450 640 T 950 640 T 1450 640" fill="none" stroke="#FF6A4D" stroke-opacity=".08" stroke-width="2"/>
+    <circle cx="1020" cy="130" r="70" fill="#FF6A4D" fill-opacity=".07"/>
+    <circle cx="1020" cy="130" r="40" fill="#FF6A4D" fill-opacity=".08"/>
+  </svg>
+  <div class="cover-tag rv"><span class="dot"></span>PROPOSTA · DOJO FITNESS CLUB · ILHABELA</div>
+  <h1 class="rv d1">Seus dados já treinam aqui.<span class="line2">Falta colocá-los pra lutar.</span></h1>
+  <p class="sub rv d2">Uma camada de inteligência artificial sobre o Tecnofit que atende, renova e reativa alunos pelo WhatsApp, vende para turistas e devolve o seu tempo para o que importa: as pessoas no salão.</p>
+  <div class="byline rv d3">Preparado por <strong>Thuan</strong> · Engenharia de Dados &amp; IA · Julho 2026</div>
+</section>
+
+<!-- 2 · O MOMENTO DO DOJO -->
+<section id="s1" data-label="O momento do Dojo">
+  <div class="eyebrow rv">01 · O momento do Dojo</div>
+  <h2 class="rv d1">Uma comunidade que nenhum sistema compra</h2>
+  <p class="lead rv d2">O Dojo é referência em Ilhabela: pioneiro no Cross Training da ilha, hoje um centro completo de saúde e bem-estar em plena expansão. O que esta proposta faz não é mudar isso — é proteger e amplificar.</p>
+  <div class="grid g4">
+    <div class="card stat rv d1"><div class="num" data-count="12">0</div><div class="lbl">anos transformando vidas na ilha, agora na 3ª ampliação</div></div>
+    <div class="card stat rv d2"><div class="num" data-count="15">0</div><div class="lbl">modalidades — do Cross Kids ao Jiu-Jitsu, da Bike ao Pilates</div></div>
+    <div class="card stat rv d3"><div class="num c2" data-count="16">0</div><div class="lbl">horas de porta aberta por dia (06h–22h), operação intensa</div></div>
+    <div class="card stat rv d4"><div class="num c2">3</div><div class="lbl">públicos distintos — kids, adultos e atletas — cada um pedindo uma conversa diferente</div></div>
+  </div>
+  <p class="foot-note rv d4"><b>A força do Dojo é o relacionamento humano.</b> O desafio é que relacionamento em escala — centenas de alunos, 15 modalidades, alta temporada — consome exatamente o recurso mais escasso de uma gestão familiar: tempo.</p>
+</section>
+
+<!-- 3 · O QUE ESCAPA HOJE -->
+<section id="s2" data-label="A oportunidade">
+  <div class="eyebrow rv">02 · A oportunidade</div>
+  <h2 class="rv d1">Onde dinheiro e tempo escapam <span class="accent2">em silêncio</span></h2>
+  <div class="grid g2">
+    <div class="card leak rv d1"><span class="tag">Vendas perdidas</span><h3>O lead das 22h de sábado</h3><p>Alguém acha o Dojo no Google, chama no WhatsApp fora do horário e não recebe resposta. Na segunda, esfriou — ou fechou com outra academia.</p></div>
+    <div class="card leak rv d2"><span class="tag">Renovação</span><h3>O vencimento que passa batido</h3><p>O Tecnofit sabe quando cada plano vence. Mas lembrar cada aluno, no tom certo e na hora certa, é trabalho manual — e a taxa de renovação cai sem ninguém ver.</p></div>
+    <div class="card leak rv d3"><span class="tag">Churn</span><h3>O aluno que some devagar</h3><p>Ninguém cancela de repente: primeiro 4x/semana, depois 2x, depois duas semanas sumido. O padrão está nos check-ins — mas ninguém tem tempo de olhar aluno por aluno.</p></div>
+    <div class="card leak rv d4"><span class="tag">Receita nova</span><h3>O turista que não entra no caixa</h3><p>Ilhabela recebe milhares de visitantes por temporada. Muitos treinam e procuram onde. Hoje, quase nada disso vira receita para o Dojo.</p></div>
+  </div>
+  <p class="foot-note rv d4">Some a isso as horas semanais em confirmações, respostas repetidas e lembretes de mensalidade — tarefas pequenas que, juntas, tiram vocês do salão.</p>
+</section>
+
+<!-- 4 · COMO FUNCIONA -->
+<section id="s3" data-label="Como funciona">
+  <div class="eyebrow rv">03 · Como funciona</div>
+  <h2 class="rv d1">Nada muda no Tecnofit. <span class="accent">Tudo muda no que ele entrega.</span></h2>
+  <div class="flow">
+    <div class="fbox rv d1">
+      <div class="k">O que vocês já têm</div>
+      <h3>Tecnofit</h3>
+      <p>Segue como sistema de gestão: matrículas, cobrança, check-ins, agenda. Os dados que ele coleta todo dia são a matéria-prima.</p>
+    </div>
+    <div class="farrow rv d2">→</div>
+    <div class="fbox core rv d2">
+      <div class="k">O que eu adiciono</div>
+      <h3>Camada de Inteligência</h3>
+      <p>Lê os dados do Tecnofit (API/exportações), entende cada aluno — vencimento, frequência, modalidade, tempo de casa — e decide a ação certa, na hora certa.</p>
+    </div>
+    <div class="farrow rv d3">→</div>
+    <div class="fouts rv d3">
+      <div class="fout"><div class="ic">💬</div><div><b>WhatsApp com IA</b><span>atende, renova, reativa e vende — 24h, no tom do Dojo</span></div></div>
+      <div class="fout"><div class="ic">🏝️</div><div><b>Funil turista</b><span>day pass e passe semanal com Pix, sem fricção</span></div></div>
+      <div class="fout"><div class="ic">📊</div><div><b>Painel + resumo semanal</b><span>os números que importam, toda segunda, no WhatsApp do Diego</span></div></div>
+    </div>
+  </div>
+  <p class="foot-note rv d4"><b>Regra de ouro:</b> a IA amplifica o toque humano do Dojo, nunca substitui. Casos sensíveis são sempre encaminhados a vocês — e toda conversa fica registrada.</p>
+</section>
+
+<!-- 5 · PILAR 1 WHATSAPP -->
+<section id="s4" data-label="Pilar 1 · WhatsApp">
+  <div class="eyebrow rv">Pilar 1 · Relacionamento &amp; vendas</div>
+  <div class="split">
+    <div>
+      <h2 class="rv d1">Um agente que conversa como o Dojo</h2>
+      <div class="feat rv d1"><div class="ic">🌙</div><div><b>Atendimento 24h</b><span>Horários, planos, modalidades e agendamento de aula experimental — inclusive às 22h de sábado.</span></div></div>
+      <div class="feat rv d2"><div class="ic">🔄</div><div><b>Renovação proativa</b><span>Plano vencendo → mensagem personalizada com link de pagamento pronto, dias antes.</span></div></div>
+      <div class="feat rv d2"><div class="ic">👋</div><div><b>Reativação de sumidos</b><span>14 dias sem check-in → um toque gentil com sugestão prática de horário.</span></div></div>
+      <div class="feat rv d3"><div class="ic">🥋</div><div><b>Pais das turmas kids</b><span>Graduações, exame de faixa e recados de Jiu-Jitsu e Judô infantil direto no zap dos pais.</span></div></div>
+      <div class="feat rv d3"><div class="ic">🏆</div><div><b>Marcos &amp; reconhecimento</b><span>50º treino, 100º treino, 1 ano de Dojo — celebração automática. E aluno feliz recebe convite de avaliar no Google.</span></div></div>
+    </div>
+    <div class="rv d2">
+      <div class="scenes" role="tablist" aria-label="Cenários de conversa">
+        <button class="on" data-scene="renova" role="tab">Renovação</button>
+        <button data-scene="reativa" role="tab">Reativação</button>
+        <button data-scene="turista" role="tab">Turista</button>
+      </div>
+      <div class="phone">
+        <div class="ph-screen">
+          <div class="ph-head">
+            <div class="ph-ava">D</div>
+            <div><b>Dojo Fitness Club</b><span>online agora</span></div>
+          </div>
+          <div class="ph-chat" id="chat"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 · PILAR 2 TURISTA -->
+<section id="s5" data-label="Pilar 2 · Turista">
+  <div class="eyebrow rv">Pilar 2 · Receita nova</div>
+  <h2 class="rv d1">A sazonalidade de Ilhabela <span class="accent2">virando caixa</span></h2>
+  <p class="lead rv d2">O visitante que treina não quer burocracia: quer saber preço, horário e pagar. O agente resolve tudo em uma conversa — e o Dojo fatura enquanto vocês dão aula.</p>
+  <div class="steps">
+    <div class="step rv d1"><div class="n">PASSO 1</div><h3>Turista encontra e chama</h3><p>Google, Instagram ou indicação da pousada. A primeira resposta chega em segundos, a qualquer hora.</p></div>
+    <div class="step rv d2"><div class="n">PASSO 2</div><h3>Day pass ou passe semanal</h3><p>O agente apresenta as opções, as aulas do dia e fecha com link Pix. Nome já fica na recepção.</p></div>
+    <div class="step rv d3"><div class="n">PASSO 3</div><h3>Pousadas como canal</h3><p>Passe de hóspede com comissão para o parceiro e painel de acompanhamento. Um canal que nenhuma academia da ilha tem.</p></div>
+    <div class="step rv d4"><div class="n">PASSO 4</div><h3>Campanhas de temporada</h3><p>Alta temporada: capturar volume. Baixa: campanhas de plano anual e reativação para estabilizar a receita.</p></div>
+  </div>
+  <p class="foot-note rv d4"><b>Meta simples:</b> o funil turista, sozinho, deve pagar a mensalidade da solução. Todo o resto — retenção, renovações, indicações — vira lucro da decisão.</p>
+</section>
+
+<!-- 7 · PILAR 3 INTELIGÊNCIA -->
+<section id="s6" data-label="Pilar 3 · Inteligência">
+  <div class="eyebrow rv">Pilar 3 · Inteligência de dados</div>
+  <h2 class="rv d1">O que o Tecnofit sabe, <span class="accent">mas não mostra</span></h2>
+  <p class="lead rv d2">Metas ilustrativas com base em benchmarks do setor — na conversa inicial, calibramos com os números reais do Dojo.</p>
+
+  <div class="kpis">
+    <div class="kpi rv d1"><div class="v">68→84%</div><span>taxa de renovação: de reativa para proativa, com lembrete e link prontos</span></div>
+    <div class="kpi rv d2"><div class="v">~22%</div><span>dos alunos sumidos voltam após uma única mensagem de reativação bem feita</span></div>
+    <div class="kpi rv d3"><div class="v c2">&lt;1 min</div><span>tempo de primeira resposta a qualquer lead — 24h por dia, 7 dias por semana</span></div>
+  </div>
+
+  <div class="dash">
+    <div class="panel rv d1">
+      <h3>Retenção por tempo de casa</h3>
+      <div class="sub">% da turma ativa, mês a mês após a matrícula</div>
+      <div class="chart-wrap"><canvas id="chartRet"></canvas></div>
+    </div>
+    <div class="panel rv d2">
+      <h3>Engajamento da base, hoje</h3>
+      <div class="sub">frequência semanal de check-ins — a fatia coral é onde o churn nasce</div>
+      <div class="chart-wrap"><canvas id="chartEng"></canvas></div>
+    </div>
+    <div class="panel rv d1">
+      <h3>Sazonalidade: alunos ativos × passes de turista</h3>
+      <div class="sub">a receita de turista compensa exatamente o vale da baixa temporada</div>
+      <div class="chart-wrap"><canvas id="chartSeason"></canvas></div>
+    </div>
+    <div class="panel rv d2">
+      <h3>Valor de cada aluno por modalidade</h3>
+      <div class="sub">receita média ao longo da permanência — onde investir aquisição</div>
+      <div class="chart-wrap"><canvas id="chartLtv"></canvas></div>
+    </div>
+    <div class="panel wide rv d3">
+      <h3>Mapa de ocupação da grade</h3>
+      <div class="sub">horário × dia — onde a grade satura e onde há espaço para crescer</div>
+      <div class="heat" id="heat"></div>
+      <div class="legend">
+        <span><span class="sw" style="background:#182420"></span>ocioso</span>
+        <span><span class="sw" style="background:#1d6f60"></span>saudável</span>
+        <span><span class="sw" style="background:#2BE0C8"></span>cheio</span>
+        <span><span class="sw" style="background:#FF6A4D"></span>saturado — lista de espera</span>
+      </div>
+    </div>
+  </div>
+  <p class="foot-note rv d4">Além do painel: alerta de <b>alunos em risco</b> (queda de frequência) para agir antes do cancelamento, e o <b>resumo de segunda-feira</b> no WhatsApp do Diego — 30 segundos de leitura.</p>
+</section>
+
+<!-- 8 · SIMULADOR ROI -->
+<section id="s7" data-label="Simulador de ROI">
+  <div class="eyebrow rv">Faça as contas · Simulador interativo</div>
+  <h2 class="rv d1">Quanto o Dojo <span class="accent2">perde hoje</span> — e quanto <span class="accent">recupera</span></h2>
+  <div class="roi">
+    <div class="rv d2">
+      <div class="ctrl">
+        <label>Alunos ativos <b id="vAlunos">300</b></label>
+        <input type="range" id="rAlunos" min="150" max="600" step="10" value="300" aria-label="Alunos ativos">
+      </div>
+      <div class="ctrl">
+        <label>Mensalidade média <b id="vMens">R$ 200</b></label>
+        <input type="range" id="rMens" min="120" max="350" step="10" value="200" aria-label="Mensalidade média">
+      </div>
+      <div class="ctrl">
+        <label>Evasão mensal (churn) <b id="vChurn">6%</b></label>
+        <input type="range" id="rChurn" min="2" max="12" step="0.5" value="6" aria-label="Churn mensal">
+        <div class="ctrl-hint" id="hChurn">—</div>
+      </div>
+      <div class="ctrl">
+        <label>Passes de turista por mês <b id="vTur">15</b></label>
+        <input type="range" id="rTur" min="0" max="60" step="5" value="15" aria-label="Passes de turista por mês">
+        <div class="ctrl-hint" id="hTur">—</div>
+      </div>
+      <div class="premissas">
+        Premissas conservadoras: cada aluno retido vale +5 meses de mensalidade ·
+        a solução recupera 20% da evasão · ticket médio turista R$ 70 ·
+        custo ano 1 = plano Completo (R$ 4.500 setup + 12 × R$ 697).
+      </div>
+    </div>
+    <div class="roi-out rv d3">
+      <div class="roi-card bad"><div class="l"><b>Receita perdida com evasão</b><span id="sPerda">—</span></div><div class="v" id="oPerda">—</div></div>
+      <div class="roi-card good"><div class="l"><b>Ganho estimado no ano 1</b><span id="sGanho">—</span></div><div class="v" id="oGanho">—</div></div>
+      <div class="roi-card"><div class="l"><b>Investimento ano 1</b><span>R$ 4.500 setup + 12 × R$ 697 (Completo)</span></div><div class="v mono" id="oCusto">—</div></div>
+      <div class="roi-card big"><div class="l"><b>Retorno sobre o investimento</b><span id="sPayback">—</span></div><div class="v" id="oRoi">—</div></div>
+      <div class="compare">
+        <div class="cmp-row"><span>investimento</span><div class="cmp-bar"><div class="cmp-fill cost" id="barCusto"></div></div><span class="cmp-val" id="cvCusto">—</span></div>
+        <div class="cmp-row"><span>ganho ano 1</span><div class="cmp-bar"><div class="cmp-fill gain" id="barGanho"></div></div><span class="cmp-val" id="cvGanho">—</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 9 · ROADMAP -->
+<section id="s8" data-label="Roadmap">
+  <div class="eyebrow rv">Implantação · Sem big bang</div>
+  <h2 class="rv d1">Resultado em 30 dias, <span class="accent">evolução em 90</span></h2>
+  <div class="road">
+    <div class="phase rv d1">
+      <div class="when">Fase 1 · primeiros 30 dias</div>
+      <h3>Quick wins</h3>
+      <ul>
+        <li>Agente WhatsApp no ar: atendimento 24h + aula experimental</li>
+        <li>Renovações proativas com link de pagamento</li>
+        <li>Reativação de alunos sumidos</li>
+        <li>Boas-vindas a novos alunos</li>
+        <li>Resumo semanal no WhatsApp do Diego</li>
+      </ul>
+    </div>
+    <div class="phase rv d2">
+      <div class="when">Fase 2 · até 60 dias</div>
+      <h3>Visão &amp; receita nova</h3>
+      <ul>
+        <li>Painel executivo: retenção, ocupação, conversão, LTV</li>
+        <li>Funil turista com pagamento Pix</li>
+        <li>Pedidos automáticos de avaliação no Google</li>
+      </ul>
+    </div>
+    <div class="phase rv d3">
+      <div class="when">Fase 3 · até 90 dias</div>
+      <h3>Diferenciação</h3>
+      <ul>
+        <li>Parcerias com pousadas + painel de comissão</li>
+        <li>Predição de churn com alerta de alunos em risco</li>
+        <li>Gamificação de marcos e motor de indicações</li>
+        <li>Comunicação kids/graduações e campanhas sazonais</li>
+      </ul>
+    </div>
+  </div>
+  <p class="foot-note rv d4">Cada fase entrega valor sozinha. Se por qualquer motivo pararmos na Fase 1, o Dojo já sai com renovação e reativação automatizadas — o maior retorno imediato.</p>
+</section>
+
+<!-- 10 · INVESTIMENTO -->
+<section id="s9" data-label="Investimento">
+  <div class="eyebrow rv">Investimento · Sem fidelidade</div>
+  <h2 class="rv d1">Três formatos, <span class="accent">um compromisso: resultado</span></h2>
+  <div class="plans">
+    <div class="plan rv d1">
+      <h3>Essencial</h3>
+      <div class="price">R$ 397<small>/mês</small></div>
+      <div class="setup">implantação única R$ 2.500</div>
+      <ul>
+        <li>Agente WhatsApp 24h (atendimento + experimental)</li>
+        <li>Renovações proativas e reativação de sumidos</li>
+        <li>Boas-vindas e resumo semanal do dono</li>
+        <li class="no">Painel executivo</li>
+        <li class="no">Funil turista + Google Reviews</li>
+        <li class="no">Pousadas, predição de churn, kids</li>
+      </ul>
+      <div class="rule">Para começar com o essencial da retenção.</div>
+    </div>
+    <div class="plan reco rv d2">
+      <div class="badge">RECOMENDADO</div>
+      <h3>Completo</h3>
+      <div class="price">R$ 697<small>/mês</small></div>
+      <div class="setup">implantação única R$ 4.500</div>
+      <ul>
+        <li>Tudo do Essencial</li>
+        <li>Painel executivo: retenção, ocupação, conversão, LTV</li>
+        <li>Funil turista com Pix</li>
+        <li>Avaliações no Google automáticas</li>
+        <li>Gamificação de marcos</li>
+        <li class="no">Pousadas, predição de churn, kids/sazonal</li>
+      </ul>
+      <div class="rule">≈ 3 mensalidades de aluno/mês. 4 alunos retidos ou 14 day passes pagam o mês.</div>
+    </div>
+    <div class="plan rv d3">
+      <h3>Premium</h3>
+      <div class="price">R$ 1.197<small>/mês</small></div>
+      <div class="setup">implantação única R$ 7.500</div>
+      <ul>
+        <li>Tudo do Completo</li>
+        <li>Parcerias com pousadas + painel de comissão</li>
+        <li>Predição de churn com alertas de risco</li>
+        <li>Comunicação kids/graduações</li>
+        <li>Campanhas sazonais automáticas</li>
+        <li>Suporte prioritário + evolução mensal</li>
+      </ul>
+      <div class="rule">Para transformar a solução em vantagem competitiva permanente.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 11 · PRÓXIMOS PASSOS -->
+<section id="s10" data-label="Próximos passos">
+  <div class="eyebrow rv">Próximos passos</div>
+  <h2 class="rv d1">Três passos até o agente no ar</h2>
+  <div class="next-steps">
+    <div class="ns rv d1"><div class="n">1</div><div><b>Conversa de 1 hora</b><span>Com Diego e Janine: validar prioridades e mapear as rotinas que mais tomam tempo hoje — a lista de automações nasce dessa conversa.</span></div></div>
+    <div class="ns rv d2"><div class="n">2</div><div><b>Checagem técnica do Tecnofit</b><span>Verificar o acesso à API/exportações do plano atual. Leva minutos e define os detalhes da integração.</span></div></div>
+    <div class="ns rv d3"><div class="n">3</div><div><b>Fase 1 em 30 dias</b><span>Assinatura e mãos à obra: agente de WhatsApp atendendo, renovando e reativando em até um mês.</span></div></div>
+  </div>
+  <p class="cta-line rv d3">Vocês construíram a comunidade mais forte de Ilhabela com relacionamento humano. <b>Agora é hora de dar a esse relacionamento a escala que ele merece — sem perder o toque.</b></p>
+  <div class="byline rv d4">Thuan · Engenharia de Dados &amp; IA · WhatsApp e e-mail nos detalhes da proposta</div>
+</section>
+
+<script>
+/* ================= setup ================= */
+const sections = [...document.querySelectorAll('section')];
+const beltFill = document.getElementById('beltFill');
+const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let chartsDone = false;
+let countersRan = false;
+
+/* ---------- dots ---------- */
+const dots = document.getElementById('dots');
+sections.forEach((s,i)=>{
+  const a = document.createElement('a');
+  a.href = '#'+s.id;
+  a.setAttribute('aria-label', s.dataset.label);
+  a.innerHTML = `<span class="tip">${s.dataset.label}</span>`;
+  dots.appendChild(a);
+});
+const dotEls = [...dots.children];
+
+/* ---------- progresso + dot ativo ---------- */
+function onScroll(){
+  const max = document.documentElement.scrollHeight - window.innerHeight;
+  beltFill.style.width = (max>0 ? (window.scrollY/max*100) : 0) + '%';
+  const mid = window.scrollY + window.innerHeight*0.45;
+  let active = 0;
+  sections.forEach((s,i)=>{ if(s.offsetTop <= mid) active = i; });
+  dotEls.forEach((d,i)=>d.classList.toggle('on', i===active));
+}
+window.addEventListener('scroll', onScroll, {passive:true});
+window.addEventListener('resize', onScroll);
+
+/* ---------- teclado: pular por seção ---------- */
+function currentSection(){
+  const mid = window.scrollY + window.innerHeight*0.45;
+  let idx = 0;
+  sections.forEach((s,i)=>{ if(s.offsetTop <= mid) idx = i; });
+  return idx;
+}
+window.addEventListener('keydown', e=>{
+  if(e.target.tagName === 'INPUT') return;
+  if(['ArrowRight','ArrowDown','PageDown'].includes(e.key)){
+    e.preventDefault();
+    sections[Math.min(sections.length-1, currentSection()+1)].scrollIntoView({behavior: reduced?'auto':'smooth'});
+  }
+  if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)){
+    e.preventDefault();
+    sections[Math.max(0, currentSection()-1)].scrollIntoView({behavior: reduced?'auto':'smooth'});
+  }
+  if(e.key==='Home'){ e.preventDefault(); sections[0].scrollIntoView(); }
+  if(e.key==='End'){ e.preventDefault(); sections[sections.length-1].scrollIntoView(); }
+});
+
+/* ---------- reveal + gatilhos por seção ---------- */
+const io = new IntersectionObserver(entries=>{
+  entries.forEach(en=>{
+    if(!en.isIntersecting) return;
+    const s = en.target;
+    s.classList.add('inview');
+    if(s.id==='s1') runCounters();
+    if(s.id==='s6' && !chartsDone){ initCharts(); chartsDone = true; }
+  });
+},{threshold:.22});
+sections.forEach(s=>io.observe(s));
+
+/* whatsapp: replay sempre que a seção volta a aparecer */
+const ioChat = new IntersectionObserver(entries=>{
+  entries.forEach(en=>{ if(en.isIntersecting) playScene(currentScene); });
+},{threshold:.45});
+ioChat.observe(document.getElementById('s4'));
+
+/* ---------- contadores ---------- */
+function runCounters(){
+  if(countersRan) return; countersRan = true;
+  document.querySelectorAll('[data-count]').forEach(el=>{
+    const target = +el.dataset.count;
+    if(reduced){ el.textContent = target; return; }
+    let v = 0; const step = Math.max(1, Math.round(target/28));
+    const t = setInterval(()=>{
+      v += step;
+      if(v>=target){ v=target; clearInterval(t); }
+      el.textContent = v;
+    }, 40);
+  });
+}
+
+/* ---------- cenas whatsapp ---------- */
+const scenes = {
+  renova: [
+    ['bot','Oi, Marina! 💚 Tudo bem? Vi aqui que seu plano trimestral vence sexta (17/07). Você tá numa sequência ótima — 14 treinos no último mês! 👊','09:12'],
+    ['bot','Quer que eu já deixe a renovação pronta? Renovando até sexta, o valor segue o mesmo.','09:12'],
+    ['user','Oi! Pode deixar pronto sim 🙌','09:15'],
+    ['bot','Feito! Link do Pix aqui embaixo. Qualquer coisa é só chamar. Bons treinos! 🥋<span class="pix">pix.dojo.com.br/renovacao-marina</span>','09:15']
+  ],
+  reativa: [
+    ['bot','E aí, Rafa! Sentimos sua falta no Cross 😄 Faz 15 dias que você não aparece — tá tudo bem?','18:40'],
+    ['bot','Se a correria apertou, tem vaga na turma das 19h30, mais tranquila. Quer que eu te encaixe?','18:40'],
+    ['user','Verdade, semana corrida... 19h30 amanhã rola?','19:02'],
+    ['bot','Rola! Já te coloquei na lista de amanhã (qui) às 19h30 com o professor Diego. Te esperamos! 🔥','19:02']
+  ],
+  turista: [
+    ['user','Oi! Tô passando uns dias em Ilhabela, vocês têm diária?','22:07'],
+    ['bot','Oi! Temos sim 🏝️ Day pass R$ 50 (musculação + aulas do dia) ou passe semanal R$ 180. Amanhã 18h tem Cross e 19h Muay Thai.','22:07'],
+    ['bot','Quer garantir? Te mando o Pix e já deixo seu nome na recepção.','22:07'],
+    ['user','Fechou, manda o day pass!','22:09'],
+    ['bot','Link enviado ✅ Acesso liberado — é só dizer seu nome na recepção. Bom treino e boa estadia! 🌊<span class="pix">pix.dojo.com.br/daypass</span>','22:09']
+  ]
+};
+let currentScene = 'renova';
+let sceneTimers = [];
+const chat = document.getElementById('chat');
+
+function playScene(name){
+  currentScene = name;
+  sceneTimers.forEach(clearTimeout); sceneTimers = [];
+  chat.innerHTML = '';
+  scenes[name].forEach(([who,msg,time],i)=>{
+    const b = document.createElement('div');
+    b.className = 'bub '+who;
+    b.innerHTML = msg + `<span class="t">${time}</span>`;
+    chat.appendChild(b);
+    const delay = reduced ? 0 : 550 + i*900;
+    sceneTimers.push(setTimeout(()=>{
+      b.classList.add('show');
+      chat.scrollTop = chat.scrollHeight;
+    }, delay));
+  });
+}
+document.querySelectorAll('.scenes button').forEach(btn=>{
+  btn.onclick = ()=>{
+    document.querySelectorAll('.scenes button').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+    playScene(btn.dataset.scene);
+  };
+});
+
+/* ---------- gráficos ---------- */
+function initCharts(){
+  const gridCol = 'rgba(143,163,155,.12)';
+  Chart.defaults.font.family = "'Sora',sans-serif";
+  Chart.defaults.color = '#8FA39B';
+
+  /* retenção (cohort) */
+  new Chart(document.getElementById('chartRet'), {
+    type:'line',
+    data:{
+      labels:['Mês 0','1','2','3','4','5','6','7','8'],
+      datasets:[
+        { label:'Hoje', data:[100,84,74,66,61,57,54,51,49],
+          borderColor:'#5c6f68', backgroundColor:'transparent', tension:.35, borderWidth:2, pointRadius:0 },
+        { label:'Com engajamento proativo', data:[100,91,85,80,77,74,72,70,69],
+          borderColor:'#2BE0C8', backgroundColor:'rgba(43,224,200,.10)', fill:true, tension:.35, borderWidth:2.5, pointRadius:0 }
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ labels:{ boxWidth:14, boxHeight:3 } } },
+      scales:{
+        y:{ min:40, max:100, grid:{color:gridCol}, ticks:{callback:v=>v+'%'} },
+        x:{ grid:{display:false} }
+      }
+    }
+  });
+
+  /* engajamento (doughnut) */
+  new Chart(document.getElementById('chartEng'), {
+    type:'doughnut',
+    data:{
+      labels:['Engajados · 3+ treinos/sem','Mornos · 1–2 treinos/sem','Em risco · 0 check-ins em 14 dias'],
+      datasets:[{ data:[45,33,22],
+        backgroundColor:['#2BE0C8','#1d6f60','#FF6A4D'],
+        borderColor:'#171E1B', borderWidth:3, hoverOffset:6 }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false, cutout:'62%',
+      plugins:{
+        legend:{ position:'bottom', labels:{ boxWidth:12, boxHeight:12, padding:10, font:{size:11} } },
+        tooltip:{ callbacks:{ label:c=>' '+c.raw+'% da base' } }
+      }
+    }
+  });
+
+  /* sazonalidade (barras turista + linha ativos) */
+  new Chart(document.getElementById('chartSeason'), {
+    type:'bar',
+    data:{
+      labels:['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+      datasets:[
+        { type:'bar', label:'Passes de turista', yAxisID:'y1',
+          data:[48,40,18,10,6,8,30,10,8,12,20,52],
+          backgroundColor:'rgba(255,106,77,.75)', borderRadius:4, barThickness:14 },
+        { type:'line', label:'Alunos ativos', yAxisID:'y',
+          data:[310,305,298,290,282,278,288,280,284,290,298,312],
+          borderColor:'#2BE0C8', backgroundColor:'transparent', tension:.35, borderWidth:2.5, pointRadius:0 }
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ labels:{ boxWidth:14, boxHeight:3 } } },
+      scales:{
+        y:{ position:'left', min:250, grid:{color:gridCol}, title:{display:true,text:'alunos',font:{size:10}} },
+        y1:{ position:'right', min:0, grid:{display:false}, title:{display:true,text:'passes/mês',font:{size:10}} },
+        x:{ grid:{display:false} }
+      }
+    }
+  });
+
+  /* LTV por modalidade */
+  new Chart(document.getElementById('chartLtv'), {
+    type:'bar',
+    data:{
+      labels:['Jiu-Jitsu','Cross','Pilates','Musculação','Bike'],
+      datasets:[{ data:[2900,2400,2200,1800,1500],
+        backgroundColor:['#FF6A4D','#2BE0C8','#2BE0C8','#2BE0C8','#2BE0C8'],
+        borderRadius:6, barThickness:24 }]
+    },
+    options:{
+      indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false},
+        tooltip:{ callbacks:{ label:c=>' R$ '+c.raw.toLocaleString('pt-BR') } } },
+      scales:{
+        x:{ grid:{color:gridCol}, ticks:{callback:v=>'R$ '+(v/1000)+'k'} },
+        y:{ grid:{display:false} }
+      }
+    }
+  });
+}
+
+/* ---------- heatmap ---------- */
+(function buildHeat(){
+  const heat = document.getElementById('heat');
+  const days = ['Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const rows = [
+    ['06h',[70,65,72,68,60,30]],
+    ['07h',[85,80,88,82,75,45]],
+    ['08h',[60,55,62,58,52,65]],
+    ['12h',[40,45,42,48,38,20]],
+    ['17h',[75,70,78,72,68,35]],
+    ['18h',[95,90,97,92,88,50]],
+    ['19h',[92,96,90,94,85,40]],
+    ['20h',[65,70,62,68,55,15]]
+  ];
+  let html = '<div></div>' + days.map(d=>`<div class="hd">${d}</div>`).join('');
+  rows.forEach(([h,vals])=>{
+    html += `<div class="hl">${h}</div>`;
+    vals.forEach(v=>{
+      let c;
+      if(v>=88) c='#FF6A4D';
+      else if(v>=70) c='#2BE0C8';
+      else if(v>=45) c='#1d6f60';
+      else c='#182420';
+      html += `<div class="cell" style="background:${c}" title="${v}% de ocupação"></div>`;
+    });
+  });
+  heat.innerHTML = html;
+})();
+
+/* ---------- ROI ---------- */
+const $ = id=>document.getElementById(id);
+const fmtBRL = v=>'R$ '+Math.round(v).toLocaleString('pt-BR');
+function calcROI(){
+  const alunos = +$('rAlunos').value;
+  const mens = +$('rMens').value;
+  const churn = +$('rChurn').value/100;
+  const tur = +$('rTur').value;
+  $('vAlunos').textContent = alunos;
+  $('vMens').textContent = 'R$ '+mens;
+  $('vChurn').textContent = (+$('rChurn').value)+'%';
+  $('vTur').textContent = tur;
+
+  const saemMes = alunos*churn;                    // alunos que saem por mês
+  const perdidosAno = Math.round(saemMes*12);      // alunos que saem por ano
+  const perdaAno = perdidosAno*mens*5;             // cada um valia +5 meses de mensalidade
+  const recupera = perdaAno*0.20;                  // 20% da evasão recuperada
+  const turistaAno = tur*70*12;                    // ticket médio R$ 70
+  const ganho = recupera + turistaAno;
+  const custo = 4500 + 697*12;                     // plano Completo, ano 1
+  const roi = ganho/custo;
+  const payback = ganho>0 ? Math.max(1, Math.round(custo/(ganho/12))) : 0;
+
+  /* hints dos sliders */
+  $('hChurn').textContent = `≈ ${saemMes.toFixed(0)} alunos deixando o Dojo por mês`;
+  $('hTur').textContent = tur>0 ? `≈ ${fmtBRL(tur*70)} por mês em passes` : 'sem receita de turistas';
+
+  /* cards com a lógica visível */
+  $('oPerda').textContent = fmtBRL(perdaAno);
+  $('sPerda').textContent = `${perdidosAno} alunos/ano × R$ ${mens} × 5 meses que cada um ainda ficaria`;
+  $('oGanho').textContent = fmtBRL(ganho);
+  $('sGanho').textContent = `retenção ${fmtBRL(recupera)} + turistas ${fmtBRL(turistaAno)}`;
+  $('oCusto').textContent = fmtBRL(custo);
+  $('oRoi').textContent = roi.toFixed(1).replace('.',',')+'×';
+  $('sPayback').textContent = payback>0
+    ? `cada R$ 1 investido volta como R$ ${roi.toFixed(2).replace('.',',')} · se paga em ~${payback} ${payback===1?'mês':'meses'}`
+    : 'ajuste os controles para simular';
+
+  /* barras comparativas */
+  const maxV = Math.max(ganho, custo, 1);
+  $('barCusto').style.width = (custo/maxV*100)+'%';
+  $('barGanho').style.width = (ganho/maxV*100)+'%';
+  $('cvCusto').textContent = fmtBRL(custo);
+  $('cvGanho').textContent = fmtBRL(ganho);
+}
+['rAlunos','rMens','rChurn','rTur'].forEach(id=>$(id).addEventListener('input',calcROI));
+calcROI();
+
+/* start */
+onScroll();
+</script>
+</body>
+</html>
