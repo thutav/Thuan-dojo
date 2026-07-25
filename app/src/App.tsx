@@ -11,7 +11,14 @@ import {
   salvarLocais,
   type BaseApp,
 } from './dados';
-import { LIMITE_COMPARACAO, ROTULO_MODO, useComparador, useFavoritos, useFiltrosNaUrl } from './estado';
+import {
+  LIMITE_COMPARACAO,
+  ROTULO_MODO,
+  textoCompartilhado,
+  useComparador,
+  useFavoritos,
+  useFiltrosNaUrl,
+} from './estado';
 import { Mapa, metricasDisponiveis, type Metrica } from './Mapa';
 import { Painel } from './Painel';
 import { Comparador, FichaImovel } from './Ficha';
@@ -55,6 +62,8 @@ export function App() {
   const [desenhando, setDesenhando] = useState(false);
   const [vistaMobile, setVistaMobile] = useState<'lista' | 'mapa'>('mapa');
 
+  const [textoCompartilhadoInicial, setTextoCompartilhadoInicial] = useState<string | null>(null);
+
   useEffect(() => {
     carregarBase()
       .then((b) => {
@@ -62,6 +71,14 @@ export function App() {
         setLocais(carregarLocais());
       })
       .catch((e: Error) => setErro(e.message));
+
+    // Compartilhar um post do Facebook ou do WhatsApp para o aplicativo instalado abre
+    // direto o formulário de colar, já preenchido.
+    const compartilhado = textoCompartilhado();
+    if (compartilhado) {
+      setTextoCompartilhadoInicial(compartilhado);
+      setModal('colar');
+    }
   }, []);
 
   // A diária por m² é um número pequeno e pouco intuitivo; na temporada o mapa abre pelo
@@ -112,16 +129,23 @@ export function App() {
     [atualizarFiltros],
   );
 
-  const salvarColado = (imovel: Imovel) => {
-    const novos = [...locais, imovel];
-    setLocais(novos);
-    salvarLocais(novos);
+  const guardarLocais = (novos: Imovel[]) => {
+    const todosLocais = [...locais, ...novos];
+    setLocais(todosLocais);
+    salvarLocais(todosLocais);
     setBase((b) =>
-      b ? { ...b, dataset: { ...b.dataset, imoveis: [...b.dataset.imoveis, imovel] } } : b,
+      b ? { ...b, dataset: { ...b.dataset, imoveis: [...b.dataset.imoveis, ...novos] } } : b,
     );
+    setTextoCompartilhadoInicial(null);
     setModal('nenhum');
+  };
+
+  const salvarColado = (imovel: Imovel) => {
+    guardarLocais([imovel]);
     setSelecionado(imovel.id);
   };
+
+  const salvarVariosColados = (imoveis: Imovel[]) => guardarLocais(imoveis);
 
   if (erro) {
     return (
@@ -398,8 +422,13 @@ export function App() {
         <ColarAnuncio
           gazetteer={base.gazetteer}
           indiceGeo={base.indiceGeo}
+          textoInicial={textoCompartilhadoInicial ?? undefined}
           aoSalvar={salvarColado}
-          aoFechar={() => setModal('nenhum')}
+          aoSalvarVarios={salvarVariosColados}
+          aoFechar={() => {
+            setTextoCompartilhadoInicial(null);
+            setModal('nenhum');
+          }}
         />
       )}
 

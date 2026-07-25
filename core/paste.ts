@@ -157,6 +157,28 @@ function extrairAreas(texto: string): { areaUtil: number | null; areaTerreno: nu
   return { areaUtil, areaTerreno };
 }
 
+/**
+ * Quem acompanha grupo de Facebook copia vários posts de uma vez. Cada bloco separado por
+ * linha em branco (ou por uma linha de traços) que tenha preço vira um anúncio.
+ *
+ * Blocos sem preço são juntados ao anterior: é comum o post ter uma linha solta com o
+ * telefone ou com "aceito proposta" depois de uma linha em branco.
+ */
+export function separarAnuncios(texto: string): string[] {
+  const blocos = texto
+    .split(/\n\s*(?:[-–—=_*]{3,}|\n)\s*\n?/)
+    .map((b) => b.trim())
+    .filter(Boolean);
+
+  const juntados: string[] = [];
+  for (const bloco of blocos) {
+    const temPreco = /r\$\s*[\d.,]+/i.test(bloco);
+    if (temPreco || !juntados.length) juntados.push(bloco);
+    else juntados[juntados.length - 1] += '\n' + bloco;
+  }
+  return juntados.filter((b) => /r\$\s*[\d.,]+/i.test(b));
+}
+
 export function parseAnuncioColado(texto: string, fonteRotulo = 'Colado à mão'): AnuncioColado {
   const linhas = texto
     .split('\n')

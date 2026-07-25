@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
 import { posicionar, resolverBairro, type IndiceGeo } from '@core/geocode';
 import { calcularPrecoM2 } from '@core/normalize';
-import { parseAnuncioColado } from '@core/paste';
-import { rotuloTipo } from '@core/format';
+import { parseAnuncioColado, separarAnuncios } from '@core/paste';
+import { formatarPreco, rotuloTipo } from '@core/format';
 import type { Finalidade, Gazetteer, Imovel, TipoImovel } from '@core/types';
 import { Modal } from './Ficha';
 
@@ -37,14 +37,90 @@ interface Rascunho {
 
 type CampoNumerico = 'preco' | 'areaUtil' | 'areaTerreno' | 'quartos' | 'suites' | 'banheiros' | 'vagas' | 'condominio' | 'iptu';
 
+/** Monta o imóvel a partir de um texto já revisado (ou de um bloco de um lote). */
+function montarImovel(
+  texto: string,
+  bairroId: string,
+  gazetteer: Gazetteer,
+  indiceGeo: IndiceGeo,
+  ajustes: Rascunho = {},
+  sufixoId = '',
+): Imovel | null {
+  const lido = parseAnuncioColado(texto);
+  const bairro = gazetteer.bairros.find((b) => b.id === bairroId);
+  const preco = ajustes.preco ?? lido.preco;
+  if (!bairro || !preco) return null;
+
+  const id = `local-${Date.now().toString(36)}${sufixoId}`;
+  const pos = posicionar(id, bairro, indiceGeo);
+  const hoje = new Date().toISOString().slice(0, 10);
+  const areaUtil = ajustes.areaUtil ?? lido.areaUtil ?? null;
+
+  return {
+    id,
+    titulo: ajustes.titulo || lido.titulo,
+    finalidade: ajustes.finalidade ?? lido.finalidade ?? 'venda',
+    tipo: ajustes.tipo ?? lido.tipo ?? 'casa',
+    bairroId: pos.bairroId,
+    bairro: pos.bairro,
+    setor: pos.setor,
+    preco,
+    precoM2: calcularPrecoM2(preco, areaUtil),
+    condominio: ajustes.condominio ?? lido.condominio ?? null,
+    iptu: ajustes.iptu ?? lido.iptu ?? null,
+    areaUtil,
+    areaTerreno: ajustes.areaTerreno ?? lido.areaTerreno ?? null,
+    quartos: ajustes.quartos ?? lido.quartos ?? null,
+    suites: ajustes.suites ?? lido.suites ?? null,
+    banheiros: ajustes.banheiros ?? lido.banheiros ?? null,
+    vagas: ajustes.vagas ?? lido.vagas ?? null,
+    caracteristicas: lido.caracteristicas,
+    descricao: texto.trim(),
+    fotos: [],
+    lat: pos.lat,
+    lon: pos.lon,
+    precisaoGeo: pos.precisao,
+    fontes: lido.telefone
+      ? [
+          {
+            fonte: 'colado',
+            nomeFonte: `Colado por você · ${lido.telefone}`,
+            url: '',
+            preco,
+            coletadoEm: hoje,
+          },
+        ]
+      : [],
+    atualizadoEm: hoje,
+    novo: true,
+  };
+}
+
 export function ColarAnuncio(props: {
   gazetteer: Gazetteer;
   indiceGeo: IndiceGeo;
+  textoInicial?: string;
   aoSalvar: (imovel: Imovel) => void;
+  aoSalvarVarios?: (imoveis: Imovel[]) => void;
   aoFechar: () => void;
 }) {
-  const [texto, setTexto] = useState('');
+  const [texto, setTexto] = useState(props.textoInicial ?? '');
   const [edicao, setEdicao] = useState<Rascunho>({});
+  const [bairroDoLote, setBairroDoLote] = useState<Record<number, string>>({});
+
+  // Um post só segue no formulário detalhado; vários viram uma lista para confirmar de uma vez.
+  const blocos = useMemo(() => (texto.trim() ? separarAnuncios(texto) : []), [texto]);
+  const ehLote = blocos.length > 1;
+
+  const lote = useMemo(
+    () =>
+      blocos.map((bloco, i) => {
+        const parsed = parseAnuncioColado(bloco);
+        const bairro = resolverBairro(bloco, props.indiceGeo);
+        return { i, bloco, parsed, bairroId: bairroDoLote[i] ?? bairro?.id ?? '' };
+      }),
+    [blocos, bairroDoLote, props.indiceGeo],
+  );
 
   const lido = useMemo(() => (texto.trim() ? parseAnuncioColado(texto) : null), [texto]);
   const bairroDetectado = useMemo(
@@ -68,6 +144,17 @@ export function ColarAnuncio(props: {
   const preco = campo('preco');
   const areaUtil = campo('areaUtil');
   const podeSalvar = !!texto.trim() && !!bairroId && !!preco && preco > 0;
+
+  const salvarLote = () => {
+    const prontos = lote
+      .map((item, ordem) =>
+        item.bairroId
+          ? montarImovel(item.bloco, item.bairroId, props.gazetteer, props.indiceGeo, {}, `-${ordem}`)
+          : null,
+      )
+      .filter((i): i is Imovel => i !== null);
+    if (prontos.length) props.aoSalvarVarios?.(prontos);
+  };
 
   const salvar = () => {
     const bairro = props.gazetteer.bairros.find((b) => b.id === bairroId);
@@ -124,14 +211,29 @@ export function ColarAnuncio(props: {
       subtitulo="Cole o texto de um post de Facebook, WhatsApp ou de um anúncio avulso"
       aoFechar={props.aoFechar}
       rodape={
-        <>
-          <button className="botao" onClick={() => setTexto(EXEMPLO)}>
-            Usar um exemplo
-          </button>
-          <button className="botao primario" onClick={salvar} disabled={!podeSalvar}>
-            Salvar no meu mapa
-          </button>
-        </>
+        ehLote ? (
+          <>
+            <span style={{ marginRight: 'auto', fontSize: 12.5, color: 'var(--muted)' }}>
+              {lote.filter((l) => l.bairroId).length} de {lote.length} prontos para salvar
+            </span>
+            <button
+              className="botao primario"
+              onClick={salvarLote}
+              disabled={!lote.some((l) => l.bairroId)}
+            >
+              Salvar {lote.filter((l) => l.bairroId).length} anúncios
+            </button>
+          </>
+        ) : (
+          <>
+            <button className="botao" onClick={() => setTexto(EXEMPLO)}>
+              Usar um exemplo
+            </button>
+            <button className="botao primario" onClick={salvar} disabled={!podeSalvar}>
+              Salvar no meu mapa
+            </button>
+          </>
+        )
       }
     >
       <div className="campo">
@@ -144,7 +246,48 @@ export function ColarAnuncio(props: {
         />
       </div>
 
-      {lido && (
+      {ehLote && (
+        <>
+          <div className="alerta info" style={{ marginBottom: 14 }}>
+            <span>
+              <strong>{lote.length} anúncios</strong> reconhecidos no texto colado. Confira o
+              bairro de cada um — os que ficarem sem bairro não são salvos, porque não teriam
+              onde aparecer no mapa.
+            </span>
+          </div>
+
+          <div className="lista-lote">
+            {lote.map((item) => (
+              <div className="item-lote" key={item.i}>
+                <div style={{ minWidth: 0 }}>
+                  <div className="titulo-lote">{item.parsed.titulo}</div>
+                  <div className="mono" style={{ fontSize: 11.5, color: 'var(--muted)' }}>
+                    {item.parsed.preco
+                      ? formatarPreco(item.parsed.preco, item.parsed.finalidade ?? 'venda')
+                      : 'sem preço'}
+                    {item.parsed.areaUtil ? ` · ${item.parsed.areaUtil} m²` : ''}
+                    {item.parsed.quartos ? ` · ${item.parsed.quartos} quartos` : ''}
+                  </div>
+                </div>
+                <select
+                  value={item.bairroId}
+                  aria-label={`Bairro do anúncio ${item.i + 1}`}
+                  onChange={(e) => setBairroDoLote((s) => ({ ...s, [item.i]: e.target.value }))}
+                >
+                  <option value="">sem bairro</option>
+                  {props.gazetteer.bairros.map((b) => (
+                    <option key={b.id} value={b.id}>
+                      {b.nome}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {lido && !ehLote && (
         <>
           <div className="alerta info" style={{ marginBottom: 14 }}>
             <span>

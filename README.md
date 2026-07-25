@@ -36,10 +36,20 @@ suficiente.
 três fontes e o menor preço em destaque. Quando as fontes divergem em mais de 15%, a ficha
 avisa em vez de esconder a diferença na média.
 
-**Colar anúncio.** Grupo de Facebook e WhatsApp não têm API, e raspar essas plataformas
-violaria os termos delas. Então: você cola o texto do post, o parser separa preço, área,
-quartos, suítes, vagas, bairro, características e telefone, você confere e salva. O anúncio
-fica no seu navegador e entra nas buscas, no mapa e nas estatísticas como qualquer outro.
+**Facebook e WhatsApp.** Não há como puxar automaticamente: a API de grupos do Facebook foi
+fechada em 2020, e raspar o site exigiria login com a sua conta — viola os termos e arrisca o
+bloqueio dela. O que existe são três caminhos manuais, feitos para custar poucos segundos:
+
+1. **Compartilhar direto para o aplicativo.** Com o app instalado no celular, ele aparece na
+   folha de compartilhamento do Facebook e do WhatsApp: um toque no post e o formulário abre
+   preenchido. (Android e Windows; o Safari do iPhone não implementa isso.)
+2. **Colar um post.** O parser separa preço, área, quartos, suítes, vagas, bairro,
+   características e telefone; você confere e salva.
+3. **Colar vários de uma vez.** Copiou dez posts de um grupo? Cada bloco com preço vira um
+   anúncio, e você só confirma o bairro de cada um numa lista.
+
+O que você salva fica no seu navegador e entra nas buscas, no mapa e nas estatísticas como
+qualquer outro imóvel.
 
 **Alertas.** As buscas que você quer acompanhar ficam em
 [`data/alertas.json`](data/alertas.json). A cada coleta, o que entrar novo ou baixar de preço

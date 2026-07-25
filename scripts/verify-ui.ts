@@ -199,6 +199,45 @@ async function main() {
   );
   await page.keyboard.press('Escape');
 
+  // ---- colar vários de uma vez -------------------------------------------
+  await page.getByRole('button', { name: 'Colar anúncio' }).click();
+  await page.waitForSelector('#texto-anuncio');
+  await page.locator('#texto-anuncio').fill(
+    [
+      'VENDO CASA NO CURRAL\n3 quartos, 180 m². R$ 1.850.000',
+      'Apartamento no Perequê\n2 dormitórios, 70 m². R$ 620.000',
+      'Terreno em Barra Velha, 500 m². R$ 480.000',
+    ].join('\n\n'),
+  );
+  await page.waitForSelector('.lista-lote');
+  const itensLote = await page.locator('.item-lote').count();
+  conferir(itensLote === 3, `um texto com vários posts vira ${itensLote} anúncios separados`);
+  await foto(page, '08b-colar-lote');
+  const antesDoLote = await page.locator('.card').count();
+  await page.getByRole('button', { name: /Salvar \d+ anúncios/ }).click();
+  await page.waitForFunction(
+    (n) => document.querySelectorAll('.card').length > n,
+    antesDoLote,
+    { timeout: 5000 },
+  );
+  conferir(true, 'o lote inteiro entra na base de uma vez');
+
+  // ---- compartilhar do Facebook/WhatsApp para o app -----------------------
+  const compartilhado = 'Casa no Julião, 3 quartos, 200 m². R$ 1.200.000';
+  await page.goto(`${base}?titulo=Post&texto=${encodeURIComponent(compartilhado)}`, {
+    waitUntil: 'networkidle',
+  });
+  await page.waitForSelector('#texto-anuncio');
+  conferir(
+    (await page.locator('#texto-anuncio').inputValue()).includes('Julião'),
+    'texto compartilhado pelo celular já chega aberto no formulário',
+  );
+  conferir(
+    !page.url().includes('texto='),
+    'os parâmetros do compartilhamento saem da URL depois de lidos',
+  );
+  await page.keyboard.press('Escape');
+
   // ---- celular -----------------------------------------------------------
   const celular = await navegador.newContext({
     viewport: { width: 390, height: 844 },

@@ -173,6 +173,29 @@ export function useComparador() {
   return useConjuntoPersistido('ilhabela.comparar.v1', LIMITE_COMPARACAO);
 }
 
+/**
+ * Compartilhar do Facebook ou do WhatsApp para o aplicativo instalado: o sistema abre o app
+ * com o texto do post na URL (share_target do manifest). É o mais perto de "puxar do
+ * Facebook" que existe sem violar os termos deles — vira um toque em vez de copiar, trocar
+ * de aplicativo e colar.
+ *
+ * Funciona no Android e no Windows com o app instalado. O Safari do iPhone não implementa
+ * share_target; lá o caminho continua sendo copiar e colar.
+ */
+export function textoCompartilhado(): string | null {
+  const p = new URLSearchParams(location.search);
+  const partes = [p.get('titulo'), p.get('texto'), p.get('origem')].filter(Boolean);
+  if (!partes.length) return null;
+
+  // O texto compartilhado não faz parte da busca: sai da barra de endereços depois de lido.
+  const limpa = new URLSearchParams(location.search);
+  for (const chave of ['titulo', 'texto', 'origem']) limpa.delete(chave);
+  const busca = limpa.toString();
+  history.replaceState(null, '', busca ? `${location.pathname}?${busca}` : location.pathname);
+
+  return partes.join('\n');
+}
+
 export const ROTULO_MODO: Record<Finalidade, string> = {
   venda: 'Comprar',
   aluguel: 'Alugar',

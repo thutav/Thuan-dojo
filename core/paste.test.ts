@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseAnuncioColado } from './paste';
+import { parseAnuncioColado, separarAnuncios } from './paste';
 
 describe('parseAnuncioColado', () => {
   it('lê um post de grupo de Facebook de venda', () => {
@@ -63,6 +63,43 @@ Diária R$ 900. Pacote de réveillon R$ 12.000 (7 noites).`;
     expect(r.finalidade).toBe('temporada');
     expect(r.preco).toBe(900);
     expect(r.quartos).toBe(4);
+  });
+
+  it('separa vários posts colados de uma vez', () => {
+    const lote = `VENDO CASA NO CURRAL
+3 quartos, 180 m². R$ 1.850.000
+
+Apartamento no Perequê
+2 dormitórios, 70 m². R$ 620.000
+Contato (12) 99999-0000
+
+-----
+
+Terreno em Barra Velha, 500 m². R$ 480.000`;
+
+    const blocos = separarAnuncios(lote);
+    expect(blocos).toHaveLength(3);
+    expect(parseAnuncioColado(blocos[0]).preco).toBe(1_850_000);
+    expect(parseAnuncioColado(blocos[1]).preco).toBe(620_000);
+    expect(parseAnuncioColado(blocos[2]).preco).toBe(480_000);
+  });
+
+  it('gruda no anúncio anterior a linha solta que veio depois dele', () => {
+    const lote = `Casa no Julião, 150 m². R$ 900.000
+
+Aceito proposta, falar com Maria`;
+    const blocos = separarAnuncios(lote);
+    expect(blocos).toHaveLength(1);
+    expect(blocos[0]).toContain('Aceito proposta');
+  });
+
+  it('um post só continua sendo um post só', () => {
+    const post = `VENDO CASA NO CURRAL
+
+Casa com 3 quartos, 180 m².
+
+Valor: R$ 1.850.000`;
+    expect(separarAnuncios(post)).toHaveLength(1);
   });
 
   it('devolve campos nulos quando o texto não informa, sem inventar', () => {

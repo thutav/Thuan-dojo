@@ -1288,6 +1288,46 @@ button {
   margin-left: 7px;
 }
 
+/* ---------- lote de anúncios colados ---------- */
+.lista-lote {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.item-lote {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.item-lote select {
+  background: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-size: 12px;
+  flex: none;
+  max-width: 175px;
+}
+
+.item-lote select:not([value='']) {
+  border-color: rgba(43, 224, 200, 0.45);
+}
+
+.titulo-lote {
+  font-size: 13px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* ---------- carregando ---------- */
 .carregando {
   height: 100%;
