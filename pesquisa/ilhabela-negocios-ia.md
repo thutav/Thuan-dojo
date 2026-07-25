@@ -25,7 +25,7 @@ Onde não existe dado público, está escrito **"dado não encontrado"** e há u
 - [⚡ Três insights que mudam o jogo](#-três-insights-que-mudam-o-jogo)
 - [Base factual](#base-factual)
 - [Parte 1 — Mapa da economia local](#parte-1--mapa-da-economia-local)
-- [Parte 2 — Brainstorm massivo (70 ideias)](#parte-2--brainstorm-massivo-70-ideias)
+- [Parte 2 — Brainstorm massivo (71 ideias)](#parte-2--brainstorm-massivo-71-ideias)
 - [Parte 3 — Matriz de ranqueamento](#parte-3--matriz-de-ranqueamento)
 - [Parte 4 — Top 5 aprofundadas](#parte-4--top-5-aprofundadas)
 - [Parte 5 — Portfólio e sequenciamento](#parte-5--portfólio-e-sequenciamento)
@@ -50,7 +50,7 @@ Isso muda tudo na análise. O ativo mais valioso hoje não é uma ideia — é *
 
 ---
 
-## ⚡ Três insights que mudam o jogo
+## ⚡ Quatro insights que mudam o jogo
 
 ### ⚡ 1. O PIB per capita de Ilhabela é uma ficção contábil — e quase todo mundo que analisa a cidade cai nessa
 
@@ -90,6 +90,28 @@ Cenário otimista: 5% de penetração = 32 clientes
 **R$ 250–400 mil por ano de ARR é o teto realista do jogo puramente local para um operador solo.** É um resultado excelente de vida — e um resultado medíocre de construção de patrimônio, porque ARR de serviço não tem múltiplo: se você para, ele para.
 
 O problema é que esse teto é alto o bastante para ser confortável e baixo o bastante para não construir nada permanente. **É uma armadilha de conforto.** A conclusão estratégica do dossiê inteiro sai daqui: o serviço local é o *financiador*, nunca o destino.
+
+### ⚡ 4. O setor náutico não é analógico por falta de software — e essa correção rebaixou a aposta nº 1 deste dossiê
+
+Este insight **contradiz uma afirmação da primeira versão desta análise**, e a correção importa mais que a afirmação original.
+
+Eu havia classificado a náutica como "o setor com maior ticket e menor maturidade digital da ilha". A pesquisa de concorrência mostra que a categoria já tem um mercado brasileiro maduro:
+
+| Player | O que faz | Escala conhecida |
+|---|---|---|
+| **EasyMarine** | Operação em tempo real (descidas, içamentos, abastecimento), faturamento em lote, bloqueio automático de inadimplente, **app gratuito para o proprietário do barco** | **140 marinas em 17 estados**, 5+ anos de mercado [FATO] |
+| **DOCKA** | Agendamento de descida, vagas, **ordens de serviço**, cobrança por Pix e boleto, apps para operador e para proprietário | SaaS nacional [FATO] |
+| **MarinasOnline** | Cadastro de embarcação com documentação, **histórico completo de manutenção por barco**, galeria de imagens, estoque | Nacional [FATO] |
+| **DK MAR · Gestão Náutica · GeMN** | Gestão de náuticas, histórico de saídas e retornos, documentação | Nacionais [FATO] |
+| **Harbour Assist** | Gestão de marinas, presença internacional | Global [FATO] |
+
+Ou seja: **"Marina OS" e "Ordem de Serviço Náutica", como eu os havia desenhado, já existem e são vendidos por empresas com anos de vantagem e centenas de clientes.** DOCKA descreve literalmente o escopo que eu propus. MarinasOnline já entrega o histórico por embarcação que eu havia chamado de fosso.
+
+**Implicação prática — e ela é a mesma tese que já funciona no deck do Dojo:** o movimento não é competir com o PMS náutico. É ser a **camada de inteligência sobre o PMS que a marina já usa** — exatamente como a proposta do Dojo se posiciona sobre o Tecnofit, sem pedir que o cliente troque de sistema. O que os incumbentes vendem é *registro*: quem desceu, quanto deve, o que foi feito. O que nenhum deles vende é *decisão*: prever quem vai cancelar a vaga, transformar áudio do mecânico em orçamento aprovável, avisar o proprietário antes que o problema vire despesa, e responder no WhatsApp às 22h de sábado.
+
+Consequência direta na matriz: **Marina OS caiu de 82 para 70 pontos** (6º → 29º lugar), e entrou uma ideia nova, **A13 — Camada de IA sobre o PMS náutico, com 83 pontos (5º lugar)**. A Parte 4 foi reescrita em torno dessa correção.
+
+**A lição generalizável, e ela vale para todo este documento:** onde eu escrevi "setor sem software", leia "setor onde eu não procurei o software". A primeira pergunta de qualquer visita de descoberta passa a ser *"que sistema vocês usam hoje?"* — e não *"vocês usam algum sistema?"*.
 
 ---
 
@@ -159,9 +181,76 @@ Os dois caminhos convergem na mesma ordem de grandeza. **Trabalhe com R$ 450–7
 `4.800 barcos × R$ 1.200/mês de vaga [HIP, faixa típica] ≈ R$ 69 milhões/ano só de guarda`
 `+ manutenção estimada em 8% do valor do barco/ano, com barco médio de R$ 250 mil ≈ R$ 96 milhões/ano de serviços`
 
-**A economia náutica de Ilhabela movimenta algo entre R$ 150 e R$ 250 milhões por ano** [EST] — comparável a um terço de todo o gasto turístico — e é, de longe, o setor com maior ticket e menor maturidade digital da ilha. Guarde isso: é a resposta da Parte 4.
+**A economia náutica de Ilhabela movimenta algo entre R$ 150 e R$ 250 milhões por ano** [EST] — comparável a um terço de todo o gasto turístico — e é, de longe, o setor de maior ticket da ilha.
 
-*Dado não encontrado:* número exato de embarcações registradas em Ilhabela e receita agregada do setor. **Validação em 7 dias:** visitar 5 das 32 marinas, perguntar número de vagas, ocupação, valor médio da vaga e qual sistema usam. Cinco conversas resolvem a estimativa.
+⚠️ **Correção importante:** eu havia escrito aqui que era também o setor de menor maturidade digital. **Isso está errado** — ver ⚡4. Existem pelo menos seis sistemas de gestão náutica no mercado brasileiro, um deles com 140 marinas em 17 estados [FATO]. O ticket alto continua verdadeiro; o vazio de software, não.
+
+*Dado não encontrado:* número exato de embarcações registradas em Ilhabela e receita agregada do setor. **Validação em 7 dias:** visitar 5 das 32 marinas, perguntar número de vagas, ocupação, valor médio da vaga e — pergunta corrigida após ⚡4 — **qual sistema usam hoje e o que ele não faz**.
+
+### Maturidade digital: quem já ocupa cada nicho
+
+Esta é a seção que a primeira versão desta pesquisa não tinha, e a ausência dela produziu o erro do ⚡4. O padrão que emerge: **quase nenhum nicho está vazio de software; quase todos estão vazios de inteligência.**
+
+| Nicho | Quem já domina | Preço conhecido | O que o incumbente **não** faz |
+|---|---|---|---|
+| **Marinas e náuticas** | EasyMarine (140 marinas / 17 estados), DOCKA, MarinasOnline, DK MAR, Gestão Náutica, GeMN [FATO] | não publicado | Prever cancelamento de vaga · transformar áudio e foto do mecânico em orçamento · falar com o proprietário · atender fora do horário |
+| **Hospedagem e temporada** | Stays (**a partir de R$ 249/mês** [FATO]), HITS, Seazone, Hostify, APP Sistemas | R$ 249+/mês | Conversar com o hóspede · precificar por evento local · relatar ao proprietário o **estado físico** do imóvel |
+| **Academias e estúdios** | Tecnofit e similares | — | Exatamente o que o deck do Dojo aponta: o sistema sabe, mas não age |
+| **Gastronomia** | Consumer, Saipos, Goomer e concorrentes (mercado nacional consolidado) | — | Previsão de compra atrelada a balsa, clima e evento |
+| **Charter e passeios** | *Dado não encontrado* — nenhum player vertical brasileiro identificado | — | Possível vazio real. **Validar em campo** |
+| **Casa de veraneio / caseiro** | *Dado não encontrado* — nenhum produto identificado | — | Possível vazio real, e é a base da ideia A7 |
+
+> **A leitura estratégica.** Os dois nichos onde não encontrei incumbente — **charter/passeios** e **gestão de casa fechada** — são justamente os menos "softwarizáveis" pela lógica tradicional e os mais dependentes de conversa, foto e julgamento. Ou seja: os que só se tornaram atacáveis agora, com IA. Não é coincidência, é onde a fronteira se moveu. **É por isso que o Caseiro Digital (A7) subiu para 9º na matriz revisada enquanto o Marina OS caiu para 29º.**
+
+### Concorrência: quem já vende serviço digital para este público
+
+| Player | Base | Alcance declarado | Perfil |
+|---|---|---|---|
+| **Huzza Sites** (ex-Agência CSW) | Caraguatatuba | Caraguá, **Ilhabela**, São Sebastião, Ubatuba — desde 2001 [FATO] | Sites, marketing digital, servidores |
+| **Lance Marketing Digital** | Litoral Norte | Os 4 municípios, 100% digital via WhatsApp e dashboards [FATO] | SEO e mídia paga local |
+| **Starten Comunicação** | Caraguatatuba | 20+ anos; SEO, conteúdo, **automação de e-mail marketing, "inteligência de dados"** [FATO] | Agência full-service |
+| **Digitall Evolution** | Caraguatatuba | Sites de conversão, **trilhas de automação para leads** [FATO] | Performance |
+| **Phase4** | Caraguatatuba | Declara **usar IA para otimizar campanhas e personalizar jornadas** [FATO] | Consultoria de marketing |
+
+**Conclusão honesta:** o Litoral Norte **não** é um vazio competitivo. Há pelo menos cinco agências estabelecidas atendendo Ilhabela, uma delas há 25 anos, e ao menos duas já usam "IA" e "automação" no discurso comercial.
+
+**Mas nenhuma delas faz o que está proposto neste dossiê.** São agências de *aquisição* — trazer o cliente até a porta. O que este portfólio vende é *operação e retenção* — o que acontece depois que o cliente chega, integrado ao sistema de gestão que a empresa já usa. São orçamentos diferentes, comprados por razões diferentes, e frequentemente complementares.
+
+**Implicação prática, em três pontos:**
+1. **O CAC sobe.** O dono já foi abordado por três agências este ano e vai ouvir sua proposta pelo mesmo filtro. Diferencie-se na primeira frase, ou será confundido.
+2. **Nunca se apresente como agência.** A frase de abertura não pode conter "marketing", "site" ou "tráfego". A diferença precisa ser óbvia em 10 segundos: *"não trago cliente novo — evito que você perca os que já tem".*
+3. **Elas são canal, não inimigo.** Uma agência que entrega leads e vê o cliente perdê-los tem um problema que você resolve. Parceria com repasse é um caminho de aquisição mais barato que prospecção direta. *(Ideia nova de canal — testar no T1.)*
+
+### Canais institucionais e fomento
+
+Este é o achado de maior valor prático imediato de toda a pesquisa.
+
+| Programa / evento | O que é | Relevância |
+|---|---|---|
+| **6º Fórum Corredor Azul — Turismo Sustentável e Experiência** | **28/07/2026, 9h–17h, Race Village, Praça das Bandeiras, Centro Histórico da Vila.** Evento oficial da SIVI53, organizado pela Secretaria de Desenvolvimento Econômico e Turismo de Ilhabela em parceria com o Sebrae-SP. Pauta: turismo de experiência, hubs de inovação, **tecnologias aplicadas ao meio marinho**, propriedade intelectual, internacionalização e **soluções para o setor náutico**. Reúne governo, empresários, pesquisadores, **startups** e universidades. **Inscrição gratuita via Sympla** [FATO] | 🔴 **Acontece em 3 dias.** Governo municipal, Sebrae, setor náutico e startups na mesma praça, discutindo exatamente as apostas 1, 2 e 4 deste documento |
+| **Turismo Conectado Litoral Norte** | Programa Sebrae dentro do Investe Turismo (MTur + Sebrae Nacional + Embratur), focado em **aprimorar controles de gestão, tecnologia e inovação** dos pequenos negócios de turismo [FATO] | Canal de distribuição pronto para as apostas 3 e 5 — o Sebrae já está fazendo a evangelização por você |
+| **ALI Produtividade** (Agentes Locais de Inovação) | Inscrições abertas no Sebrae-SP [FATO] | Rede de agentes que entram nas empresas. Parceria ou credenciamento |
+| **Semana do MEI · Sebrae Móvel** | Ações recorrentes no Vale do Paraíba e Litoral Norte [FATO] | Palco para a ideia B10 (treinamento) |
+| **Rede Brasileira de Destinos Turísticos Inteligentes** | Ilhabela integra a rede [FATO] | Legitima a Aposta 2: você é continuidade de uma agenda oficial, não novidade |
+
+### Setor público: como ele compra
+
+| Canal | Onde | Observação |
+|---|---|---|
+| Licitações e contratos da Prefeitura | Portal de licitações, dispensas e inexigibilidade; histórico desde 2008 em todas as modalidades [FATO] | Base pública e estruturada — é o insumo da ideia F5 (leitor de edital) |
+| Portal da Transparência | Operado por **Prescon Informática** [FATO] | Fornecedores, folha, execução orçamentária |
+| Câmara Municipal | Portal de compras próprio + **plano anual de contratações 2026** publicado [FATO] | Contratos menores, decisão mais rápida |
+| IPTU 2026 | Reajuste de 3,0332% (Decreto 11.505/2025); a comunicação oficial destaca o IPTU como **"fonte extremamente importante de receita, especialmente diante da queda dos royalties"** [FATO] | Confirmação direta do ⚡2, com palavras da própria prefeitura |
+
+*Dado não encontrado:* composição da receita municipal por rubrica (ISS por setor, IPTU, transferências) na LOA 2026. O documento existe e está publicado, mas os valores não foram recuperados nesta pesquisa. **Validação em 7 dias:** baixar a LOA 2026 no site da prefeitura e ler o anexo de receitas — 40 minutos de trabalho que substituem toda a estimativa da dor nº 12 por número oficial.
+
+### Perfil da demanda — o dado que reforça a Aposta 3
+
+No litoral paulista, **47,1% dos entrevistados relatam permanência de 5 a 10 noites**, e entre os tipos de hospedagem destacam-se **Airbnb e similares com 26,7% e casa própria com 26%** [FATO].
+
+Some os dois: **mais de metade das hospedagens no litoral não é hotelaria** — é temporada e segunda residência. Isso valida quantitativamente a leitura de que o inventário relevante de Ilhabela são os 7.000 leitos de temporada [FATO] e as casas de proprietário ausente, não os 5.000 leitos hoteleiros. É a base das ideias A6 e A7.
+
+*Dado não encontrado:* perfil de origem, gasto e permanência **específicos de Ilhabela**. O Observatório de Turismo municipal coleta exatamente isso, com questionário trilíngue [FATO], mas os resultados não estão publicados de forma acessível. **Validação em 7 dias:** solicitar os dados à Secretaria de Desenvolvimento Econômico e Turismo — e o Fórum Corredor Azul, em 28/07, é literalmente a oportunidade de fazer esse pedido pessoalmente a quem tem o dado.
 
 ---
 
@@ -238,17 +327,17 @@ Ordenadas por custo anual estimado para o conjunto da ilha. A coluna **IA-shaped
 
 ---
 
-## Parte 2 — Brainstorm massivo (70 ideias)
+## Parte 2 — Brainstorm massivo (71 ideias)
 
 Regra desta seção: quantidade primeiro, julgamento depois. O filtro vem na Parte 3. Cada linha traz cliente, dor, o "por que agora", o modelo de receita e — o mais importante — **quem é o primeiro cliente pagante que dá para procurar nesta semana**.
 
 Na coluna "primeiro cliente", *nomeável* significa um alvo concreto e identificável em campo, não uma persona genérica.
 
-### A. Micro-SaaS vertical para nicho local — 12 ideias
+### A. Micro-SaaS vertical para nicho local — 13 ideias
 
 | # | Ideia | Cliente e dor | Por que só agora | Modelo e ticket | Primeiro cliente |
 |---|---|---|---|---|---|
-| A1 | **Marina OS** — fila de descida de barco, agenda de mar, vaga, cobrança | 32 marinas e garagens náuticas [FATO]; hoje operam em planilha e rádio | Agente entende áudio e foto do marinheiro; antes exigiria app e treinamento | SaaS R$ 900–2.500/mês por marina | Centro Náutico Ilhabela (260 barcos) e vizinhas do Perequê |
+| ~~A1~~ | ~~**Marina OS** — fila de descida, agenda de mar, vaga, cobrança~~ **✂️ MORTA na 2ª rodada** | 32 marinas e garagens náuticas [FATO] | — | — | **Categoria já ocupada:** EasyMarine (140 marinas), DOCKA, MarinasOnline [FATO]. Ver ⚡4 e A13 |
 | A2 | **Ordem de Serviço Náutica** — mecânico manda foto e áudio, IA gera orçamento estruturado, dono aprova por WhatsApp | Oficinas náuticas e proprietários ausentes; barco parado é dor nº 5 | Visão + transcrição em português técnico só ficou confiável agora | R$ 600–1.500/mês + % sobre OS aprovada | Oficinas dentro das marinas do Perequê e Itaquanduba |
 | A3 | **Charter OS** — disponibilidade, contrato, checklist de segurança, briefing, Pix, avaliação | Operadores de lancha, veleiro e escuna; ticket R$ 1.800–5.000 por saída [FATO] | Agente lida com o ida-e-volta de negociação que hoje consome o dono | R$ 400–900/mês + 2–3% do booking | Terra & Mar, Eva Turismo, operadores independentes de lancha |
 | A4 | **Pousada Copiloto** — pré-check-in, upsell, resposta a OTA, reputação | > 5.000 leitos de hotelaria [FATO]; dono responde tudo no celular | Custo por conversa caiu ao ponto de caber em pousada de 12 quartos | R$ 397–997/mês (a régua do deck já existente) | Pousadas do Curral, Feiticeira e Vila |
@@ -260,6 +349,7 @@ Na coluna "primeiro cliente", *nomeável* significa um alvo concreto e identific
 | A10 | **Roteirizador de passeio com mar** — remarcação automática quando vento e ondulação inviabilizam | Operadores de passeio (dor 10) | Modelos meteo-oceânicos abertos + agente que renegocia com o cliente | R$ 297–597/mês | Escunas e speedboats da Vila |
 | A11 | **Camada de Inteligência para negócio de recorrência** — churn, renovação, reativação | Academias, escolas, clubes, clínicas (dor 14) | **Já construído e precificado no deck do Dojo** | R$ 397 / 697 / 1.197 por mês | Dojo Fitness Club — proposta pronta |
 | A12 | **Agenda sem no-show** — clínicas, estética, pet, personal | Serviços de hora marcada na ilha | Confirmação conversacional custa centavos | R$ 197–397/mês | Clínicas e estúdios da Vila e Perequê |
+| **A13** ⭐ | **Camada de IA sobre o PMS náutico** — lê o EasyMarine, DOCKA ou MarinasOnline que a marina já usa e age: prevê vaga em risco, vira áudio do mecânico em orçamento, fala com o proprietário, atende 24 h | Marinas que **já pagam** software e ainda operam a decisão no braço | *Ideia nascida da correção do ⚡4.* Só existe porque o incumbente registra e não decide — e porque o dono não troca de sistema | R$ 890–1.890/mês + setup R$ 4.500 | As mesmas 32 marinas — mas a conversa começa por *"que sistema vocês usam?"* |
 
 ### B. Serviço de IA "agência de uma pessoa só" — 10 ideias
 
@@ -356,7 +446,7 @@ Estas são as que a maioria descartaria de cara. A defesa de cada uma está na c
 | H7 | **Ponto físico na fila da balsa** — totem ou atendimento onde o turista espera | Operação física, autorização, baixa margem aparente | 4.000 veículos por dia [FATO] com público cativo por dezenas de minutos, no exato momento em que estão decidindo o que fazer na ilha. É o melhor ponto de captura de intenção do destino inteiro, e está vago |
 | H8 | **Tratar Ilhabela como laboratório fechado e vender o case, não o produto** | Mercado pequeno demais para importar | Uma ilha é um sistema fechado e mensurável — a fantasia de qualquer pesquisador de destino inteligente. "Digitalizamos um destino turístico inteiro" é uma narrativa nacional que vale mais que o ARR local. A prefeitura já se posiciona como destino inteligente [FATO] |
 
-**Total: 70 ideias.** A seguir, o filtro.
+**Total: 71 ideias.** A seguir, o filtro.
 
 ---
 
@@ -380,98 +470,103 @@ Os pesos não são neutros — eles codificam uma tese. A tese é: **um operador
 
 Escala 1–5 em cada critério. Nota final normalizada de 0 a 100.
 
-### Tabela completa — as 70 ideias ranqueadas
+### Tabela completa — as 71 ideias ranqueadas
 
 | Pos | # | Ideia | MER | ESC | SAZ | FOS | TTR | CAC | OPS | RIS | CC | **Nota** |
 |---:|---|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---:|
 | 1 | D7 | Cadastro sombra de temporada | 3 | 5 | 5 | 5 | 3 | 3 | 4 | 3 | 5 | **84.0** |
-| 2 | A2 | Ordem de Serviço Náutica | 4 | 5 | 4 | 4 | 4 | 4 | 3 | 4 | 5 | **84.0** |
-| 3 | H3 | B2G por success fee (= F1) | 4 | 5 | 5 | 5 | 2 | 3 | 4 | 2 | 5 | **83.0** |
-| 4 | F1 | Recuperação de receita própria (B2G) | 4 | 5 | 5 | 5 | 2 | 3 | 4 | 2 | 5 | **83.0** |
-| 5 | D5 | Benchmark de diária e ocupação | 2 | 5 | 4 | 5 | 3 | 3 | 5 | 4 | 5 | **83.0** |
-| 6 | A1 | Marina OS | 4 | 5 | 4 | 4 | 3 | 4 | 3 | 4 | 5 | **82.0** |
-| 7 | D1 | Índice Ilhabela | 3 | 5 | 4 | 5 | 2 | 3 | 4 | 3 | 5 | **80.0** |
-| 8 | A6 | Anfitrião Copiloto | 5 | 5 | 3 | 3 | 4 | 4 | 3 | 3 | 5 | **80.0** |
-| 9 | G4 | Observatório independente | 2 | 4 | 5 | 5 | 2 | 5 | 3 | 4 | 5 | **79.0** |
-| 10 | G1 | Náutica além de Ilhabela | 5 | 5 | 4 | 4 | 2 | 3 | 3 | 3 | 5 | **79.0** |
-| 11 | F5 | Leitor de edital | 2 | 5 | 5 | 3 | 4 | 3 | 4 | 3 | 5 | **78.0** |
-| 12 | A7 | Caseiro Digital | 4 | 4 | 5 | 4 | 4 | 3 | 3 | 4 | 4 | **78.0** |
-| 13 | H6 | Mídia antes de fornecedor | 2 | 4 | 5 | 5 | 1 | 5 | 3 | 4 | 5 | **77.0** |
-| 14 | A11 | Camada de Inteligência (recorrência) | 3 | 4 | 4 | 2 | 5 | 5 | 3 | 4 | 5 | **76.0** |
-| 15 | G5 | Consultoria de dados remota | 5 | 5 | 5 | 2 | 5 | 3 | 1 | 3 | 4 | **75.0** |
-| 16 | D8 | Inteligência de fluxo | 3 | 4 | 4 | 4 | 3 | 3 | 4 | 3 | 5 | **75.0** |
-| 17 | B1 | Diagnóstico de IA pago | 4 | 3 | 4 | 2 | 5 | 4 | 4 | 5 | 5 | **75.0** |
-| 18 | A5 | Motor de tarifa dinâmica | 3 | 5 | 3 | 4 | 3 | 3 | 4 | 3 | 4 | **75.0** |
-| 19 | A3 | Charter OS | 3 | 5 | 2 | 3 | 4 | 4 | 3 | 3 | 5 | **74.0** |
-| 20 | H4 | Horas de IA como mão de obra sazonal | 4 | 4 | 2 | 2 | 5 | 5 | 3 | 3 | 5 | **73.0** |
-| 21 | H1 | CFO fracionário por resultado | 4 | 4 | 4 | 4 | 4 | 3 | 2 | 2 | 4 | **72.0** |
-| 22 | G2 | Gerador de proposta comercial | 1 | 5 | 5 | 2 | 4 | 3 | 4 | 2 | 5 | **72.0** |
-| 23 | B3 | Camada sobre o sistema existente | 4 | 3 | 4 | 3 | 5 | 4 | 2 | 3 | 5 | **72.0** |
-| 24 | H8 | Ilhabela como laboratório | 2 | 5 | 5 | 4 | 1 | 3 | 3 | 3 | 4 | **71.0** |
-| 25 | C1 | Concierge de Ilhabela | 4 | 5 | 2 | 4 | 2 | 2 | 3 | 3 | 5 | **71.0** |
-| 26 | A4 | Pousada Copiloto | 4 | 4 | 3 | 2 | 4 | 4 | 3 | 3 | 5 | **71.0** |
-| 27 | G3 | Curso IA para negócios de turismo | 2 | 5 | 4 | 3 | 3 | 3 | 3 | 3 | 4 | **70.0** |
-| 28 | F2 | Vigilância de entorno do parque | 2 | 4 | 5 | 4 | 2 | 2 | 4 | 2 | 5 | **70.0** |
-| 29 | B7 | Auditoria de dados parados | 3 | 3 | 4 | 2 | 5 | 3 | 4 | 4 | 5 | **70.0** |
+| 2 | H3 | B2G por success fee (= F1) | 4 | 5 | 5 | 5 | 2 | 3 | 4 | 2 | 5 | **83.0** |
+| 3 | F1 | Recuperação de receita própria (B2G) | 4 | 5 | 5 | 5 | 2 | 3 | 4 | 2 | 5 | **83.0** |
+| 4 | D5 | Benchmark de diária e ocupação | 2 | 5 | 4 | 5 | 3 | 3 | 5 | 4 | 5 | **83.0** |
+| 5 | A13 | Camada de IA sobre o PMS náutico | 4 | 5 | 4 | 4 | 4 | 4 | 3 | 3 | 5 | **83.0** |
+| 6 | D1 | Índice Ilhabela | 3 | 5 | 4 | 5 | 2 | 3 | 4 | 3 | 5 | **80.0** |
+| 7 | G4 | Observatório independente | 2 | 4 | 5 | 5 | 2 | 5 | 3 | 4 | 5 | **79.0** |
+| 8 | F5 | Leitor de edital | 2 | 5 | 5 | 3 | 4 | 3 | 4 | 3 | 5 | **78.0** |
+| 9 | A7 | Caseiro Digital | 4 | 4 | 5 | 4 | 4 | 3 | 3 | 4 | 4 | **78.0** |
+| 10 | H6 | Mídia antes de fornecedor | 2 | 4 | 5 | 5 | 1 | 5 | 3 | 4 | 5 | **77.0** |
+| 11 | A2 | Ordem de Serviço Náutica | 4 | 4 | 4 | 3 | 4 | 4 | 3 | 4 | 5 | **77.0** |
+| 12 | G1 | Náutica além de Ilhabela | 5 | 5 | 4 | 3 | 2 | 3 | 3 | 3 | 5 | **76.0** |
+| 13 | A11 | Camada de Inteligência (recorrência) | 3 | 4 | 4 | 2 | 5 | 5 | 3 | 4 | 5 | **76.0** |
+| 14 | G5 | Consultoria de dados remota | 5 | 5 | 5 | 2 | 5 | 3 | 1 | 3 | 4 | **75.0** |
+| 15 | D8 | Inteligência de fluxo | 3 | 4 | 4 | 4 | 3 | 3 | 4 | 3 | 5 | **75.0** |
+| 16 | B1 | Diagnóstico de IA pago | 4 | 3 | 4 | 2 | 5 | 4 | 4 | 5 | 5 | **75.0** |
+| 17 | A5 | Motor de tarifa dinâmica | 3 | 5 | 3 | 4 | 3 | 3 | 4 | 3 | 4 | **75.0** |
+| 18 | H4 | Horas de IA como mão de obra sazonal | 4 | 4 | 2 | 2 | 5 | 5 | 3 | 3 | 5 | **73.0** |
+| 19 | A6 | Anfitrião Copiloto | 5 | 4 | 3 | 2 | 4 | 4 | 3 | 3 | 5 | **73.0** |
+| 20 | H1 | CFO fracionário por resultado | 4 | 4 | 4 | 4 | 4 | 3 | 2 | 2 | 4 | **72.0** |
+| 21 | G2 | Gerador de proposta comercial | 1 | 5 | 5 | 2 | 4 | 3 | 4 | 2 | 5 | **72.0** |
+| 22 | B3 | Camada sobre o sistema existente | 4 | 3 | 4 | 3 | 5 | 4 | 2 | 3 | 5 | **72.0** |
+| 23 | H8 | Ilhabela como laboratório | 2 | 5 | 5 | 4 | 1 | 3 | 3 | 3 | 4 | **71.0** |
+| 24 | C1 | Concierge de Ilhabela | 4 | 5 | 2 | 4 | 2 | 2 | 3 | 3 | 5 | **71.0** |
+| 25 | A4 | Pousada Copiloto | 4 | 4 | 3 | 2 | 4 | 4 | 3 | 3 | 5 | **71.0** |
+| 26 | G3 | Curso IA para negócios de turismo | 2 | 5 | 4 | 3 | 3 | 3 | 3 | 3 | 4 | **70.0** |
+| 27 | F2 | Vigilância de entorno do parque | 2 | 4 | 5 | 4 | 2 | 2 | 4 | 2 | 5 | **70.0** |
+| 28 | B7 | Auditoria de dados parados | 3 | 3 | 4 | 2 | 5 | 3 | 4 | 4 | 5 | **70.0** |
+| 29 | A1 | Marina OS | 4 | 4 | 4 | 2 | 3 | 4 | 3 | 4 | 4 | **70.0** |
 | 30 | G6 | Produto de vela | 2 | 5 | 3 | 4 | 2 | 3 | 3 | 3 | 4 | **69.0** |
 | 31 | C8 | Álbum do passeio | 3 | 5 | 2 | 2 | 4 | 3 | 3 | 3 | 5 | **69.0** |
-| 32 | B2 | Agente WhatsApp produtizado | 4 | 3 | 4 | 2 | 5 | 4 | 2 | 3 | 5 | **69.0** |
-| 33 | H2 | Ser o próprio cliente-zero | 3 | 4 | 3 | 5 | 2 | 5 | 1 | 1 | 4 | **68.0** |
-| 34 | F6 | Vigia da transparência | 1 | 4 | 5 | 3 | 3 | 2 | 4 | 3 | 5 | **68.0** |
-| 35 | G7 | Boilerplate vertical | 1 | 5 | 5 | 1 | 4 | 2 | 4 | 2 | 5 | **67.0** |
-| 36 | G8 | Micro-aquisição local | 3 | 3 | 4 | 4 | 3 | 4 | 2 | 2 | 4 | **66.0** |
-| 37 | A8 | Previsão de compra p/ restaurante | 3 | 4 | 3 | 3 | 3 | 3 | 3 | 3 | 4 | **66.0** |
-| 38 | H5 | Cooperativa de dados do trade | 3 | 4 | 4 | 5 | 1 | 2 | 2 | 2 | 4 | **65.0** |
-| 39 | D2 | Disponibilidade unificada de barcos | 3 | 5 | 2 | 4 | 2 | 2 | 2 | 2 | 4 | **64.0** |
-| 40 | B10 | Treinamento de IA p/ equipes | 2 | 4 | 4 | 2 | 4 | 4 | 2 | 4 | 3 | **64.0** |
-| 41 | E6 | Estúdio de conteúdo náutico | 3 | 4 | 3 | 2 | 4 | 3 | 2 | 3 | 4 | **63.0** |
-| 42 | D3 | Rede pousada → experiência | 3 | 4 | 2 | 3 | 3 | 3 | 3 | 2 | 4 | **63.0** |
-| 43 | C4 | Roteiro sob medida com reserva | 3 | 5 | 2 | 3 | 2 | 2 | 3 | 2 | 4 | **63.0** |
-| 44 | B9 | CTO fracionário | 2 | 3 | 5 | 4 | 4 | 2 | 1 | 3 | 4 | **63.0** |
-| 45 | B6 | Motor de reputação | 3 | 3 | 4 | 1 | 5 | 4 | 3 | 2 | 4 | **63.0** |
-| 46 | A12 | Agenda sem no-show | 3 | 4 | 4 | 1 | 4 | 3 | 3 | 2 | 4 | **63.0** |
-| 47 | E3 | Manutenção preventiva de casa fechada | 4 | 3 | 5 | 3 | 3 | 3 | 1 | 3 | 3 | **62.0** |
-| 48 | B4 | Back-office fiscal de pousada | 3 | 3 | 4 | 3 | 3 | 3 | 2 | 3 | 4 | **62.0** |
-| 49 | A10 | Roteirizador de passeio com mar | 2 | 4 | 2 | 3 | 3 | 3 | 3 | 3 | 4 | **62.0** |
-| 50 | F8 | Prestação de contas da TPA | 1 | 3 | 5 | 3 | 3 | 2 | 4 | 2 | 4 | **61.0** |
-| 51 | D4 | Central de reservas white-label | 4 | 4 | 3 | 3 | 2 | 2 | 2 | 2 | 4 | **61.0** |
-| 52 | F3 | Monitor de fauna marinha | 1 | 4 | 4 | 4 | 1 | 2 | 3 | 2 | 4 | **60.0** |
-| 53 | F4 | Atendimento ao cidadão | 2 | 4 | 5 | 2 | 2 | 2 | 3 | 1 | 4 | **59.0** |
-| 54 | B8 | Onboarding de conformidade | 3 | 2 | 4 | 3 | 4 | 3 | 2 | 4 | 3 | **59.0** |
-| 55 | A9 | Escala Sazonal | 3 | 4 | 2 | 2 | 3 | 3 | 3 | 3 | 3 | **59.0** |
-| 56 | F7 | Rota de coleta preditiva | 1 | 4 | 4 | 3 | 2 | 2 | 3 | 1 | 4 | **58.0** |
-| 57 | C5 | Guia offline de trilhas | 2 | 4 | 2 | 2 | 3 | 2 | 4 | 2 | 4 | **58.0** |
-| 58 | B5 | Máquina de conteúdo local | 3 | 3 | 3 | 1 | 4 | 4 | 2 | 2 | 4 | **57.0** |
+| 32 | H2 | Ser o próprio cliente-zero | 3 | 4 | 3 | 5 | 2 | 5 | 1 | 1 | 4 | **68.0** |
+| 33 | F6 | Vigia da transparência | 1 | 4 | 5 | 3 | 3 | 2 | 4 | 3 | 5 | **68.0** |
+| 34 | G7 | Boilerplate vertical | 1 | 5 | 5 | 1 | 4 | 2 | 4 | 2 | 5 | **67.0** |
+| 35 | B2 | Agente WhatsApp produtizado | 4 | 3 | 4 | 2 | 5 | 3 | 2 | 3 | 5 | **67.0** |
+| 36 | A3 | Charter OS | 3 | 4 | 2 | 2 | 4 | 4 | 3 | 3 | 5 | **67.0** |
+| 37 | G8 | Micro-aquisição local | 3 | 3 | 4 | 4 | 3 | 4 | 2 | 2 | 4 | **66.0** |
+| 38 | A8 | Previsão de compra p/ restaurante | 3 | 4 | 3 | 3 | 3 | 3 | 3 | 3 | 4 | **66.0** |
+| 39 | H5 | Cooperativa de dados do trade | 3 | 4 | 4 | 5 | 1 | 2 | 2 | 2 | 4 | **65.0** |
+| 40 | D2 | Disponibilidade unificada de barcos | 3 | 5 | 2 | 4 | 2 | 2 | 2 | 2 | 4 | **64.0** |
+| 41 | B10 | Treinamento de IA p/ equipes | 2 | 4 | 4 | 2 | 4 | 4 | 2 | 4 | 3 | **64.0** |
+| 42 | E6 | Estúdio de conteúdo náutico | 3 | 4 | 3 | 2 | 4 | 3 | 2 | 3 | 4 | **63.0** |
+| 43 | D3 | Rede pousada → experiência | 3 | 4 | 2 | 3 | 3 | 3 | 3 | 2 | 4 | **63.0** |
+| 44 | C4 | Roteiro sob medida com reserva | 3 | 5 | 2 | 3 | 2 | 2 | 3 | 2 | 4 | **63.0** |
+| 45 | B9 | CTO fracionário | 2 | 3 | 5 | 4 | 4 | 2 | 1 | 3 | 4 | **63.0** |
+| 46 | B6 | Motor de reputação | 3 | 3 | 4 | 1 | 5 | 4 | 3 | 2 | 4 | **63.0** |
+| 47 | A12 | Agenda sem no-show | 3 | 4 | 4 | 1 | 4 | 3 | 3 | 2 | 4 | **63.0** |
+| 48 | E3 | Manutenção preventiva de casa fechada | 4 | 3 | 5 | 3 | 3 | 3 | 1 | 3 | 3 | **62.0** |
+| 49 | B4 | Back-office fiscal de pousada | 3 | 3 | 4 | 3 | 3 | 3 | 2 | 3 | 4 | **62.0** |
+| 50 | A10 | Roteirizador de passeio com mar | 2 | 4 | 2 | 3 | 3 | 3 | 3 | 3 | 4 | **62.0** |
+| 51 | F8 | Prestação de contas da TPA | 1 | 3 | 5 | 3 | 3 | 2 | 4 | 2 | 4 | **61.0** |
+| 52 | D4 | Central de reservas white-label | 4 | 4 | 3 | 3 | 2 | 2 | 2 | 2 | 4 | **61.0** |
+| 53 | F3 | Monitor de fauna marinha | 1 | 4 | 4 | 4 | 1 | 2 | 3 | 2 | 4 | **60.0** |
+| 54 | F4 | Atendimento ao cidadão | 2 | 4 | 5 | 2 | 2 | 2 | 3 | 1 | 4 | **59.0** |
+| 55 | B8 | Onboarding de conformidade | 3 | 2 | 4 | 3 | 4 | 3 | 2 | 4 | 3 | **59.0** |
+| 56 | A9 | Escala Sazonal | 3 | 4 | 2 | 2 | 3 | 3 | 3 | 3 | 3 | **59.0** |
+| 57 | F7 | Rota de coleta preditiva | 1 | 4 | 4 | 3 | 2 | 2 | 3 | 1 | 4 | **58.0** |
+| 58 | C5 | Guia offline de trilhas | 2 | 4 | 2 | 2 | 3 | 2 | 4 | 2 | 4 | **58.0** |
 | 59 | E2 | Turnover as a service | 4 | 3 | 2 | 3 | 3 | 3 | 1 | 3 | 3 | **56.0** |
 | 60 | C6 | Companheiro de mergulho | 1 | 4 | 2 | 2 | 3 | 2 | 4 | 2 | 4 | **56.0** |
 | 61 | C3 | Assistente de chegada (TPA) | 2 | 3 | 2 | 2 | 3 | 2 | 4 | 3 | 4 | **55.0** |
-| 62 | C2 | Previsor de fila de balsa | 2 | 2 | 2 | 3 | 3 | 2 | 4 | 3 | 4 | **54.0** |
-| 63 | C7 | Vitrine de experiências caiçaras | 2 | 3 | 2 | 4 | 2 | 2 | 2 | 3 | 3 | **53.0** |
-| 64 | E8 | Escola e cowork de IA | 2 | 3 | 3 | 3 | 2 | 3 | 1 | 3 | 3 | **52.0** |
-| 65 | D6 | Mercado do Peixe digital | 2 | 2 | 3 | 3 | 3 | 2 | 2 | 3 | 3 | **50.0** |
-| 66 | H7 | Ponto físico na fila da balsa | 3 | 2 | 2 | 4 | 2 | 2 | 1 | 2 | 3 | **48.0** |
-| 67 | E1 | Rouparia de temporada roteirizada | 3 | 2 | 2 | 3 | 3 | 3 | 1 | 3 | 2 | **48.0** |
-| 68 | E4 | Consolidação de carga na balsa | 2 | 2 | 3 | 3 | 2 | 2 | 1 | 2 | 2 | **43.0** |
-| 69 | E7 | Quiosque autônomo em praia remota | 1 | 3 | 1 | 2 | 1 | 2 | 1 | 2 | 3 | **38.0** |
-| 70 | E5 | Dark store de alta temporada | 2 | 2 | 2 | 2 | 2 | 2 | 1 | 2 | 2 | **38.0** |
+| 62 | B5 | Máquina de conteúdo local | 3 | 3 | 3 | 1 | 4 | 3 | 2 | 2 | 4 | **55.0** |
+| 63 | C2 | Previsor de fila de balsa | 2 | 2 | 2 | 3 | 3 | 2 | 4 | 3 | 4 | **54.0** |
+| 64 | C7 | Vitrine de experiências caiçaras | 2 | 3 | 2 | 4 | 2 | 2 | 2 | 3 | 3 | **53.0** |
+| 65 | E8 | Escola e cowork de IA | 2 | 3 | 3 | 3 | 2 | 3 | 1 | 3 | 3 | **52.0** |
+| 66 | D6 | Mercado do Peixe digital | 2 | 2 | 3 | 3 | 3 | 2 | 2 | 3 | 3 | **50.0** |
+| 67 | H7 | Ponto físico na fila da balsa | 3 | 2 | 2 | 4 | 2 | 2 | 1 | 2 | 3 | **48.0** |
+| 68 | E1 | Rouparia de temporada roteirizada | 3 | 2 | 2 | 3 | 3 | 3 | 1 | 3 | 2 | **48.0** |
+| 69 | E4 | Consolidação de carga na balsa | 2 | 2 | 3 | 3 | 2 | 2 | 1 | 2 | 2 | **43.0** |
+| 70 | E7 | Quiosque autônomo em praia remota | 1 | 3 | 1 | 2 | 1 | 2 | 1 | 2 | 3 | **38.0** |
+| 71 | E5 | Dark store de alta temporada | 2 | 2 | 2 | 2 | 2 | 2 | 1 | 2 | 2 | **38.0** |
 
 ### Por que as 10 primeiras subiram
 
+> ⚠️ **Esta tabela foi recalculada após a pesquisa de concorrência (⚡4).** Sete ideias tiveram nota revisada para baixo e uma ideia nova (A13) entrou. O movimento mais brutal: **Marina OS caiu de 82 para 70 pontos — do 6º para o 29º lugar** — ao se descobrir que EasyMarine, DOCKA e MarinasOnline já ocupam a categoria [FATO]. A matriz original está preservada no histórico do git; esta é a versão corrigida.
+
 - **D7 (84) — Cadastro sombra de temporada.** Ganhou porque acerta os dois critérios de maior peso ao mesmo tempo. O fosso é o dataset: uma vez que você tem o mapeamento de qual imóvel anuncia e não está regularizado, ninguém refaz isso rápido. E o produto é literalmente o mesmo em qualquer cidade turística do Brasil que esteja regulamentando temporada — que é todas elas.
-- **A2 (84) — Ordem de Serviço Náutica.** Ticket alto, cliente com dinheiro, setor quase intocado por software, e um problema que só ficou resolvível agora: transformar foto e áudio de mecânico em orçamento estruturado. Náutica é o mesmo negócio em Angra, Paraty, Búzios e depois no Mediterrâneo, onde se cobra em euro.
-- **F1 e H3 (83) — Recuperação de receita municipal.** São a mesma aposta: o produto (F1) e o modelo comercial que a viabiliza (H3, success fee). Subiram pela combinação de timing e assimetria — a prefeitura perdeu 75% dos royalties [FATO] e precisa de receita própria agora. Ver a análise completa na Parte 4.
+- **H3 e F1 (83) — Recuperação de receita municipal.** São a mesma aposta: o produto (F1) e o modelo comercial que a viabiliza (H3, success fee). Subiram pela combinação de timing e assimetria — a prefeitura perdeu 75% dos royalties [FATO], e a própria comunicação oficial do IPTU 2026 admite depender mais de receita própria "diante da queda dos royalties" [FATO].
 - **D5 (83) — Benchmark de diária e ocupação.** A maior nota de carga operacional da lista inteira: depois de construído, roda praticamente sozinho. Fosso alto porque a série histórica só se acumula com tempo — quem começar depois nunca alcança o histórico.
-- **A1 (82) — Marina OS.** 32 instalações na ilha e 150 no Litoral Norte [FATO], todas operando em planilha e rádio. Mercado pequeno em número de logos, grande em ticket.
+- **A13 (83) — Camada de IA sobre o PMS náutico. 🆕** A ideia que só existe porque a pesquisa de concorrência derrubou a anterior. Mantém tudo que era bom na tese náutica — ticket alto, cliente com dinheiro, mercado replicável — e troca o que era ruim: em vez de competir com seis sistemas estabelecidos, senta em cima deles. É a mesma jogada do deck do Dojo sobre o Tecnofit, aplicada a outro vertical. **Fosso 4 em vez de 2**, porque o dado que ela acumula (histórico de decisão, não de registro) não está no PMS de ninguém.
 - **D1 (80) — Índice Ilhabela.** O maior fosso da lista junto com D5 e D7. É infraestrutura de dado, não produto — e por isso alimenta várias outras ideias.
-- **A6 (80) — Anfitrião Copiloto.** Único 5 em mercado local: 7.000 leitos de temporada [FATO] e administradoras cobrando 20–40% [FATO]. Perde pontos em fosso porque o mercado nacional de property management já é competitivo.
-- **G4 (79) — Observatório independente.** Nota 5 em CAC: publicar o dado que ninguém tem faz o cliente vir até você. É o menor custo de aquisição possível em cidade pequena.
-- **G1 (79) — Náutica além de Ilhabela.** Não é uma ideia separada de A1 e A2 — é o segundo tempo delas. Está listada à parte porque a decisão de quando expandir é uma decisão real, e ela precisa estar na matriz.
-- **F5 (78) — Leitor de edital.** Alta resistência à sazonalidade (licitação não tem verão), boa alavancagem, e um público que já tem o hábito de pagar por informação de negócio.
+- **G4 (79) — Observatório independente.** Nota 5 em CAC: publicar o dado que ninguém tem faz o cliente vir até você. Ganhou peso adicional com a descoberta de que há **cinco agências disputando atenção do mesmo empresário local** [FATO] — autoridade publicada é como se escapa desse leilão.
+- **F5 (78) — Leitor de edital.** Subiu de posição com um dado novo: o histórico de licitações de Ilhabela está publicado desde 2008 em todas as modalidades, e a Câmara publica plano anual de contratações [FATO]. A matéria-prima existe e é estruturada.
+- **A7 (78) — Caseiro Digital.** **Subiu do 12º para o 9º sem mudar de nota** — todos os que estavam à frente caíram. Foi o maior beneficiário da pesquisa de concorrência: é um dos dois únicos nichos onde **não encontrei incumbente algum**. E o dado de demanda reforça: casa própria representa 26% das hospedagens no litoral paulista [FATO].
+- **H6 (77) — Mídia antes de fornecedor.** Mesma lógica de G4, e a descoberta das cinco agências concorrentes a torna mais defensável, não menos.
+- **A2 (77) — Ordem de Serviço Náutica.** Caiu de 84 para 77 — MarinasOnline já entrega histórico de manutenção por embarcação [FATO]. **Sobreviveu ao corte** porque o núcleo dela (áudio e foto do mecânico → orçamento estruturado → aprovação do dono ausente) continua sendo algo que nenhum incumbente faz. Mas agora é feature de A13, não produto autônomo.
 
 ### Por que ideias aparentemente atraentes caíram
 
 Esta é a parte mais útil da matriz.
 
+- **A1 Marina OS (70, posição 29) — a queda mais violenta da revisão, de 82 para 70.** Era a 6ª colocada e a base da aposta principal. Morreu como produto autônomo no instante em que a pesquisa mostrou EasyMarine com 140 marinas em 17 estados e DOCKA descrevendo exatamente o mesmo escopo [FATO]. **Não foi o mercado que mudou — foi minha informação sobre ele.** Continua sendo um bom negócio para quem começou em 2019; para quem começa em 2026, é entrar num mercado com incumbente escalado, sem nenhuma vantagem além de velocidade de construção — que não é vantagem quando o produto já existe. Substituída por A13.
+- **A6 Anfitrião Copiloto (73, posição 19).** Caiu de 80 para 73 pela mesma razão: Stays a partir de R$ 249/mês, HITS, Seazone e Hostify já ocupam a gestão de temporada [FATO]. O que sobra — e ainda é bom — é a camada de conversa com o hóspede e a relação com o proprietário, não o PMS.
 - **C1 Concierge de Ilhabela (71, posição 25).** É a ideia mais sedutora do documento e provavelmente a que mais atrai. Caiu porque **CAC 2 e TTR 2**: mais de 1 milhão de visitantes por verão [FATO] não significa 1 milhão de usuários — significa 1 milhão de pessoas que você precisa alcançar, uma a uma, sem marca e sem verba, num mercado onde o Google e o Instagram já estão. Monetização por afiliação exige volume que leva anos. **Faça como subproduto do Índice Ilhabela, nunca como aposta principal.**
 - **B2 Agente WhatsApp produtizado (69, posição 32).** É a coisa que está mais pronta para vender — e ainda assim caiu para o terço médio. Motivo: **fosso 2**. Qualquer pessoa com um fim de semana e uma plataforma pronta entrega algo parecido; o mercado nacional já cobra R$ 99/mês por versões genéricas [FATO]. Sua vantagem aqui não é o agente, é a integração com o sistema que o cliente já usa e a relação local. Continua sendo o motor de caixa — mas é caixa, não patrimônio.
 - **D4 Central de reservas white-label (61, posição 51).** Ataca a maior dor em valor absoluto — R$ 10,6 milhões por ano em comissão de OTA [EST]. Caiu porque essa dor é de *estrutura de mercado*, não de software: as pousadas pagam a OTA pela **demanda**, não pelo motor de reserva. Construir o motor não traz o hóspede. Já se tentou isso em todo destino turístico do Brasil e quase nunca funciona.
@@ -494,23 +589,31 @@ Esta é a parte mais útil da matriz.
 
 ## Parte 4 — Top 5 aprofundadas
 
-Uma nota de método: as cinco apostas abaixo **agrupam ideias adjacentes da Parte 2**. Isso não é diluição — é a forma correta de ler a matriz. A2 sem A1 é um produto órfão; D7 sem D1 não tem base de dados; A11 sem B1 não tem funil. Cada aposta é a menor unidade que faz sentido construir.
+Uma nota de método: as cinco apostas abaixo **agrupam ideias adjacentes da Parte 2**. Isso não é diluição — é a forma correta de ler a matriz. A2 sem A13 é uma feature órfã; D7 sem D1 não tem base de dados; A11 sem B1 não tem funil. Cada aposta é a menor unidade que faz sentido construir.
 
 A quinta aposta (o serviço) está aqui apesar de ranquear em 14º. **Isso é deliberado e é o ponto central do portfólio:** ela não ganha na matriz porque não tem fosso, mas é ela que paga as outras quatro. Uma matriz de alavancagem não sabe medir folha de pagamento.
 
 ---
 
-### 🥇 Aposta 1 — Náutica: Marina OS + Ordem de Serviço Náutica
-*(A1 + A2 + A3, notas 82 / 84 / 74)*
+### 🥇 Aposta 1 — Náutica: camada de IA sobre o PMS que a marina já usa
+*(A13 + A2 + A3, notas 83 / 77 / 71 — **reescrita após ⚡4**)*
+
+> 🔄 **Esta aposta foi reformulada.** A versão original propunha construir um "Marina OS" do zero. A pesquisa de concorrência mostrou que essa categoria já tem seis players brasileiros, um deles com 140 marinas em 17 estados [FATO]. **O setor continua sendo o alvo certo; o produto estava errado.** O que segue é a tese corrigida.
 
 #### 1. Tese e hipótese central
 
-A economia náutica de Ilhabela movimenta R$ 150–250 milhões por ano [EST] em 32 instalações [FATO] que operam com planilha, rádio VHF e grupo de WhatsApp. É o setor com maior ticket e menor maturidade digital da ilha, e o cliente final — o proprietário do barco — mora em São Paulo e toma decisões sobre um ativo que não vê há três semanas. Existe uma assimetria de informação estrutural entre quem cuida do barco e quem paga por ele, e essa assimetria custa dinheiro aos dois lados.
+A economia náutica de Ilhabela movimenta R$ 150–250 milhões por ano [EST] em 32 instalações [FATO]. Boa parte delas já paga um sistema — EasyMarine, DOCKA, MarinasOnline ou similar — e esses sistemas fazem bem o que se propõem: **registrar**. Quem desceu, quem içou, quem deve, o que foi feito.
+
+O que nenhum deles faz é **decidir e conversar**. Não preveem qual proprietário vai cancelar a vaga na baixa. Não transformam o áudio do mecânico em orçamento aprovável. Não escrevem para o dono, que mora em São Paulo, antes de a infiltração virar uma despesa de R$ 15 mil. Não respondem ao interessado em uma vaga às 22h de sábado. A assimetria de informação entre quem cuida do barco e quem paga por ele continua intacta — e o software instalado não a resolve, apenas a documenta.
+
+É a mesma tese que já está no deck do Dojo, aplicada a outro vertical: **camada de inteligência sobre o sistema que o cliente não vai trocar.**
 
 > **Hipótese central que, se falsa, mata o negócio:**
-> *Marinas e oficinas náuticas pagam por software mensal.*
+> *A marina paga por uma segunda assinatura, em cima da que já tem.*
 >
-> Elas nunca pagaram. Podem ser um setor rico com clientes ricos e ainda assim um setor que compra ferramenta e não compra assinatura. Se em 15 conversas nenhuma marina tiver algum software pago hoje — nem gestão, nem financeiro, nem CRM — a tese muda de "vender SaaS para marina" para "vender para o proprietário do barco, usando a marina como canal".
+> Essa é uma barreira maior do que a hipótese original. Um dono que já paga um PMS tem uma objeção pronta: *"eu já tenho sistema"*. Se em 15 conversas nenhuma marina aceitar somar uma segunda mensalidade, restam dois caminhos, nesta ordem: **(a)** vender ao proprietário do barco, usando a marina como canal — o pagador tem muito mais dinheiro que a marina; ou **(b)** vender para os próprios PMS náuticos como fornecedor de camada de IA, num modelo de white-label. O caminho (b) é o mais improvável e o mais valioso.
+
+**O que essa correção custou e o que ela salvou:** custou a posição nº 1 do ranking e a ilusão de um mercado vazio. Salvou provavelmente doze meses construindo um produto que já existe.
 
 #### 2. Persona e ICP
 
@@ -557,7 +660,7 @@ Entre os passos 5 e 6 está o dinheiro: **um barco parado esperando aprovação 
 
 **Custo de inferência estimado:** R$ 40–120 por cliente/mês [EST: ~600 OS/mês numa marina de 260 barcos, ~4k tokens por OS]. Margem bruta acima de 90%.
 
-**Riscos técnicos:** qualidade do áudio em ambiente de marina (vento e motor); identificação correta do barco na foto — resolver com QR code no berço, não com visão computacional pura; integração com o financeiro que a marina já usa, que pode ser um Excel de 2011.
+**Riscos técnicos:** qualidade do áudio em ambiente de marina (vento e motor); identificação correta do barco na foto — resolver com QR code no berço, não com visão computacional pura; e o risco novo, criado pelo ⚡4: **integração com o PMS incumbente**. EasyMarine, DOCKA e MarinasOnline podem não ter API pública, e um deles pode simplesmente recusar a integração ao perceber que você ocupa a camada de valor acima da dele. **Plano B obrigatório desde o dia 1:** operar por exportação de relatório e entrada paralela via WhatsApp, sem depender de API de terceiro. Se o produto morre quando um incumbente fecha a porta, ele não deveria ser construído.
 
 #### 5. Como o Claude Code encurta o caminho
 
@@ -598,7 +701,7 @@ O canal não é digital. É físico, e isso é uma vantagem — porque não é e
 1. **Semana 1:** visitar 5 das 32 marinas. Não vender. Perguntar: *"Como funciona quando um barco precisa de reparo e o dono está em São Paulo?"* Ouvir. Anotar o vocabulário exato que eles usam.
 2. **Semana 2:** construir o protótipo com os barcos reais de UMA marina. Voltar e mostrar.
 3. **Semana 3:** oferta piloto — **R$ 0 por 60 dias, R$ 1.490/mês depois, cancelável a qualquer momento.** O piloto não é generosidade, é aquisição de dado.
-4. **Semana 4 em diante:** usar a SIVI — 53ª edição, 120+ barcos, delegações de Argentina e Uruguai [FATO] — como concentração de todos os decisores do setor em uma semana. Nenhum outro momento do ano reúne esse público.
+4. **Imediatamente, fora de ordem:** a **SIVI** — 53ª edição, 120+ barcos, delegações de Argentina e Uruguai [FATO] — concentra todos os decisores do setor em uma semana, e dentro dela o **6º Fórum Corredor Azul (28/07, Race Village, Praça das Bandeiras)** reúne Sebrae, Secretaria de Desenvolvimento Econômico, startups e universidades para discutir explicitamente *tecnologias aplicadas ao meio marinho e soluções para o setor náutico* [FATO]. Isso não é passo 4 de um plano de quatro semanas — **é esta semana, e não se repete até 2027.**
 
 **Roteiro de descoberta (5 perguntas):**
 1. Quantos barcos vocês guardam e qual a taxa de ocupação das vagas hoje?
@@ -625,7 +728,7 @@ A pergunta 3 é a que produz o número que vira a proposta.
 3. **O marinheiro não usou.** Continuou mandando foto no grupo. → *Mitigação:* a entrada tem que ser o WhatsApp que ele já usa, e o gerente tem que ter incentivo para exigir.
 4. **A oficina viu o produto como fiscalização.** Sabotou a adoção. → *Mitigação:* posicione como "mais serviço aprovado, mais rápido" — a oficina ganha volume, não perde liberdade.
 5. **Faturamento estagnou em R$ 12 mil/mês.** Esgotou Ilhabela e a expansão nunca aconteceu. → *Mitigação:* colocar a primeira marina fora da ilha no cronograma do mês 9, não do "quando der".
-6. **Um concorrente nacional de gestão náutica chegou com preço menor.** → *Mitigação:* o fosso não é o software, é o histórico por casco. Comece a acumular no dia 1.
+6. **Um incumbente lançou a mesma camada de IA.** EasyMarine tem 140 marinas e cinco anos de vantagem [FATO]; se ele adicionar um agente ao produto, a distribuição dele esmaga a sua. → *Mitigação:* seja rápido e seja local — comece pelas marinas que ele **não** atende, acumule histórico de decisão desde o dia 1, e considere seriamente o caminho de vender a camada **para** ele em vez de contra ele.
 7. **A sazonalidade comeu o caixa.** Junho a setembro sem vender nada. → *Mitigação:* manutenção acontece **na baixa**, quando o barco está parado. É contra-cíclico ao turismo. Use isso na venda.
 
 ---
@@ -733,11 +836,13 @@ Ordem exata, e a ordem importa mais que o conteúdo:
 ---
 
 ### 🥉 Aposta 3 — Anfitrião Copiloto + Caseiro Digital
-*(A6 + A7, notas 80 / 78 — o maior mercado local)*
+*(A7 + A6, notas 78 / 73 — o maior mercado local, com o eixo invertido após ⚡4)*
 
 #### 1. Tese e hipótese central
 
-Mais de 7.000 leitos em casas de temporada [FATO], ~1.750 imóveis [EST], administradoras cobrando 20–40% da reserva [FATO]. E, atrás de cada imóvel, um proprietário que mora fora e tem duas perguntas permanentes: *quanto minha casa rendeu* e *em que estado ela está*. Ninguém responde bem às duas.
+Mais de 7.000 leitos em casas de temporada [FATO], ~1.750 imóveis [EST], administradoras cobrando 20–40% da reserva [FATO]. No litoral paulista, Airbnb e similares (26,7%) somados a casa própria (26%) representam **mais da metade das hospedagens** [FATO] — o inventário relevante não é a hotelaria. E, atrás de cada imóvel, um proprietário que mora fora e tem duas perguntas permanentes: *quanto minha casa rendeu* e *em que estado ela está*. Ninguém responde bem às duas.
+
+⚠️ **Ajuste pós-pesquisa de concorrência:** a primeira pergunta já tem dono. Stays (a partir de R$ 249/mês), HITS, Seazone e Hostify cobrem calendário, canais e financeiro [FATO] — por isso A6 caiu de 80 para 73 pontos. **A segunda pergunta — o estado físico do imóvel — não tem nenhum incumbente identificado.** É por lá que se entra: o Caseiro Digital (A7, 9º lugar) deixa de ser o complemento e passa a ser o produto principal desta aposta.
 
 > **Hipótese central:**
 > *O proprietário paga por transparência sobre um ativo que não vê.*
@@ -1092,7 +1197,11 @@ Três séries, todas começando **agora**, porque a única variável que não se
 
 ### 2. Relacionamentos que funcionam como infraestrutura
 
-Em cidade de 36 mil habitantes [FATO], seis relacionamentos substituem um departamento comercial: **ACEI**, **Ilhabela Convention & Visitors Bureau**, **ALITI**, a **maior marina**, o **Observatório de Turismo** e o **Instituto Ilhabela Sustentável**. Meta concreta: uma conversa de qualidade por semana, com registro. Em um ano são 50 pessoas que sabem exatamente o que você faz.
+Em cidade de 36 mil habitantes [FATO], sete relacionamentos substituem um departamento comercial: **ACEI**, **Ilhabela Convention & Visitors Bureau**, **ALITI**, a **maior marina**, o **Observatório de Turismo**, o **Instituto Ilhabela Sustentável** e — descoberto na 2ª rodada de pesquisa — o **Sebrae-SP Litoral Norte**.
+
+O Sebrae merece destaque próprio: ele opera o **Turismo Conectado Litoral Norte** dentro do Investe Turismo (MTur + Sebrae Nacional + Embratur), cujo objetivo declarado é *aprimorar controles de gestão, tecnologia e inovação* dos pequenos negócios de turismo [FATO], além do **ALI Produtividade**, do **Sebrae Móvel** e do **Fórum Corredor Azul** [FATO]. Ou seja: **uma instituição pública está fazendo, de graça e em escala, a evangelização que seria seu maior custo de venda.** Chegar como parceiro credenciado dessa agenda vale mais que qualquer campanha — e é o antídoto direto para as cinco agências que disputam o mesmo empresário [FATO].
+
+Meta concreta: uma conversa de qualidade por semana, com registro. Em um ano são 50 pessoas que sabem exatamente o que você faz.
 
 ### 3. Autoridade publicada
 
@@ -1172,22 +1281,24 @@ Na alta temporada, cuidado com o inverso: o cliente tem caixa em janeiro e some 
 
 ## O que fazer na segunda-feira de manhã
 
-Dez ações, em ordem, executáveis em uma semana.
+> 🔴 **A lista mudou por causa de uma data.** A pesquisa revelou que o **6º Fórum Corredor Azul acontece em 28/07/2026** — e a SIVI está em curso desde 24/07 [FATO]. Isso não é um plano de sete dias qualquer: é a única semana do ano em que o setor náutico, o Sebrae, a Secretaria de Desenvolvimento Econômico e Turismo, startups e universidades estão todos na Praça das Bandeiras. As ações abaixo estão ordenadas por **prazo perecível**, não por importância abstrata.
 
-| # | Ação | Tempo | Resultado esperado |
-|---|---|---|---|
-| 1 | **Mandar a proposta do Dojo e marcar a conversa de 1 hora** com Diego e Janine — ela está pronta há tempo demais | 30 min | Um contrato em negociação. Sem caixa, nada mais deste documento acontece |
-| 2 | **Subir o coletor do Índice Ilhabela** — preço e disponibilidade de temporada, rodando diariamente | 4 h | A série histórica começa hoje. **É a ação de maior retorno composto da lista** e a única que perde valor a cada dia adiada |
-| 3 | **Agendar 5 visitas a marinas** para a mesma semana | 1 h | Cinco conversas resolvem a maior incerteza do dossiê: marina paga assinatura? |
-| 4 | **Falar com um advogado de direito digital** sobre coleta de anúncios e LGPD | 1 h | Gate de morte da Aposta 2 resolvido no dia 5, não no mês 6 |
-| 5 | **Simular Fator R com o contador** e ajustar o pró-labore | 1 h | Até R$ 28,5 mil/ano [EST] de economia fiscal com uma decisão administrativa |
-| 6 | **Extrair o núcleo reutilizável do trabalho do Dojo** e separar do conector Tecnofit | 6 h | O segundo cliente custa 20 h em vez de 80 h. É a diferença entre produto e agência |
-| 7 | **Publicar a edição nº 1 do boletim** com um número que ninguém tem | 3 h | O ativo de autoridade começa a compor. Cem edições depois você é a fonte |
-| 8 | **Listar 30 empresas endereçáveis da ilha**, com nome, dono, sistema que usa e dor provável | 2 h | Sai da prospecção genérica. É o pipeline dos próximos 6 meses |
-| 9 | **Trocar os tokens do deck e enviar a 2ª proposta** para outra vertical, no mesmo dia | 3 h | Testa a hipótese central da Aposta 5 — o deck é replicável? — pelo custo de uma tarde |
-| 10 | **Bloquear a data da SIVI na agenda** (24/07 a 01/08) e planejar a semana de prospecção náutica | 30 min | Todos os decisores do setor náutico em um lugar, uma vez por ano [FATO] |
+| # | Ação | Quando | Tempo | Resultado esperado |
+|---|---|---|---|---|
+| 1 | **Inscrever-se no 6º Fórum Corredor Azul** (Sympla, gratuito) e ir — 28/07, 9h–17h, Race Village, Praça das Bandeiras. Pauta oficial inclui tecnologias aplicadas ao meio marinho e soluções para o setor náutico [FATO] | **hoje** | 10 min | Acesso, em um dia, ao Sebrae, à Secretaria e ao setor náutico. **Sem isso, a próxima janela é 2027** |
+| 2 | **Preparar 3 perguntas e uma frase de apresentação** para o Fórum. A frase não pode conter "marketing" nem "site" — há cinco agências disputando esse rótulo na região [FATO]. A pergunta-chave para toda marina: *"que sistema vocês usam, e o que ele não faz?"* | dom/seg | 1 h | Transforma presença em conversa. Presença sem preparo é turismo |
+| 3 | **Pedir à Secretaria de Turismo, no Fórum, os dados do Observatório** — origem, permanência, gasto e satisfação, que eles coletam e não publicam [FATO] | 28/07 | 15 min | Substitui três estimativas deste dossiê por dado oficial, de graça |
+| 4 | **Mandar a proposta do Dojo e marcar a conversa de 1 hora** — ela está pronta há tempo demais | segunda | 30 min | Um contrato em negociação. Sem caixa, nada mais deste documento acontece |
+| 5 | **Subir o coletor do Índice Ilhabela** — preço e disponibilidade de temporada, rodando diariamente | segunda | 4 h | A série histórica começa hoje. **É a ação de maior retorno composto da lista** e a única que perde valor a cada dia adiada |
+| 6 | **Testar EasyMarine, DOCKA e MarinasOnline** — pedir demo, ver o produto por dentro, mapear o que eles não fazem | esta semana | 3 h | Define o wedge exato da Aposta 1. Sem isso você está construindo às cegas contra um incumbente de 140 marinas [FATO] |
+| 7 | **Falar com um advogado de direito digital** sobre coleta de anúncios e LGPD | esta semana | 1 h | Gate de morte da Aposta 2 resolvido no dia 5, não no mês 6 |
+| 8 | **Baixar a LOA 2026 e o histórico de licitações** no site da prefeitura | esta semana | 40 min | Troca a estimativa da dor nº 12 por número oficial e alimenta a ideia F5 |
+| 9 | **Simular Fator R com o contador** e ajustar o pró-labore | esta semana | 1 h | Até R$ 28,5 mil/ano [EST] de economia fiscal com uma decisão administrativa |
+| 10 | **Extrair o núcleo reutilizável do trabalho do Dojo** e separar do conector Tecnofit | esta semana | 6 h | O segundo cliente custa 20 h em vez de 80 h. É a diferença entre produto e agência |
 
-**Se só der para fazer três:** 1, 2 e 3. A primeira paga as contas, a segunda começa o único ativo que compõe sozinho, e a terceira testa a maior aposta do documento.
+**Se só der para fazer três:** 1, 4 e 5. A primeira é a única com prazo de validade, a segunda paga as contas, e a terceira começa o único ativo que compõe sozinho.
+
+*Ficaram para a semana seguinte, sem perda:* publicar a edição nº 1 do boletim, listar 30 empresas endereçáveis com o sistema que cada uma usa, e enviar a 2ª proposta trocando os tokens do deck.
 
 ---
 
@@ -1199,7 +1310,7 @@ Onde esta análise está mais frágil, sem suavizar.
 
 **2. O estoque náutico — a base da minha aposta nº 1 — é uma extrapolação.** Sei que há 32 instalações em Ilhabela [FATO] e que uma delas guarda 260 barcos [FATO]. Multipliquei por uma média de 150. Se a média real for 60, a economia náutica é um terço do que estimei e a Aposta 1 desce vários degraus. **Cinco visitas resolvem isso, e é por isso que estão na ação nº 3 da segunda-feira.**
 
-**3. Não validei em campo se marina compra software.** É a hipótese que mais pode derrubar a análise, e ela está declarada como hipótese, não como fato. Setores ricos e analógicos às vezes são analógicos por escolha, não por falta de oferta.
+**3. Eu já errei uma vez neste documento, e o erro foi de método.** A primeira versão afirmou que a náutica era o setor "de menor maturidade digital da ilha" sem ter pesquisado o mercado de software náutico. Bastou uma consulta para encontrar seis players, um deles com 140 marinas em 17 estados [FATO]. A afirmação estava errada, a aposta construída sobre ela caiu 12 pontos e 23 posições, e a Parte 4 teve de ser reescrita. **O erro não foi de estimativa — foi de não ter procurado.** Isso deve ser lido como um aviso sobre o restante: onde este documento diz "não há solução para isso hoje", pode significar apenas que eu não procurei o suficiente. Os dois nichos que declarei vazios — charter/passeios e gestão de casa fechada — merecem exatamente a mesma desconfiança antes de virarem aposta.
 
 **4. Não consegui acessar duas fontes primárias importantes.** O portal do IBGE e o dashboard de fluxo de entrada da prefeitura retornaram HTTP 403 durante a pesquisa. Os dados do IBGE vieram de agregadores confiáveis, mas **os números de fluxo mensal — que dariam a curva exata de sazonalidade — não foram obtidos.** A curva sazonal que uso é qualitativa, montada a partir de ocupação de Carnaval (87%) e de baixa (65–70%) [FATO]. Uma visita ao dashboard oficial substituiria essa aproximação por dado real.
 
@@ -1207,7 +1318,7 @@ Onde esta análise está mais frágil, sem suavizar.
 
 **6. A matriz de ranqueamento é sensível aos pesos, e os pesos são uma escolha.** Se "escape da ilha" caísse de 20% para 10% e "mercado local" subisse, a Aposta 3 (temporada) passaria a Aposta 1 (náutica). A matriz não é um oráculo — é uma tese explicitada em números. **Discorde dos pesos antes de discordar do ranking.**
 
-**7. Subestimei deliberadamente a concorrência local.** Não consegui mapear quem já vende automação e IA para PMEs em Ilhabela e no Litoral Norte — busquei e encontrei apenas o mercado nacional. Pode haver dois ou três operadores locais já atuando, o que muda o CAC e o preço de todas as ideias da categoria B. **Uma tarde perguntando "quem já te ofereceu isso?" nas primeiras cinco visitas resolve.**
+**7. A concorrência local foi mapeada — e é maior do que eu supunha.** Cinco agências atendem Ilhabela a partir de Caraguatatuba, uma delas desde 2001, duas já usando "IA" e "automação" no discurso comercial [FATO]. Nenhuma faz o que este portfólio propõe, mas todas competem pela mesma atenção e pelo mesmo orçamento mental do dono. **O que continua não mapeado é o preço que elas praticam** — e isso ancora a expectativa do cliente antes de você abrir a boca. Uma tarde pedindo orçamento como cliente-oculto resolve.
 
 **8. O risco social da Aposta 2 pode estar subestimado.** Escrevi que é gerenciável com posicionamento. Em uma cidade de 36 mil habitantes onde sua reputação **é** seu canal de vendas, ser associado à fiscalização de vizinhos pode custar mais do que qualquer contrato paga. Não tenho como quantificar isso, e a decisão é de foro pessoal, não de planilha.
 
@@ -1258,6 +1369,30 @@ Onde esta análise está mais frágil, sem suavizar.
 - [Prefeitura investe nas comunidades tradicionais caiçaras](https://www.ilhabela.sp.gov.br/portal/noticias/0/3/13504/prefeitura-de-ilhabela-investe-nas-comunidades-tradicionais-com-foco-na-qualidade-de-vida-dos-caicaras)
 - [Mercado do Peixe — apoio às comunidades caiçaras](https://www.ilhabela.sp.gov.br/portal/noticias/0/3/14318/mercado-do-peixe-prefeitura-de-ilhabela-reforca-seu-apoio-as-comunidades-caicaras)
 - [Comunidades tradicionais de Ilhabela — Tudo Em Ilhabela](https://ilhabela.tudoem.com.br/noticia/2025/11/3766/saiba-quais-sao-as-comunidades)
+
+**Concorrência e maturidade digital por nicho** *(pesquisa da 2ª rodada)*
+- [EasyMarine — plataforma de gestão náutica, 140 marinas em 17 estados](https://easymarine.com.br/)
+- [DOCKA — gestão de marinas, garagens e clubes náuticos](https://www.usedocka.com/)
+- [MarinasOnline — histórico de manutenção por embarcação](https://marinasonline.com.br/)
+- [DK MAR — software para náuticas e marinas](https://dkmar.com.br/)
+- [Gestão Náutica](https://gestaonautica.com.br/) · [GeMN](https://gemn.com.br/) · [Harbour Assist](https://harbourassist.com/pt/gestao-de-marinas/)
+- [Stays — software para aluguel por temporada (primeiro plano a partir de R$ 249/mês)](https://stays.net/blog/software-para-aluguel-de-temporada/)
+- [Huzza Sites — agência atuando em Caraguatatuba, Ilhabela, São Sebastião e Ubatuba desde 2001](https://criarsiteweb.com.br/criacao-de-sites-em-caraguatatuba/)
+- [Lance Marketing Digital — Litoral Norte](https://www.lancemktdigital.com.br/marketing-digital-em-sao-paulo/litoral-norte/)
+- [Starten Comunicação — Caraguatatuba](https://startencomunicacao.com.br/agencia-de-marketing-digital-em-caraguatatuba-sao-paulo/)
+- [Digitall Evolution](https://www.digitallevolution.com.br/agencia-de-marketing-caraguatatuba) · [Phase4](https://phase4.com.br/atendimento/marketing/servicos/consultoria-de-marketing-digital-em-caraguatatuba.php)
+
+**Fomento, canais institucionais e compras públicas** *(pesquisa da 2ª rodada)*
+- [6º Fórum Corredor Azul em Ilhabela durante a 53ª SIVI — 28/07/2026 — Tamoios News](https://tamoiosnews.com.br/ilhabela-recebe-forum-sobre-economia-azul-e-turismo-sustentavel-durante-53a-semana-internacional-de-vela/)
+- [Sebrae-SP reúne especialistas em Ilhabela para discutir a Economia Azul — Agência Sebrae](https://sp.agenciasebrae.com.br/cultura-empreendedora/sebrae-sp-reune-especialistas-em-ilhabela-para-discutir-os-desafios-e-oportunidades-da-economia-azul/)
+- [Inscrição gratuita — 6º Fórum do Corredor Azul (Sympla)](https://www.sympla.com.br/evento/6-forum-do-corredor-azul/3482780)
+- [Sebrae-SP — capacitação para empreendedores do turismo no Litoral Norte (Investe Turismo)](https://www.investe.sp.gov.br/noticia/sebrae-sp-abre-capacitacao-para-empreendedores-do-turismo-no-litoral-norte-e-vale-do-paraiba/)
+- [Projeto ALI — Agentes Locais de Inovação](https://ali.recruitment.com.br/)
+- [Prefeitura de Ilhabela — Licitações, dispensas e inexigibilidade](https://www.ilhabela.sp.gov.br/licitacoes--dispensas-e-inexigibilidade)
+- [Portal da Transparência de Ilhabela](https://ilhabelatransp.presconinformatica.com.br/)
+- [Câmara Municipal de Ilhabela — licitações e contratos](https://www.camarailhabela.sp.gov.br/portal_transparencia_licitacoes_contratos.php)
+- [Prefeitura de Ilhabela — LOA 2026](https://www.ilhabela.sp.gov.br/loa-2026) · [IPTU 2026](https://www.ilhabela.sp.gov.br/portal/noticias/0/3/16526/prefeitura-de-ilhabela-divulga-calendario-e-condicoes-do-iptu-2026/)
+- [Destino inteligente — Ilhabela amplia uso de dados para planejar turismo](https://www.ilhabela.sp.gov.br/portal/noticias/0/3/16987/destino-inteligente-ilhabela-amplia-uso-de-dados-para-planejar-turismo)
 
 **Mercado, preços e tributação**
 - [Quanto custa um agente de IA para WhatsApp em 2026 — Zap Trend](https://zaptrend.com.br/blog/quanto-custa-agente-ia-atendimento-whatsapp/)
