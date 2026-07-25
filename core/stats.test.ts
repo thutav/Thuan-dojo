@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { AMOSTRA_MINIMA, dealScore, estatisticasPorZona, mediana, quantil } from './stats';
+import {
+  AMOSTRA_MINIMA,
+  dealScore,
+  estatisticaDaZona,
+  estatisticasPorZona,
+  mediana,
+  quantil,
+} from './stats';
 import type { Imovel } from './types';
 
 function imovel(id: string, bairroId: string, preco: number, area: number): Imovel {
@@ -51,18 +58,39 @@ describe('estatisticasPorZona', () => {
     );
 
     const est = estatisticasPorZona([...poucos, ...muitos], { finalidade: 'venda' });
-    expect(est.get('juliao')?.confiavel).toBe(false);
-    expect(est.get('juliao')?.medianaPrecoM2).toBeNull();
-    expect(est.get('curral')?.confiavel).toBe(true);
-    expect(est.get('curral')?.medianaPrecoM2).toBeGreaterThan(0);
+    expect(estatisticaDaZona(est, 'juliao', 'construido')?.confiavel).toBe(false);
+    expect(estatisticaDaZona(est, 'juliao', 'construido')?.medianaPrecoM2).toBeNull();
+    expect(estatisticaDaZona(est, 'curral', 'construido')?.confiavel).toBe(true);
+    expect(estatisticaDaZona(est, 'curral', 'construido')?.medianaPrecoM2).toBeGreaterThan(0);
   });
 
   it('separa por finalidade', () => {
     const venda = imovel('v', 'curral', 2_000_000, 100);
     const aluguel: Imovel = { ...imovel('a', 'curral', 8_000, 100), finalidade: 'aluguel' };
     const est = estatisticasPorZona([venda, aluguel], { finalidade: 'aluguel' });
-    expect(est.get('curral')?.n).toBe(1);
-    expect(est.get('curral')?.medianaPreco).toBe(8_000);
+    expect(estatisticaDaZona(est, 'curral', 'construido')?.n).toBe(1);
+    expect(estatisticaDaZona(est, 'curral', 'construido')?.medianaPreco).toBe(8_000);
+  });
+});
+
+describe('separação entre terreno e construído', () => {
+  it('não compara o m² de terreno com o de casa', () => {
+    // Um terreno grande sai a poucos reais o m² de chão; comparado com casas construídas,
+    // qualquer terreno viraria "95% abaixo da mediana" e dominaria a lista de oportunidades.
+    const casas = Array.from({ length: 9 }, (_, i) => imovel(`c${i}`, 'curral', 1_000_000, 100));
+    const terrenos = Array.from({ length: 9 }, (_, i) => ({
+      ...imovel(`t${i}`, 'curral', 900_000, 9_000),
+      tipo: 'terreno' as const,
+    }));
+
+    const est = estatisticasPorZona([...casas, ...terrenos], { finalidade: 'venda' });
+    expect(estatisticaDaZona(est, 'curral', 'construido')?.medianaPrecoM2).toBe(10_000);
+    expect(estatisticaDaZona(est, 'curral', 'terreno')?.medianaPrecoM2).toBe(100);
+    expect(estatisticaDaZona(est, 'curral')?.n).toBe(18);
+
+    // O terreno é medido contra terrenos: está na mediana, não é oportunidade nenhuma.
+    const umTerreno = { ...imovel('t-novo', 'curral', 900_000, 9_000), tipo: 'terreno' as const };
+    expect(dealScore(umTerreno, est)?.nivel).toBe('na-media');
   });
 });
 

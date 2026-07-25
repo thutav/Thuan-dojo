@@ -13,6 +13,8 @@ import { similaridade } from './texto';
  */
 const TOLERANCIA_AREA = 0.03;
 const TOLERANCIA_PRECO_PARA_UNIR = 0.05;
+/** Usada quando a área não está disponível dos dois lados — aí o preço precisa bater. */
+const TOLERANCIA_PRECO_IDENTICO = 0.02;
 const SIMILARIDADE_TITULO = 0.5;
 export const DIVERGENCIA_RELEVANTE = 0.15;
 
@@ -20,21 +22,45 @@ function chaveBucket(i: Imovel): string {
   return `${i.finalidade}|${i.tipo}|${i.bairroId}|${i.quartos ?? '?'}`;
 }
 
+/** Só compara quando os dois lados têm o número: ausência não é evidência de igualdade. */
 function proximo(a: number | null, b: number | null, tolerancia: number): boolean {
-  if (a === null || b === null) return true; // informação ausente não desempata
-  if (a <= 0 || b <= 0) return true;
+  if (a === null || b === null || a <= 0 || b <= 0) return false;
   return Math.abs(a - b) / Math.max(a, b) <= tolerancia;
 }
 
+function areaComparavel(i: Imovel): number | null {
+  return i.areaUtil ?? i.areaTerreno;
+}
+
+/**
+ * Juntar demais é pior do que juntar de menos: um imóvel a mais na lista é um clique perdido,
+ * enquanto uma fusão errada apaga imóveis reais e desloca a mediana do bairro.
+ *
+ * Foi o que aconteceu na primeira coleta: uma corretora publica dezenas de anúncios com o
+ * mesmo título genérico ("Terreno em Ilhabela") e sem metragem, e a semelhança de título
+ * sozinha fundiu catorze terrenos de R$ 400 mil a R$ 6 milhões em um só registro. Agora o
+ * título nunca decide sozinho — é preciso a área bater, ou o preço bater quase exatamente.
+ */
 function ehMesmoImovel(a: Imovel, b: Imovel): boolean {
-  if (a.fontes[0]?.fonte === b.fontes[0]?.fonte && a.fontes[0]?.url === b.fontes[0]?.url) return true;
-  if (!proximo(a.areaUtil, b.areaUtil, TOLERANCIA_AREA)) return false;
-  if (a.areaUtil === null && b.areaUtil === null && !proximo(a.areaTerreno, b.areaTerreno, TOLERANCIA_AREA)) {
-    return false;
-  }
-  const precoProximo = proximo(a.preco, b.preco, TOLERANCIA_PRECO_PARA_UNIR);
+  const urlA = a.fontes[0]?.url;
+  const urlB = b.fontes[0]?.url;
+  if (urlA && urlA === urlB) return true;
+
+  const areaA = areaComparavel(a);
+  const areaB = areaComparavel(b);
+  const areasBatem = proximo(areaA, areaB, TOLERANCIA_AREA);
+  const semArea = areaA === null || areaB === null;
+  const precoQuaseIgual = proximo(a.preco, b.preco, TOLERANCIA_PRECO_IDENTICO);
   const tituloParecido = similaridade(a.titulo, b.titulo) >= SIMILARIDADE_TITULO;
-  return precoProximo || tituloParecido;
+
+  // Anúncios da mesma corretora com URLs diferentes são, quase sempre, imóveis diferentes.
+  if (a.fontes[0]?.fonte === b.fontes[0]?.fonte) {
+    return areasBatem && precoQuaseIgual;
+  }
+
+  if (semArea) return precoQuaseIgual && tituloParecido;
+  if (!areasBatem) return false;
+  return proximo(a.preco, b.preco, TOLERANCIA_PRECO_PARA_UNIR) || tituloParecido;
 }
 
 /** Une-e-busca simples: agrupa transitivamente os anúncios equivalentes. */

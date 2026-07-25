@@ -51,6 +51,74 @@ const PORTAIS: ConfigPortal[] = [
       { url: 'https://www.imovelweb.com.br/imoveis-aluguel-ilhabela-sp.html', finalidade: 'aluguel' },
     ],
   },
+  {
+    id: 'olx',
+    nome: 'OLX',
+    site: 'https://www.olx.com.br',
+    esperarPor: '[data-ds-component="DS-AdCard"], section, article',
+    vitrines: [
+      {
+        url: 'https://www.olx.com.br/imoveis/venda/estado-sp/vale-do-paraiba-e-litoral-norte/ilhabela',
+        finalidade: 'venda',
+      },
+      {
+        url: 'https://www.olx.com.br/imoveis/aluguel/estado-sp/vale-do-paraiba-e-litoral-norte/ilhabela',
+        finalidade: 'aluguel',
+      },
+    ],
+  },
+  {
+    id: 'chavesnamao',
+    nome: 'Chaves na Mão',
+    site: 'https://www.chavesnamao.com.br',
+    esperarPor: 'article, [class*="card"]',
+    vitrines: [
+      {
+        url: 'https://www.chavesnamao.com.br/imoveis-a-venda/sp-ilhabela/',
+        finalidade: 'venda',
+      },
+      {
+        url: 'https://www.chavesnamao.com.br/imoveis-para-alugar/sp-ilhabela/',
+        finalidade: 'aluguel',
+      },
+    ],
+  },
+  {
+    id: 'lopes',
+    nome: 'Lopes',
+    site: 'https://www.lopes.com.br',
+    esperarPor: 'article, [class*="card"], [class*="Card"]',
+    vitrines: [
+      { url: 'https://www.lopes.com.br/busca/venda/br/sp/ilhabela', finalidade: 'venda' },
+      { url: 'https://www.lopes.com.br/busca/aluguel/br/sp/ilhabela', finalidade: 'aluguel' },
+    ],
+  },
+  {
+    id: 'agenteimovel',
+    nome: 'Agente Imóvel',
+    site: 'https://www.agenteimovel.com.br',
+    esperarPor: 'article, [class*="card"], [class*="listing"]',
+    vitrines: [
+      {
+        url: 'https://www.agenteimovel.com.br/imoveis/a-venda/sp/ilhabela/',
+        finalidade: 'venda',
+      },
+      {
+        url: 'https://www.agenteimovel.com.br/imoveis/aluguel/sp/ilhabela/',
+        finalidade: 'aluguel',
+      },
+    ],
+  },
+  {
+    id: 'wimoveis',
+    nome: 'Wimoveis',
+    site: 'https://www.wimoveis.com.br',
+    esperarPor: '[data-qa="posting PROPERTY"], .postingsList, article',
+    vitrines: [
+      { url: 'https://www.wimoveis.com.br/venda/imoveis/sp/ilhabela', finalidade: 'venda' },
+      { url: 'https://www.wimoveis.com.br/aluguel/imoveis/sp/ilhabela', finalidade: 'aluguel' },
+    ],
+  },
 ];
 
 function criarAdapterPortal(config: ConfigPortal): Adapter {

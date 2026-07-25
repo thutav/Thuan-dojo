@@ -91,21 +91,38 @@ async function main() {
   const pinos = await page.locator('.pino-preco, .pino-grupo').count();
   conferir(pinos > 0, `pinos de preço no mapa (${pinos})`);
   conferir(await page.locator('.legenda').isVisible(), 'legenda do coroplético visível');
-  conferir(await page.locator('.faixa-demo').isVisible(), 'aviso de dados de demonstração visível');
   const cards = await page.locator('.card').count();
   conferir(cards > 0, `lista com resultados (${cards} cards)`);
+
+  // A faixa de demonstração e o selo "demo" só existem enquanto a coleta real não rodou.
+  // Depois dela, o certo é justamente não aparecerem.
+  const ehDemo = await page.locator('.faixa-demo').isVisible();
   const comSelo = await page.locator('.card .selo.demo').count();
-  conferir(comSelo > 0, 'cards de demonstração trazem o selo "demo"');
+  if (ehDemo) {
+    conferir(comSelo > 0, 'base de demonstração: faixa de aviso e selo "demo" nos cards');
+  } else {
+    conferir(comSelo === 0, 'base real: nenhum aviso de demonstração na tela');
+  }
   await foto(page, '01-venda');
 
   // ---- temporada --------------------------------------------------------
   await page.getByRole('button', { name: 'Temporada' }).click();
-  await page.waitForTimeout(400);
-  const precoTemporada = await page.locator('.card .por-m2').first().textContent();
-  conferir(
-    (precoTemporada ?? '').includes('noite') || (precoTemporada ?? '').includes('—'),
-    `preço por m² da temporada usa a unidade certa (${precoTemporada?.trim()})`,
-  );
+  await page.waitForTimeout(500);
+  // Com dados reais, temporada pode estar vazia: nenhuma das fontes atuais anuncia diária.
+  // Vazio é um estado legítimo e precisa ser explicado na tela, não um card em branco.
+  if ((await page.locator('.card').count()) === 0) {
+    const vazio = await page.locator('.vazio').textContent();
+    conferir(
+      (vazio ?? '').includes('temporada'),
+      'sem anúncios de temporada, a tela explica em vez de ficar em branco',
+    );
+  } else {
+    const precoTemporada = await page.locator('.card .por-m2').first().textContent();
+    conferir(
+      (precoTemporada ?? '').includes('noite') || (precoTemporada ?? '').includes('sem área'),
+      `preço por m² da temporada usa a unidade certa (${precoTemporada?.trim()})`,
+    );
+  }
   await foto(page, '02-temporada');
 
   // ---- aluguel + métrica de contagem ------------------------------------

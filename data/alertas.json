@@ -1,0 +1,27 @@
+{
+  "_leiame": "Buscas que você quer acompanhar. A cada coleta, o que entrar novo ou baixar de preço dentro de um destes filtros vira uma issue no repositório — e o GitHub te avisa por e-mail. Edite este arquivo para criar, mudar ou desligar um alerta; nada aqui depende de conta ou servidor. Campos aceitos: finalidade (venda|aluguel|temporada), precoMin, precoMax, areaMin, quartosMin, suitesMin, vagasMin, tipos, setores, bairros, caracteristicas, descontoMinimo (0.15 = só avisa se estiver 15% abaixo da mediana do bairro).",
+  "alertas": [
+    {
+      "nome": "Casa até R$ 1,5 mi no sul da ilha",
+      "ativo": true,
+      "finalidade": "venda",
+      "tipos": ["casa"],
+      "precoMax": 1500000,
+      "quartosMin": 2,
+      "setores": ["sul"]
+    },
+    {
+      "nome": "Oportunidade: 15% abaixo da mediana do bairro",
+      "ativo": true,
+      "finalidade": "venda",
+      "descontoMinimo": 0.15
+    },
+    {
+      "nome": "Terreno até R$ 600 mil",
+      "ativo": false,
+      "finalidade": "venda",
+      "tipos": ["terreno"],
+      "precoMax": 600000
+    }
+  ]
+}

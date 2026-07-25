@@ -121,6 +121,89 @@ describe('deduplicar', () => {
     expect(saida[0].preco).toBe(1_800_000);
   });
 
+  it('não funde terrenos diferentes que a corretora publica com o mesmo título genérico', () => {
+    // Caso real da primeira coleta: catorze terrenos do mesmo site, todos "Terreno em
+    // Ilhabela", nenhum com metragem, de R$ 400 mil a R$ 6 milhões. Fundir tudo apagava
+    // treze imóveis e derrubava a mediana do bairro.
+    const precos = [400_000, 480_000, 490_000, 600_000, 1_400_000, 2_500_000, 6_000_000];
+    const entrada = precos.map((preco, k) =>
+      imovel({
+        id: `t${k}`,
+        titulo: 'Terreno em Ilhabela',
+        tipo: 'terreno',
+        preco,
+        precoM2: null,
+        areaUtil: null,
+        areaTerreno: null,
+        quartos: null,
+        fontes: [
+          {
+            fonte: 'sergiohette',
+            nomeFonte: 'Sérgio Hette Imóveis',
+            url: `https://sergiohette.com.br/${k}-terreno.html`,
+            preco,
+            coletadoEm: '2026-07-25',
+          },
+        ],
+      }),
+    );
+
+    expect(deduplicar(entrada)).toHaveLength(precos.length);
+  });
+
+  it('não funde dois anúncios da mesma corretora com áreas diferentes', () => {
+    const saida = deduplicar([
+      imovel({ id: '1', areaUtil: 180, preco: 1_800_000 }),
+      imovel({
+        id: '2',
+        areaUtil: 320,
+        preco: 1_800_000,
+        fontes: [
+          {
+            fonte: 'a',
+            nomeFonte: 'Imobiliária A',
+            url: 'https://a.exemplo/outro',
+            preco: 1_800_000,
+            coletadoEm: '2026-07-20',
+          },
+        ],
+      }),
+    ]);
+    expect(saida).toHaveLength(2);
+  });
+
+  it('junta o mesmo anúncio quando corretoras diferentes publicam sem metragem e com o mesmo preço', () => {
+    const saida = deduplicar([
+      imovel({
+        id: '1',
+        titulo: 'Casa alto padrão na Praia do Curral',
+        areaUtil: null,
+        areaTerreno: null,
+        precoM2: null,
+        preco: 1_800_000,
+      }),
+      imovel({
+        id: '2',
+        titulo: 'Casa de alto padrão no Curral',
+        areaUtil: null,
+        areaTerreno: null,
+        precoM2: null,
+        preco: 1_800_000,
+        fontes: [
+          {
+            fonte: 'b',
+            nomeFonte: 'Imobiliária B',
+            url: 'https://b.exemplo/5',
+            preco: 1_800_000,
+            coletadoEm: '2026-07-20',
+          },
+        ],
+      }),
+    ]);
+    expect(saida).toHaveLength(1);
+    expect(saida[0].fontes).toHaveLength(2);
+  });
+
   it('recalcula o preço por m² a partir do menor preço', () => {
     const saida = deduplicar([
       imovel({ id: '1', preco: 1_800_000, areaUtil: 180 }),

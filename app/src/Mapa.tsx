@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import L from 'leaflet';
 import type { EstatisticaZona } from '@core/stats';
-import { cortesQuantilicos, faixaDoValor } from '@core/stats';
+import { cortesQuantilicos, estatisticaDaZona, faixaDoValor } from '@core/stats';
 import { formatarPreco, formatarPrecoM2 } from '@core/format';
 import type { Finalidade, Imovel, OutlineFile, Zona } from '@core/types';
 
@@ -27,17 +27,32 @@ export function metricasDisponiveis(finalidade: Finalidade): MetricaInfo[] {
         ? 'Aluguel mediano'
         : 'Diária mediana';
   return [
-    { id: 'precoM2', rotulo: `Preço por m² (${unidade})`, descricao: 'mediana do bairro' },
+    {
+      id: 'precoM2',
+      rotulo: `Preço por m² construído (${unidade})`,
+      descricao: 'mediana do bairro, sem terrenos',
+    },
     { id: 'preco', rotulo: preco, descricao: 'mediana do bairro' },
     { id: 'n', rotulo: 'Quantidade de ofertas', descricao: 'anúncios no bairro' },
   ];
 }
 
-function valorDaZona(est: EstatisticaZona | undefined, metrica: Metrica): number | null {
+/**
+ * Contagem e preço mediano olham o bairro inteiro; o preço por m² olha só os imóveis
+ * construídos, porque o m² de terreno é outra grandeza e misturá-los inventaria pechinchas.
+ */
+function valorDaZona(
+  estatisticas: Map<string, EstatisticaZona>,
+  bairroId: string,
+  metrica: Metrica,
+): number | null {
+  if (metrica === 'precoM2') {
+    const est = estatisticaDaZona(estatisticas, bairroId, 'construido');
+    return est?.confiavel ? est.medianaPrecoM2 : null;
+  }
+  const est = estatisticaDaZona(estatisticas, bairroId);
   if (!est) return null;
-  if (metrica === 'n') return est.n || null;
-  if (metrica === 'preco') return est.medianaPreco;
-  return est.confiavel ? est.medianaPrecoM2 : null;
+  return metrica === 'n' ? est.n || null : est.medianaPreco;
 }
 
 function formatarValorMetrica(valor: number, metrica: Metrica, finalidade: Finalidade): string {
@@ -120,7 +135,7 @@ export function Mapa(props: PropsMapa) {
 
   const cortes = useMemo(() => {
     const valores = zonas
-      .map((z) => valorDaZona(estatisticas.get(z.id), metrica))
+      .map((z) => valorDaZona(estatisticas, z.id, metrica))
       .filter((v): v is number => v !== null);
     return cortesQuantilicos(valores, ESCALA.length);
   }, [zonas, estatisticas, metrica]);
@@ -235,8 +250,10 @@ export function Mapa(props: PropsMapa) {
     if (!mostrarZonas) return;
 
     for (const zona of zonas) {
-      const est = estatisticas.get(zona.id);
-      const valor = valorDaZona(est, metrica);
+      const est = estatisticaDaZona(estatisticas, zona.id);
+      // A faixa por m² na dica vem do recorte construído, igual à cor da zona.
+      const estConstruido = estatisticaDaZona(estatisticas, zona.id, 'construido');
+      const valor = valorDaZona(estatisticas, zona.id, metrica);
       const selecionada = bairrosSelecionados.includes(zona.id);
       const temValor = valor !== null;
       const cor = temValor ? ESCALA[Math.min(faixaDoValor(valor, cortes), ESCALA.length - 1)] : SEM_AMOSTRA;
@@ -258,9 +275,9 @@ export function Mapa(props: PropsMapa) {
       }
       if (est) {
         linhas.push(`<dt>Anúncios</dt><dd>${est.n}</dd>`);
-        if (est.confiavel && est.q1PrecoM2 && est.q3PrecoM2) {
+        if (estConstruido?.confiavel && estConstruido.q1PrecoM2 && estConstruido.q3PrecoM2) {
           linhas.push(
-            `<dt>Faixa por m²</dt><dd>${formatarPrecoM2(est.q1PrecoM2, finalidade)} – ${formatarPrecoM2(est.q3PrecoM2, finalidade)}</dd>`,
+            `<dt>Faixa por m²</dt><dd>${formatarPrecoM2(estConstruido.q1PrecoM2, finalidade)} – ${formatarPrecoM2(estConstruido.q3PrecoM2, finalidade)}</dd>`,
           );
         } else if (metrica === 'precoM2') {
           linhas.push('<dt>Preço por m²</dt><dd>amostra insuficiente</dd>');
@@ -439,7 +456,7 @@ export function Mapa(props: PropsMapa) {
 
   const metricaAtual = metricasDisponiveis(finalidade).find((m) => m.id === metrica);
   const valores = zonas
-    .map((z) => valorDaZona(estatisticas.get(z.id), metrica))
+    .map((z) => valorDaZona(estatisticas, z.id, metrica))
     .filter((v): v is number => v !== null);
   const minimo = valores.length ? Math.min(...valores) : null;
   const maximo = valores.length ? Math.max(...valores) : null;

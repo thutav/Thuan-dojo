@@ -20,6 +20,7 @@ concurrency:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   coletar:
@@ -76,6 +77,30 @@ jobs:
           total=$(node -e "console.log(require('./data/listings.json').imoveis.length)")
           git commit -m "Coleta automática: ${total} imóveis em Ilhabela"
           git push
+
+      # O aviso sai como issue do repositório: o GitHub manda o e-mail para quem acompanha,
+      # sem servidor de e-mail nem senha guardada em lugar nenhum.
+      - name: Avaliar os alertas
+        id: alertas
+        if: steps.coleta.outcome == 'success'
+        run: npm run alertas
+
+      - name: Abrir issue com as oportunidades
+        if: steps.coleta.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ ! -s alerta.md ]; then
+            echo 'Nenhuma novidade nas buscas acompanhadas.'
+            exit 0
+          fi
+          gh issue create \
+            --title "Novidades nas suas buscas — $(date -u +%d/%m)" \
+            --body-file alerta.md \
+            --label "alerta" 2>/dev/null \
+          || gh issue create \
+            --title "Novidades nas suas buscas — $(date -u +%d/%m)" \
+            --body-file alerta.md
 
       - name: Falhar se a coleta não trouxe nada
         if: steps.coleta.outcome != 'success'

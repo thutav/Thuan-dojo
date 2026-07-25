@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { EstatisticaZona } from '@core/stats';
-import { dealScore } from '@core/stats';
+import { dealScore, estatisticaDaZona, grupoDe } from '@core/stats';
 import {
   formatarArea,
   formatarData,
@@ -80,7 +80,7 @@ export function FichaImovel(props: {
 }) {
   const { imovel, estatisticas } = props;
   const score = dealScore(imovel, estatisticas);
-  const est = estatisticas.get(imovel.bairroId);
+  const est = estatisticaDaZona(estatisticas, imovel.bairroId, grupoDe(imovel));
   const menorPreco = Math.min(...imovel.fontes.map((f) => f.preco).filter((p) => p > 0), imovel.preco);
 
   // Posição do imóvel dentro da faixa do bairro, para a barra comparativa.

@@ -42,26 +42,61 @@ export interface FiltroEstatistica {
   incluirDemo?: boolean;
 }
 
+/**
+ * O metro quadrado de um terreno e o de uma casa não são a mesma grandeza: um mede chão, o
+ * outro mede construção, e a diferença entre eles é de uma ordem de magnitude. Misturados na
+ * mesma mediana, todo terreno vira uma "oportunidade 95% abaixo do bairro" e ocupa o topo da
+ * lista — foi exatamente o que apareceu na primeira coleta real.
+ */
+export type GrupoComparacao = 'todos' | 'construido' | 'terreno';
+
+export function grupoDe(imovel: Imovel): Exclude<GrupoComparacao, 'todos'> {
+  return imovel.tipo === 'terreno' ? 'terreno' : 'construido';
+}
+
+export function chaveZona(bairroId: string, grupo: GrupoComparacao = 'todos'): string {
+  return `${bairroId}|${grupo}`;
+}
+
+/** Lê a estatística de uma zona sem precisar montar a chave à mão. */
+export function estatisticaDaZona(
+  estatisticas: Map<string, EstatisticaZona>,
+  bairroId: string,
+  grupo: GrupoComparacao = 'todos',
+): EstatisticaZona | undefined {
+  return estatisticas.get(chaveZona(bairroId, grupo));
+}
+
+/**
+ * Devolve as estatísticas de cada bairro em três recortes: `todos` (contagem e preço
+ * mediano), `construido` e `terreno` (preço por m², que só faz sentido separado).
+ */
 export function estatisticasPorZona(
   imoveis: Imovel[],
   filtro: FiltroEstatistica,
 ): Map<string, EstatisticaZona> {
   const porZona = new Map<string, Imovel[]>();
+  const acrescentar = (chave: string, i: Imovel) => {
+    const lista = porZona.get(chave);
+    if (lista) lista.push(i);
+    else porZona.set(chave, [i]);
+  };
+
   for (const i of imoveis) {
     if (i.finalidade !== filtro.finalidade) continue;
     if (filtro.tipo && i.tipo !== filtro.tipo) continue;
     if (i.demo && filtro.incluirDemo === false) continue;
-    const lista = porZona.get(i.bairroId);
-    if (lista) lista.push(i);
-    else porZona.set(i.bairroId, [i]);
+    acrescentar(chaveZona(i.bairroId, 'todos'), i);
+    acrescentar(chaveZona(i.bairroId, grupoDe(i)), i);
   }
 
   const saida = new Map<string, EstatisticaZona>();
-  for (const [bairroId, lista] of porZona) {
+  for (const [chave, lista] of porZona) {
+    const bairroId = chave.split('|')[0];
     const precos = lista.map((i) => i.preco).filter((p) => p > 0);
     const precosM2 = lista.map((i) => i.precoM2).filter((p): p is number => !!p && p > 0);
     const areas = lista.map((i) => i.areaUtil).filter((a): a is number => !!a && a > 0);
-    saida.set(bairroId, {
+    saida.set(chave, {
       bairroId,
       n: lista.length,
       nComArea: precosM2.length,
@@ -88,11 +123,12 @@ export interface DealScore {
 
 /**
  * Compara o preço por m² do imóvel com a mediana do próprio bairro, para a mesma finalidade
- * e o mesmo tipo. Sem amostra suficiente na zona, devolve `null` em vez de um número frágil.
+ * e o mesmo grupo — terreno com terreno, construído com construído. Sem amostra suficiente
+ * na zona, devolve `null` em vez de um número frágil.
  */
 export function dealScore(imovel: Imovel, estatisticas: Map<string, EstatisticaZona>): DealScore | null {
   if (!imovel.precoM2 || imovel.precoM2 <= 0) return null;
-  const est = estatisticas.get(imovel.bairroId);
+  const est = estatisticaDaZona(estatisticas, imovel.bairroId, grupoDe(imovel));
   if (!est || !est.confiavel || !est.medianaPrecoM2) return null;
 
   const pct = (imovel.precoM2 - est.medianaPrecoM2) / est.medianaPrecoM2;

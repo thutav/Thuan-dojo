@@ -12,7 +12,7 @@ import {
   Tooltip,
 } from 'chart.js';
 import type { EstatisticaZona } from '@core/stats';
-import { AMOSTRA_MINIMA, mediana } from '@core/stats';
+import { AMOSTRA_MINIMA, estatisticaDaZona, mediana } from '@core/stats';
 import { formatarData, formatarPreco, formatarPrecoM2 } from '@core/format';
 import type { Dataset, Finalidade, Imovel, Zona } from '@core/types';
 import { Modal } from './Ficha';
@@ -65,7 +65,7 @@ export function PainelMercado(props: {
   const ranking = useMemo(
     () =>
       zonas
-        .map((z) => ({ zona: z, est: estatisticas.get(z.id) }))
+        .map((z) => ({ zona: z, est: estatisticaDaZona(estatisticas, z.id, 'construido') }))
         .filter((r): r is { zona: Zona; est: EstatisticaZona } => !!r.est?.confiavel && !!r.est.medianaPrecoM2)
         .sort((a, b) => (b.est.medianaPrecoM2 ?? 0) - (a.est.medianaPrecoM2 ?? 0)),
     [zonas, estatisticas],
