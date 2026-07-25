@@ -44,11 +44,14 @@ const CABECALHOS = {
 
 const esperar = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-function criarContexto(registrar: (m: string) => void): ContextoColeta {
+function criarContexto(registrar: (m: string) => void): {
+  ctx: ContextoColeta;
+  fechar: () => Promise<void>;
+} {
   let ultimaRequisicao = 0;
   let navegador: import('playwright').Browser | null = null;
 
-  return {
+  const ctx: ContextoColeta = {
     maxPaginas: MAX_PAGINAS,
     registrar,
 
@@ -98,6 +101,19 @@ function criarContexto(registrar: (m: string) => void): ContextoColeta {
       }
     },
   };
+
+  // Sem fechar o Chromium o processo não termina: a coleta acaba, imprime o resumo e o
+  // runner fica pendurado até estourar o limite de tempo — foi o que aconteceu na primeira
+  // execução de teste, que ficou 23 minutos parada depois de já ter todos os dados.
+  return {
+    ctx,
+    fechar: async () => {
+      if (navegador) {
+        await navegador.close();
+        navegador = null;
+      }
+    },
+  };
 }
 
 async function main() {
@@ -118,14 +134,16 @@ async function main() {
     process.exit(1);
   }
 
-  const registros: string[] = [];
-  const ctx = criarContexto((m) => {
-    registros.push(m);
-    console.log('  ' + m);
-  });
+  const { ctx, fechar } = criarContexto((m) => console.log('  ' + m));
 
   console.log(`coletando de ${adapters.length} fontes${USAR_FIXTURES ? ' (modo fixtures)' : ''}…`);
-  const { dataset, descartes } = await coletar(adapters, ctx, ix, anterior?.imoveis ?? null);
+  let resultado;
+  try {
+    resultado = await coletar(adapters, ctx, ix, anterior?.imoveis ?? null);
+  } finally {
+    await fechar();
+  }
+  const { dataset, descartes, exemplosDescartados } = resultado;
 
   console.log('\nresumo por fonte:');
   for (const f of dataset.relatorio!.fontes) {
@@ -136,7 +154,14 @@ async function main() {
 
   if (Object.keys(descartes).length) {
     console.log('\ndescartados:');
-    for (const [motivo, n] of Object.entries(descartes)) console.log(`  ${String(n).padStart(4)} ${motivo}`);
+    for (const [motivo, n] of Object.entries(descartes)) {
+      console.log(`  ${String(n).padStart(4)} ${motivo}`);
+      // Sem ver os exemplos não dá para saber se falta bairro no gazetteer ou se são
+      // anúncios que realmente não dizem onde ficam.
+      for (const exemplo of exemplosDescartados[motivo] ?? []) {
+        console.log(`       · ${exemplo}`);
+      }
+    }
   }
 
   console.log(

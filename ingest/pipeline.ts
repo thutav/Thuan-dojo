@@ -134,7 +134,11 @@ export function aplicarHistorico(imoveis: Imovel[], anterior: Imovel[] | null, h
 export interface ResultadoColeta {
   dataset: Dataset;
   descartes: Record<string, number>;
+  /** Alguns títulos de cada motivo, para o log dizer o que precisa de ajuste. */
+  exemplosDescartados: Record<string, string[]>;
 }
+
+const EXEMPLOS_POR_MOTIVO = 8;
 
 export async function coletar(
   adapters: Adapter[],
@@ -173,11 +177,17 @@ export async function coletar(
   }
 
   const descartes: Record<string, number> = {};
+  const exemplosDescartados: Record<string, string[]> = {};
   const imoveis: Imovel[] = [];
   for (const bruto of brutos) {
     const resultado = normalizarAnuncio(bruto, ix, hoje);
     if ('descarte' in resultado) {
-      descartes[resultado.descarte] = (descartes[resultado.descarte] ?? 0) + 1;
+      const motivo = resultado.descarte;
+      descartes[motivo] = (descartes[motivo] ?? 0) + 1;
+      const exemplos = (exemplosDescartados[motivo] ??= []);
+      if (exemplos.length < EXEMPLOS_POR_MOTIVO) {
+        exemplos.push(`${bruto.fonte}: ${bruto.titulo.replace(/\s+/g, ' ').slice(0, 90)}`);
+      }
       continue;
     }
     imoveis.push(resultado.imovel);
@@ -200,6 +210,7 @@ export async function coletar(
       },
     },
     descartes,
+    exemplosDescartados,
   };
 }
 

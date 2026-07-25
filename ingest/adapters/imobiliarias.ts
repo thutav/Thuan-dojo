@@ -19,6 +19,8 @@ export interface ConfigImobiliaria {
   site: string;
   /** Vitrines conhecidas ou prováveis, com a finalidade que cada uma lista. */
   vitrines: { url: string; finalidade?: Finalidade }[];
+  /** `navegador` para sites que montam a lista com JavaScript. */
+  modo?: 'http' | 'navegador';
 }
 
 export const IMOBILIARIAS: ConfigImobiliaria[] = [
@@ -47,37 +49,46 @@ export const IMOBILIARIAS: ConfigImobiliaria[] = [
     ],
   },
   {
+    // A lista deste site é montada por JavaScript, com a busca no fragmento da URL — o HTML
+    // servido vem vazio. A primeira execução de teste devolveu 0 anúncios por isso.
     id: 'capitaldavela',
     nome: 'Capital da Vela Imóveis',
     site: 'https://www.capitaldavelaimoveis.com.br',
+    modo: 'navegador',
     vitrines: [
       {
-        url: 'https://www.capitaldavelaimoveis.com.br/imoveis/venda/sp/ilhabela',
+        url: 'https://www.capitaldavelaimoveis.com.br/imoveis/venda/#/?tipoNegocio=VA,VL&page=1',
         finalidade: 'venda',
       },
       {
-        url: 'https://www.capitaldavelaimoveis.com.br/imoveis/aluguel/sp/ilhabela',
+        url: 'https://www.capitaldavelaimoveis.com.br/imoveis/locacao/#/?tipoNegocio=LO&page=1',
         finalidade: 'aluguel',
       },
     ],
   },
+  // As três vitrines abaixo foram descobertas pela própria execução de teste, a partir da
+  // página inicial: o palpite /imoveis dava 404 nos três. Ficam fixadas para a coleta não
+  // gastar um 404 e uma rodada de descoberta a cada execução.
   {
     id: 'studiotrilha',
     nome: 'Studio Trilha Imobiliária',
     site: 'https://www.studiotrilha.com.br',
-    vitrines: [{ url: 'https://www.studiotrilha.com.br/imoveis' }],
+    vitrines: [{ url: 'https://www.studiotrilha.com.br/busca-imoveis' }],
   },
   {
     id: 'abidoia',
     nome: 'Alessandra Bidoia Imóveis',
     site: 'https://abidoia.com.br',
-    vitrines: [{ url: 'https://abidoia.com.br/imoveis' }],
+    vitrines: [
+      { url: 'https://abidoia.com.br/imovel/?finalidade=venda', finalidade: 'venda' },
+      { url: 'https://abidoia.com.br/imovel/?finalidade=locacao', finalidade: 'aluguel' },
+    ],
   },
   {
     id: 'ilhabelaimoveis',
     nome: 'Ilhabela Imóveis',
     site: 'https://www.ilhabelaimoveis.com.br',
-    vitrines: [{ url: 'https://www.ilhabelaimoveis.com.br/imoveis' }],
+    vitrines: [{ url: 'https://www.ilhabelaimoveis.com.br/' }],
   },
 ];
 
@@ -124,10 +135,12 @@ export function criarAdapterImobiliaria(config: ConfigImobiliaria): Adapter {
     id: config.id,
     nome: config.nome,
     site: config.site,
-    modo: 'http',
+    modo: config.modo ?? 'http',
     async coletar(ctx: ContextoColeta): Promise<AnuncioBruto[]> {
       const coletados = new Map<string, AnuncioBruto>();
       const visitadas = new Set<string>();
+      const buscar = (url: string) =>
+        config.modo === 'navegador' ? ctx.buscarComNavegador(url) : ctx.buscarHtml(url);
 
       const percorrer = async (urlInicial: string, finalidade?: Finalidade) => {
         let url: string | null = urlInicial;
@@ -137,7 +150,7 @@ export function criarAdapterImobiliaria(config: ConfigImobiliaria): Adapter {
 
           let html: string;
           try {
-            html = await ctx.buscarHtml(url);
+            html = await buscar(url);
           } catch (e) {
             ctx.registrar(`${config.id}: ${url} falhou (${(e as Error).message})`);
             return;
@@ -173,7 +186,7 @@ export function criarAdapterImobiliaria(config: ConfigImobiliaria): Adapter {
       if (coletados.size === 0) {
         ctx.registrar(`${config.id}: nenhuma vitrine conhecida respondeu, procurando pelo site`);
         try {
-          const inicial = await ctx.buscarHtml(config.site);
+          const inicial = await buscar(config.site);
           for (const url of await descobrirVitrines(inicial, config.site)) {
             await percorrer(url);
             if (coletados.size > 0) break;
