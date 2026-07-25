@@ -10,15 +10,17 @@ import {
   ordenar,
   salvarLocais,
   type BaseApp,
+  type Filtros,
 } from './dados';
 import {
   LIMITE_COMPARACAO,
   ROTULO_MODO,
+  filtrosParaUrl,
   textoCompartilhado,
   useComparador,
   useFavoritos,
-  useFiltrosNaUrl,
 } from './estado';
+import { useNavegacao, type ModoNavegacao, type Vista } from './navegacao';
 import { Mapa, metricasDisponiveis, type Metrica } from './Mapa';
 import { Painel } from './Painel';
 import { Comparador, FichaImovel } from './Ficha';
@@ -42,27 +44,35 @@ import {
 
 const MODOS: Finalidade[] = ['venda', 'aluguel', 'temporada'];
 
-type ModalAberto = 'nenhum' | 'filtros' | 'comparar' | 'colar' | 'mercado';
-
 export function App() {
   const [base, setBase] = useState<BaseApp | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [locais, setLocais] = useState<Imovel[]>([]);
-  const [filtros, atualizarFiltros] = useFiltrosNaUrl();
+  const { rota, navegar, voltar } = useNavegacao();
+  const { filtros, imovel: selecionado, vista: modal, aba: vistaMobile } = rota;
   const favoritos = useFavoritos();
   const comparador = useComparador();
 
-  const [selecionado, setSelecionado] = useState<string | null>(null);
+  // Trocar os filtros é a operação mais comum da tela: sai da rota inteira para uma função
+  // com a mesma assinatura de antes, para os componentes filhos não precisarem saber de rota.
+  const atualizarFiltros = useCallback(
+    (fn: (f: Filtros) => Filtros, modo: ModoNavegacao = 'trocar') =>
+      navegar((r) => ({ filtros: fn(r.filtros) }), modo),
+    [navegar],
+  );
+
   const [destacado, setDestacado] = useState<string | null>(null);
-  const [modal, setModal] = useState<ModalAberto>('nenhum');
   const [metrica, setMetrica] = useState<Metrica>('precoM2');
   const [mostrarZonas, setMostrarZonas] = useState(true);
   const [mostrarPinos, setMostrarPinos] = useState(true);
   const [usarTiles, setUsarTiles] = useState(false);
   const [desenhando, setDesenhando] = useState(false);
-  const [vistaMobile, setVistaMobile] = useState<'lista' | 'mapa'>('mapa');
 
-  const [textoCompartilhadoInicial, setTextoCompartilhadoInicial] = useState<string | null>(null);
+  // Lido na montagem, antes de qualquer efeito: a camada de navegação limpa a URL no primeiro
+  // efeito dela, e a partir daí o texto compartilhado já não estaria mais lá.
+  const [textoCompartilhadoInicial, setTextoCompartilhadoInicial] = useState<string | null>(
+    () => textoCompartilhado(),
+  );
 
   useEffect(() => {
     carregarBase()
@@ -74,11 +84,8 @@ export function App() {
 
     // Compartilhar um post do Facebook ou do WhatsApp para o aplicativo instalado abre
     // direto o formulário de colar, já preenchido.
-    const compartilhado = textoCompartilhado();
-    if (compartilhado) {
-      setTextoCompartilhadoInicial(compartilhado);
-      setModal('colar');
-    }
+    if (textoCompartilhadoInicial) navegar({ vista: 'colar' }, 'empilhar');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // A diária por m² é um número pequeno e pouco intuitivo; na temporada o mapa abre pelo
@@ -109,27 +116,51 @@ export function App() {
   const emComparacao = [...comparador.itens].map((id) => porId.get(id)).filter((i): i is Imovel => !!i);
   const filtrosAtivos = contarFiltrosAtivos(filtros);
 
+  // Link de imóvel que não existe nesta base (anúncio colado no celular de outra pessoa,
+  // anúncio que saiu do ar): tira o id da URL em vez de deixar a tela em silêncio.
+  useEffect(() => {
+    if (base && selecionado && !porId.has(selecionado)) navegar({ imovel: null }, 'trocar');
+  }, [base, selecionado, porId, navegar]);
+
+  // Chave estável da busca: muda quando os filtros mudam, e não quando alguém favorita um
+  // imóvel. É o gatilho para a lista voltar ao topo — favoritar não pode fazer isso.
+  const chaveBusca = useMemo(() => filtrosParaUrl(filtros), [filtros]);
+
+  const abrirImovel = useCallback(
+    (id: string) => navegar({ imovel: id }, 'empilhar'),
+    [navegar],
+  );
+  const abrirVista = useCallback(
+    (vista: Vista) => navegar({ vista }, 'empilhar'),
+    [navegar],
+  );
+
   const aoClicarZona = useCallback(
     (bairroId: string) => {
-      atualizarFiltros((f) => ({
-        ...f,
-        bairros: f.bairros.includes(bairroId)
-          ? f.bairros.filter((b) => b !== bairroId)
-          : [...f.bairros, bairroId],
-      }));
+      // Clicar num bairro no mapa não tem desfazer óbvio como um chip tem: vira um passo de
+      // volta próprio.
+      atualizarFiltros(
+        (f) => ({
+          ...f,
+          bairros: f.bairros.includes(bairroId)
+            ? f.bairros.filter((b) => b !== bairroId)
+            : [...f.bairros, bairroId],
+        }),
+        'empilhar',
+      );
     },
     [atualizarFiltros],
   );
 
   const aoDesenhar = useCallback(
     (poligono: [number, number][] | null) => {
-      atualizarFiltros((f) => ({ ...f, poligono }));
+      atualizarFiltros((f) => ({ ...f, poligono }), 'empilhar');
       setDesenhando(false);
     },
     [atualizarFiltros],
   );
 
-  const guardarLocais = (novos: Imovel[]) => {
+  const guardarLocais = (novos: Imovel[], abrir?: string) => {
     const todosLocais = [...locais, ...novos];
     setLocais(todosLocais);
     salvarLocais(todosLocais);
@@ -137,13 +168,12 @@ export function App() {
       b ? { ...b, dataset: { ...b.dataset, imoveis: [...b.dataset.imoveis, ...novos] } } : b,
     );
     setTextoCompartilhadoInicial(null);
-    setModal('nenhum');
+    // Sai do formulário e abre a ficha no mesmo passo: voltar leva ao mapa, não ao formulário
+    // que a pessoa já concluiu.
+    navegar({ vista: 'nenhum', imovel: abrir ?? null }, 'trocar');
   };
 
-  const salvarColado = (imovel: Imovel) => {
-    guardarLocais([imovel]);
-    setSelecionado(imovel.id);
-  };
+  const salvarColado = (imovel: Imovel) => guardarLocais([imovel], imovel.id);
 
   const salvarVariosColados = (imoveis: Imovel[]) => guardarLocais(imoveis);
 
@@ -183,7 +213,7 @@ export function App() {
             <button
               key={m}
               aria-pressed={filtros.finalidade === m}
-              onClick={() => atualizarFiltros((f) => ({ ...f, finalidade: m }))}
+              onClick={() => atualizarFiltros((f) => ({ ...f, finalidade: m }), 'empilhar')}
             >
               {ROTULO_MODO[m]}
             </button>
@@ -204,7 +234,7 @@ export function App() {
               title e o aria-label continuam dizendo o que cada botão faz. */}
           <button
             className="botao"
-            onClick={() => setModal('comparar')}
+            onClick={() => abrirVista('comparar')}
             title="Comparar imóveis"
             aria-label="Comparar imóveis"
           >
@@ -218,7 +248,7 @@ export function App() {
           </button>
           <button
             className="botao"
-            onClick={() => setModal('mercado')}
+            onClick={() => abrirVista('mercado')}
             title="Painel de mercado"
             aria-label="Painel de mercado"
           >
@@ -227,7 +257,7 @@ export function App() {
           </button>
           <button
             className="botao primario"
-            onClick={() => setModal('colar')}
+            onClick={() => abrirVista('colar')}
             title="Colar anúncio de Facebook ou WhatsApp"
             aria-label="Colar anúncio"
           >
@@ -251,6 +281,7 @@ export function App() {
       <div className="corpo" data-vista={vistaMobile}>
         <Painel
           filtros={filtros}
+          chaveBusca={chaveBusca}
           imoveis={filtrados}
           totalNoModo={imoveisDoModo.length}
           estatisticas={estatisticas}
@@ -259,8 +290,8 @@ export function App() {
           destacado={destacado}
           finalidade={filtros.finalidade}
           aoMudarFiltros={atualizarFiltros}
-          aoAbrirFiltros={() => setModal('filtros')}
-          aoAbrir={setSelecionado}
+          aoAbrirFiltros={() => abrirVista('filtros')}
+          aoAbrir={abrirImovel}
           aoFavoritar={favoritos.alternar}
           aoComparar={comparador.alternar}
           aoDestacar={setDestacado}
@@ -278,11 +309,12 @@ export function App() {
             mostrarPinos={mostrarPinos}
             usarTiles={usarTiles}
             destacado={destacado}
+            selecionado={selecionado}
             favoritos={favoritos.itens}
             bairrosSelecionados={filtros.bairros}
             poligono={filtros.poligono}
             desenhando={desenhando}
-            aoSelecionar={setSelecionado}
+            aoSelecionar={abrirImovel}
             aoDestacar={setDestacado}
             aoClicarZona={aoClicarZona}
             aoDesenhar={aoDesenhar}
@@ -377,10 +409,16 @@ export function App() {
       </div>
 
       <div className="aba-mobile" role="group" aria-label="Alternar entre lista e mapa">
-        <button aria-pressed={vistaMobile === 'lista'} onClick={() => setVistaMobile('lista')}>
+        <button
+          aria-pressed={vistaMobile === 'lista'}
+          onClick={() => navegar({ aba: 'lista' }, 'empilhar')}
+        >
           Lista
         </button>
-        <button aria-pressed={vistaMobile === 'mapa'} onClick={() => setVistaMobile('mapa')}>
+        <button
+          aria-pressed={vistaMobile === 'mapa'}
+          onClick={() => navegar({ aba: 'mapa' }, 'empilhar')}
+        >
           Mapa
         </button>
       </div>
@@ -393,7 +431,7 @@ export function App() {
           comparando={comparador.itens.has(imovelSelecionado.id)}
           aoFavoritar={favoritos.alternar}
           aoComparar={comparador.alternar}
-          aoFechar={() => setSelecionado(null)}
+          aoFechar={voltar}
         />
       )}
 
@@ -403,8 +441,11 @@ export function App() {
           zonas={base.zonas}
           faixaPreco={faixaDePreco(todos, filtros.finalidade)}
           finalidade={filtros.finalidade}
-          aoMudar={atualizarFiltros}
-          aoFechar={() => setModal('nenhum')}
+          contar={(f) => aplicarFiltros(todos, f, favoritos.itens).length}
+          // Confirmar fecha e aplica no mesmo passo: os filtros escolhidos aqui viajam junto
+          // com o voltar, senão cairiam na entrada anterior do histórico — a de antes deles.
+          aoAplicar={(f) => voltar({ filtros: f })}
+          aoFechar={voltar}
         />
       )}
 
@@ -414,7 +455,7 @@ export function App() {
           estatisticas={estatisticas}
           aoRemover={comparador.alternar}
           aoLimpar={comparador.limpar}
-          aoFechar={() => setModal('nenhum')}
+          aoFechar={voltar}
         />
       )}
 
@@ -427,7 +468,7 @@ export function App() {
           aoSalvarVarios={salvarVariosColados}
           aoFechar={() => {
             setTextoCompartilhadoInicial(null);
-            setModal('nenhum');
+            voltar();
           }}
         />
       )}
@@ -446,7 +487,7 @@ export function App() {
             imoveisDoModo={imoveisDoModo}
             estatisticas={estatisticas}
             finalidade={filtros.finalidade}
-            aoFechar={() => setModal('nenhum')}
+            aoFechar={voltar}
           />
         </Suspense>
       )}

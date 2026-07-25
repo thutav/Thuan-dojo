@@ -18,6 +18,12 @@ import { deduplicar } from '../core/dedupe';
 import { pareceAnuncioDeIlhabela, textoVisivel } from './extratores';
 import type { Adapter, ContextoColeta } from './tipos';
 
+/**
+ * Teto de sanidade para preço de venda. Não é um limite de mercado — é um detector de erro de
+ * leitura: acima disso, o que existe não é imóvel caro, é número lido errado na origem.
+ */
+const TETO_DE_VENDA = 300_000_000;
+
 /** Id estável a partir da URL: o mesmo anúncio mantém o mesmo id entre coletas. */
 function idDoAnuncio(bruto: AnuncioBruto): string {
   const semente = bruto.url || `${bruto.fonte}:${bruto.titulo}`;
@@ -79,6 +85,13 @@ export function normalizarAnuncio(
   if (finalidade === 'venda' && preco < 30_000) return { descarte: 'preço baixo demais para venda' };
   if (finalidade === 'aluguel' && preco > 200_000) return { descarte: 'preço alto demais para aluguel' };
   if (finalidade === 'temporada' && preco > 100_000) return { descarte: 'preço alto demais para diária' };
+
+  // Teto de sanidade para venda. O imóvel mais caro de Ilhabela que já apareceu nas fontes
+  // fica na casa das dezenas de milhões; uma casa de R$ 11 bilhões — que a coleta trouxe de
+  // verdade — é erro de leitura na origem, e um erro desses estica a legenda do mapa inteiro.
+  if (finalidade === 'venda' && preco > TETO_DE_VENDA) {
+    return { descarte: 'preço implausível para venda' };
+  }
 
   const id = idDoAnuncio(completo);
   const pos = posicionar(id, bairro, ix, { lat: completo.lat, lon: completo.lon });

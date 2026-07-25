@@ -91,8 +91,17 @@ async function main() {
   const pinos = await page.locator('.pino-preco, .pino-grupo').count();
   conferir(pinos > 0, `pinos de preço no mapa (${pinos})`);
   conferir(await page.locator('.legenda').isVisible(), 'legenda do coroplético visível');
+  // A lista monta por páginas: o número que vale é o total anunciado na barra, não quantos
+  // cards já estão no DOM.
+  const total = async () =>
+    Number((await page.locator('.barra-resultados strong').textContent())?.replace(/\D/g, '') ?? 0);
   const cards = await page.locator('.card').count();
-  conferir(cards > 0, `lista com resultados (${cards} cards)`);
+  const totalVenda = await total();
+  conferir(totalVenda > 0, `lista com resultados (${totalVenda} imóveis)`);
+  conferir(
+    cards > 0 && cards < totalVenda,
+    `a lista abre com ${cards} cards e não com os ${totalVenda} de uma vez`,
+  );
 
   // A faixa de demonstração e o selo "demo" só existem enquanto a coleta real não rodou.
   // Depois dela, o certo é justamente não aparecerem.
@@ -140,17 +149,90 @@ async function main() {
   await page.waitForSelector('[role="dialog"]');
   await foto(page, '04-filtros');
   await page.locator('#campo-Quartos').fill('3');
-  await page.getByRole('button', { name: 'Ver resultados' }).click();
+  await page.waitForTimeout(200);
+  // O botão de confirmar mostra o resultado do rascunho antes de aplicar.
+  const rotuloConfirmar = (await page.locator('.rodape-modal .primario').textContent()) ?? '';
+  conferir(
+    /Ver [\d.]+ imóve/.test(rotuloConfirmar),
+    `o botão diz quantos imóveis o filtro encontra (${rotuloConfirmar.trim()})`,
+  );
+  await page.locator('.rodape-modal .primario').click();
   await page.waitForTimeout(400);
-  const depoisFiltro = await page.locator('.card').count();
-  conferir(depoisFiltro > 0 && depoisFiltro <= cards, `filtro de quartos reduziu a lista (${depoisFiltro})`);
+  const depoisFiltro = await total();
+  conferir(
+    depoisFiltro > 0 && depoisFiltro < totalVenda,
+    `filtro de quartos reduziu a lista (${depoisFiltro} de ${totalVenda})`,
+  );
   conferir(page.url().includes('qt=3'), 'filtro entrou na URL para poder ser compartilhado');
+
+  // ---- rolagem: a lista cresce sozinha -----------------------------------
+  const antesDeRolar = await page.locator('.card').count();
+  await page.locator('.lista').evaluate((el) => el.scrollTo({ top: el.scrollHeight }));
+  await page
+    .waitForFunction((n) => document.querySelectorAll('.card').length > n, antesDeRolar, {
+      timeout: 5000,
+    })
+    .catch(() => null);
+  const depoisDeRolar = await page.locator('.card').count();
+  conferir(
+    depoisDeRolar > antesDeRolar,
+    `rolar carrega mais resultados (${antesDeRolar} → ${depoisDeRolar})`,
+  );
+  await page.locator('.lista').evaluate((el) => el.scrollTo({ top: 0 }));
 
   // ---- ficha -------------------------------------------------------------
   await page.locator('.card .miniatura').first().click();
   await page.waitForSelector('.ficha');
   conferir(await page.locator('.ficha').isVisible(), 'ficha do imóvel abre');
+  conferir(/[?&]i=/.test(page.url()), 'o imóvel aberto tem endereço próprio, dá para mandar o link');
   await foto(page, '05-ficha');
+
+  // O que a pessoa reclamou: abrir e não conseguir voltar. O botão voltar do navegador é o
+  // mesmo evento do gesto de voltar do Android.
+  await page.goBack();
+  await page.waitForTimeout(350);
+  conferir(
+    (await page.locator('.ficha').count()) === 0 && !/[?&]i=/.test(page.url()),
+    'voltar fecha a ficha em vez de sair do aplicativo',
+  );
+  conferir(
+    (await page.locator('.card').count()) > 0 && page.url().includes('qt=3'),
+    'ao voltar, a busca continua exatamente como estava',
+  );
+
+  // Fechar pelo X tem que andar para trás no histórico, e não empilhar um passo novo. Quem
+    // prova isso é o avançar: se o X andou para trás, avançar reabre a ficha.
+  await page.locator('.card .miniatura').first().click();
+  await page.waitForSelector('.ficha');
+  await page.locator('.modal .fechar').first().click();
+  await page.waitForTimeout(300);
+  const fechouPeloX = (await page.locator('.ficha').count()) === 0;
+  await page.goForward();
+  await page.waitForTimeout(350);
+  conferir(
+    fechouPeloX && (await page.locator('.ficha').count()) === 1,
+    'fechar pelo X anda para trás no histórico, em vez de empilhar um passo novo',
+  );
+  await page.goBack();
+  await page.waitForTimeout(300);
+
+  // Um passo de volta por bairro clicado no mapa. O clique vai direto no elemento porque o
+  // centro do retângulo de um polígono recortado costuma cair fora dele.
+  const urlAntesDaZona = page.url();
+  for (let i = 6; i < 26 && page.url() === urlAntesDaZona; i++) {
+    await page.locator('.leaflet-overlay-pane path').nth(i).dispatchEvent('click');
+    await page.waitForTimeout(120);
+  }
+  const mudouComZona = page.url() !== urlAntesDaZona;
+  await page.goBack();
+  await page.waitForTimeout(350);
+  conferir(
+    mudouComZona && page.url() === urlAntesDaZona,
+    'clicar num bairro no mapa cria um passo de volta próprio',
+  );
+
+  await page.locator('.card .miniatura').first().click();
+  await page.waitForSelector('.ficha');
   await page.locator('.rodape-modal').getByRole('button', { name: 'Comparar' }).click();
   await page.keyboard.press('Escape');
   await page.waitForTimeout(250);
@@ -182,6 +264,15 @@ async function main() {
   // ---- colar anúncio -----------------------------------------------------
   await page.getByRole('button', { name: 'Colar anúncio' }).click();
   await page.waitForSelector('#texto-anuncio');
+
+  // Digitar de verdade, tecla por tecla: o modal já teve um bug em que o foco voltava para a
+  // caixa a cada render e só a primeira letra entrava.
+  await page.locator('#texto-anuncio').click();
+  await page.keyboard.type('Casa no Veloso R$ 900.000', { delay: 12 });
+  const digitado = await page.locator('#texto-anuncio').inputValue();
+  conferir(digitado === 'Casa no Veloso R$ 900.000', `dá para digitar no modal (${digitado})`);
+  await page.locator('#texto-anuncio').fill('');
+
   await page.getByRole('button', { name: 'Usar um exemplo' }).click();
   await page.waitForTimeout(400);
   const precoLido = await page.locator('#f-preco').inputValue();
@@ -213,14 +304,15 @@ async function main() {
   const itensLote = await page.locator('.item-lote').count();
   conferir(itensLote === 3, `um texto com vários posts vira ${itensLote} anúncios separados`);
   await foto(page, '08b-colar-lote');
-  const antesDoLote = await page.locator('.card').count();
+  const antesDoLote = await total();
   await page.getByRole('button', { name: /Salvar \d+ anúncios/ }).click();
-  await page.waitForFunction(
-    (n) => document.querySelectorAll('.card').length > n,
-    antesDoLote,
-    { timeout: 5000 },
+  await page.waitForSelector('.lista-lote', { state: 'detached', timeout: 5000 });
+  await page.waitForTimeout(300);
+  const depoisDoLote = await total();
+  conferir(
+    depoisDoLote > antesDoLote,
+    `o lote entra na base de uma vez (${antesDoLote} → ${depoisDoLote} com os filtros de agora)`,
   );
-  conferir(true, 'o lote inteiro entra na base de uma vez');
 
   // ---- compartilhar do Facebook/WhatsApp para o app -----------------------
   const compartilhado = 'Casa no Julião, 3 quartos, 200 m². R$ 1.200.000';
@@ -254,6 +346,46 @@ async function main() {
   await pageCelular.waitForSelector('.card');
   conferir(await pageCelular.locator('.card').first().isVisible(), 'no celular a lista abre pela aba');
   await pageCelular.screenshot({ path: path.join(saida, '10-celular-lista.png') });
+
+  // No Android o gesto de voltar dispara o mesmo evento do botão voltar. É aqui que o
+  // aplicativo fechava sozinho: sem passo no histórico, o sistema saía do site.
+  await pageCelular.locator('.card .miniatura').first().click();
+  await pageCelular.waitForSelector('.ficha');
+  await pageCelular.goBack();
+  await pageCelular.waitForTimeout(350);
+  conferir(
+    (await pageCelular.locator('.ficha').count()) === 0 &&
+      (await pageCelular.locator('.card').first().isVisible()),
+    'no celular, voltar fecha a ficha e devolve a lista',
+  );
+  await pageCelular.goBack();
+  await pageCelular.waitForTimeout(350);
+  conferir(
+    await pageCelular.locator('.mapa').isVisible(),
+    'voltar de novo troca a lista pelo mapa, sem sair do aplicativo',
+  );
+
+  // Link direto de imóvel: quem recebe não tem passo anterior nenhum, e mesmo assim precisa
+  // conseguir fechar a ficha.
+  const idCompartilhado = await page.evaluate(() => {
+    const cru = document.querySelector('.card .miniatura')?.getAttribute('aria-label');
+    return cru ?? '';
+  });
+  const alvo = await pageCelular.evaluate(async (raizUrl) => {
+    const r = await fetch(`${raizUrl}data/listings.json`);
+    const d = (await r.json()) as { imoveis: { id: string }[] };
+    return d.imoveis[0]?.id ?? '';
+  }, base);
+  conferir(!!alvo && !!idCompartilhado, 'há imóvel para testar o link direto');
+  await pageCelular.goto(`${base}?i=${encodeURIComponent(alvo)}`, { waitUntil: 'networkidle' });
+  await pageCelular.waitForSelector('.ficha', { timeout: 10_000 });
+  conferir(true, 'link direto de um imóvel abre a ficha dele');
+  await pageCelular.locator('.modal .voltar').first().click();
+  await pageCelular.waitForTimeout(350);
+  conferir(
+    (await pageCelular.locator('.ficha').count()) === 0 && !pageCelular.url().includes('i='),
+    'quem chega por link consegue fechar a ficha e cair na busca',
+  );
 
   conferir(errosConsole.length === 0, `nenhum erro de console (${errosConsole.length})`);
   conferir(

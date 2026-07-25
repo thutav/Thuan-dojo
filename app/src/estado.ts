@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { Caracteristica, Finalidade, Setor, TipoImovel } from '@core/types';
 import { FILTROS_PADRAO, type Filtros, type Ordenacao } from './dados';
 
@@ -105,29 +105,8 @@ export function filtrosDaUrl(busca: string): Filtros {
   return f;
 }
 
-export function useFiltrosNaUrl(): [Filtros, (atualizar: (f: Filtros) => Filtros) => void] {
-  const [filtros, setFiltros] = useState<Filtros>(() => filtrosDaUrl(location.search));
-  const primeiro = useRef(true);
-
-  useEffect(() => {
-    if (primeiro.current) {
-      primeiro.current = false;
-      return;
-    }
-    const busca = filtrosParaUrl(filtros);
-    const url = busca ? `${location.pathname}?${busca}` : location.pathname;
-    history.replaceState(null, '', url);
-  }, [filtros]);
-
-  useEffect(() => {
-    const aoVoltar = () => setFiltros(filtrosDaUrl(location.search));
-    addEventListener('popstate', aoVoltar);
-    return () => removeEventListener('popstate', aoVoltar);
-  }, []);
-
-  const atualizar = useCallback((fn: (f: Filtros) => Filtros) => setFiltros((atual) => fn(atual)), []);
-  return [filtros, atualizar];
-}
+// A leitura e a escrita da rota inteira (filtros + o que está aberto) ficam em navegacao.ts,
+// que usa as duas funções acima. Aqui sobra só o que é local ao navegador.
 
 // ---------------------------------------------------------------------------
 // Favoritos e comparador — locais ao navegador, sem conta e sem servidor.
@@ -181,19 +160,15 @@ export function useComparador() {
  *
  * Funciona no Android e no Windows com o app instalado. O Safari do iPhone não implementa
  * share_target; lá o caminho continua sendo copiar e colar.
+ *
+ * Só lê. Tirar esses parâmetros da barra de endereços é trabalho da camada de navegação, que
+ * reescreve a URL a partir da rota e naturalmente descarta o que não faz parte dela — e como
+ * ela faz isso já no primeiro efeito, a leitura aqui precisa acontecer antes, na montagem.
  */
 export function textoCompartilhado(): string | null {
   const p = new URLSearchParams(location.search);
   const partes = [p.get('titulo'), p.get('texto'), p.get('origem')].filter(Boolean);
-  if (!partes.length) return null;
-
-  // O texto compartilhado não faz parte da busca: sai da barra de endereços depois de lido.
-  const limpa = new URLSearchParams(location.search);
-  for (const chave of ['titulo', 'texto', 'origem']) limpa.delete(chave);
-  const busca = limpa.toString();
-  history.replaceState(null, '', busca ? `${location.pathname}?${busca}` : location.pathname);
-
-  return partes.join('\n');
+  return partes.length ? partes.join('\n') : null;
 }
 
 export const ROTULO_MODO: Record<Finalidade, string> = {

@@ -11,6 +11,11 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    include: ['core/**/*.test.ts', 'ingest/**/*.test.ts', 'scripts/**/*.test.ts'],
+    include: [
+      'core/**/*.test.ts',
+      'ingest/**/*.test.ts',
+      'scripts/**/*.test.ts',
+      'app/src/**/*.test.ts',
+    ],
   },
 });

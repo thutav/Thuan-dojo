@@ -87,6 +87,14 @@ export function IconeFechar({ tamanho = 16 }: Props) {
   );
 }
 
+export function IconeVoltar({ tamanho = 17 }: Props) {
+  return (
+    <svg {...base(tamanho)}>
+      <path d="M19 12H5m0 0 6-6m-6 6 6 6" />
+    </svg>
+  );
+}
+
 export function IconeDesenhar({ tamanho = 15 }: Props) {
   return (
     <svg {...base(tamanho)}>

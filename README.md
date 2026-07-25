@@ -36,6 +36,20 @@ suficiente.
 três fontes e o menor preço em destaque. Quando as fontes divergem em mais de 15%, a ficha
 avisa em vez de esconder a diferença na média.
 
+**Voltar funciona.** Tudo que se abre — a ficha de um imóvel, um modal, a aba de lista do
+celular — é um passo de navegação de verdade: o botão voltar do navegador e o gesto de voltar
+do Android fecham o que está aberto em vez de sair do aplicativo. A regra está em
+[`app/src/navegacao.ts`](app/src/navegacao.ts) e é curta:
+
+- **Empilha um passo** o que *abre* algo, e por isso precisa ser fechado: ficha, modal, aba do
+  celular, troca de modo, clique num bairro do mapa.
+- **Reescreve o passo atual** o que é refinamento contínuo: digitar na busca, arrastar um
+  campo, ligar um chip que se desliga clicando de novo. Encher o histórico de um passo por
+  tecla é tão ruim quanto não poder voltar nenhum.
+
+Como o imóvel aberto mora na URL (`?i=…`), a ficha virou endereço: dá para mandar o link de um
+anúncio específico, com os filtros junto.
+
 **Facebook e WhatsApp.** Não há como puxar automaticamente: a API de grupos do Facebook foi
 fechada em 2020, e raspar o site exigiria login com a sua conta — viola os termos e arrisca o
 bloqueio dela. O que existe são três caminhos manuais, feitos para custar poucos segundos:
@@ -114,7 +128,7 @@ o que sobrevive melhor a redesenho do que uma lista de classes.
 npm install
 
 npm run dev          # aplicativo em desenvolvimento
-npm test             # 79 testes: parsers, extratores, geocodificação, deduplicação, estatísticas, alertas
+npm test             # 102 testes: parsers, extratores, geocodificação, deduplicação, estatísticas, rota, alertas
 npm run build        # gera ilhabela/ (o que o GitHub Pages publica)
 
 npm run build:geo    # regenera o contorno da ilha e as zonas de bairro
@@ -122,6 +136,7 @@ npm run build:demo   # regenera a semente de demonstração
 npm run ingest       # coleta de verdade — precisa de internet
 npm run alertas      # avalia data/alertas.json contra a última coleta
 npm run verify:ui    # abre o app no Chromium e confere os caminhos principais
+npm run medir:ui     # cronometra a interface; --contra <dir> compara com outro build
 ```
 
 Opções do coletor:

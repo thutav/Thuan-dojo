@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import type { EstatisticaZona } from '@core/stats';
 import { dealScore } from '@core/stats';
 import {
@@ -165,8 +165,50 @@ export const CardImovel = memo(function CardImovel(props: PropsCard) {
   );
 });
 
+/**
+ * Quantos cards entram na tela por vez. A lista cresce sozinha conforme a pessoa rola: com
+ * 442 resultados, montar tudo de uma vez custava meio segundo de tela travada e disparava
+ * centenas de requisições de foto ao mesmo tempo, brigando com o próprio mapa pela banda.
+ */
+const PAGINA = 24;
+
+/**
+ * O campo de busca responde à tecla na hora; o filtro sobre a base inteira espera a pessoa
+ * parar de digitar. Sem isso, cada tecla refiltrava 511 imóveis e remontava a lista.
+ */
+function useBuscaAdiada(
+  valorExterno: string,
+  aoConfirmar: (texto: string) => void,
+): [string, (v: string) => void] {
+  const [local, setLocal] = useState(valorExterno);
+  const ultimo = useRef(valorExterno);
+  const confirmarRef = useRef(aoConfirmar);
+  confirmarRef.current = aoConfirmar;
+
+  // Mudou por fora (voltar do navegador, limpar filtros): o campo acompanha.
+  useEffect(() => {
+    if (valorExterno !== ultimo.current) {
+      ultimo.current = valorExterno;
+      setLocal(valorExterno);
+    }
+  }, [valorExterno]);
+
+  useEffect(() => {
+    if (local === ultimo.current) return;
+    const t = setTimeout(() => {
+      ultimo.current = local;
+      confirmarRef.current(local);
+    }, 200);
+    return () => clearTimeout(t);
+  }, [local]);
+
+  return [local, setLocal];
+}
+
 export interface PropsPainel {
   filtros: Filtros;
+  /** Muda quando a busca muda — e só então a lista volta ao topo. */
+  chaveBusca: string;
   imoveis: Imovel[];
   totalNoModo: number;
   estatisticas: Map<string, EstatisticaZona>;
@@ -183,7 +225,40 @@ export interface PropsPainel {
 }
 
 export function Painel(props: PropsPainel) {
-  const { filtros, imoveis, totalNoModo, finalidade } = props;
+  const { filtros, imoveis, totalNoModo, finalidade, chaveBusca } = props;
+
+  const listaRef = useRef<HTMLDivElement>(null);
+  const sentinelaRef = useRef<HTMLDivElement>(null);
+  const [visiveis, setVisiveis] = useState(PAGINA);
+
+  const [textoLocal, setTextoLocal] = useBuscaAdiada(filtros.texto, (texto) =>
+    props.aoMudarFiltros((f) => ({ ...f, texto })),
+  );
+
+  // Busca nova começa do começo. Favoritar um imóvel muda a lista sem mudar a busca, e aí a
+  // posição da rolagem é preservada — perder o lugar ao favoritar seria enlouquecedor.
+  useEffect(() => {
+    setVisiveis(PAGINA);
+    listaRef.current?.scrollTo({ top: 0 });
+  }, [chaveBusca]);
+
+  useEffect(() => {
+    const alvo = sentinelaRef.current;
+    if (!alvo || visiveis >= imoveis.length) return;
+    const observador = new IntersectionObserver(
+      (entradas) => {
+        if (entradas.some((e) => e.isIntersecting)) {
+          setVisiveis((v) => Math.min(v + PAGINA, imoveis.length));
+        }
+      },
+      // Carrega antes de a pessoa chegar no fim: a lista nunca "acaba" na frente dela.
+      { root: listaRef.current, rootMargin: '600px 0px' },
+    );
+    observador.observe(alvo);
+    return () => observador.disconnect();
+  }, [visiveis, imoveis.length]);
+
+  const mostrados = imoveis.length > visiveis ? imoveis.slice(0, visiveis) : imoveis;
 
   const alternarTipo = (tipo: TipoImovel) =>
     props.aoMudarFiltros((f) => ({
@@ -206,10 +281,10 @@ export function Painel(props: PropsPainel) {
           <IconeLupa />
           <input
             type="search"
-            value={filtros.texto}
+            value={textoLocal}
             placeholder="Bairro, praia ou o que você procura…"
             aria-label="Buscar por bairro, praia ou palavra do anúncio"
-            onChange={(e) => props.aoMudarFiltros((f) => ({ ...f, texto: e.target.value }))}
+            onChange={(e) => setTextoLocal(e.target.value)}
           />
         </div>
 
@@ -268,7 +343,7 @@ export function Painel(props: PropsPainel) {
         </label>
       </div>
 
-      <div className="lista">
+      <div className="lista" ref={listaRef}>
         {imoveis.length === 0 ? (
           <p className="vazio">
             Nenhum imóvel com esses filtros.
@@ -278,20 +353,28 @@ export function Painel(props: PropsPainel) {
               : 'Tente ampliar a faixa de preço ou limpar alguns filtros.'}
           </p>
         ) : (
-          imoveis.map((imovel) => (
-            <CardImovel
-              key={imovel.id}
-              imovel={imovel}
-              estatisticas={props.estatisticas}
-              favorito={props.favoritos.has(imovel.id)}
-              comparando={props.comparando.has(imovel.id)}
-              destacado={props.destacado === imovel.id}
-              aoAbrir={props.aoAbrir}
-              aoFavoritar={props.aoFavoritar}
-              aoComparar={props.aoComparar}
-              aoDestacar={props.aoDestacar}
-            />
-          ))
+          <>
+            {mostrados.map((imovel) => (
+              <CardImovel
+                key={imovel.id}
+                imovel={imovel}
+                estatisticas={props.estatisticas}
+                favorito={props.favoritos.has(imovel.id)}
+                comparando={props.comparando.has(imovel.id)}
+                destacado={props.destacado === imovel.id}
+                aoAbrir={props.aoAbrir}
+                aoFavoritar={props.aoFavoritar}
+                aoComparar={props.aoComparar}
+                aoDestacar={props.aoDestacar}
+              />
+            ))}
+            {visiveis < imoveis.length && (
+              <div className="carregando-mais" ref={sentinelaRef} role="status">
+                carregando mais {Math.min(PAGINA, imoveis.length - visiveis)} de{' '}
+                {formatarNumero(imoveis.length - visiveis)} restantes…
+              </div>
+            )}
+          </>
         )}
       </div>
     </section>

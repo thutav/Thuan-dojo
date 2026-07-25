@@ -14,6 +14,7 @@
     "build:demo": "tsx scripts/build-demo.ts",
     "ingest": "tsx ingest/cli.ts",
     "verify:ui": "tsx scripts/verify-ui.ts",
+    "medir:ui": "tsx scripts/medir-ui.ts",
     "alertas": "tsx scripts/alertas.ts"
   },
   "dependencies": {

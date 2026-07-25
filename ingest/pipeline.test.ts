@@ -90,6 +90,24 @@ describe('normalizarAnuncio', () => {
     expect(vendaAbsurda).toEqual({ descarte: 'preço baixo demais para venda' });
   });
 
+  it('descarta preço de venda implausível, que é erro de leitura na origem', () => {
+    // Veio assim de uma coleta real e esticava a legenda do mapa inteiro.
+    const bilionaria = normalizarAnuncio(
+      bruto({ titulo: 'Casa no Curral', precoTexto: 'R$ 11.000.000.000' }),
+      ix,
+      HOJE,
+    );
+    expect(bilionaria).toEqual({ descarte: 'preço implausível para venda' });
+
+    // Uma casa cara de verdade continua entrando.
+    const cara = normalizarAnuncio(
+      bruto({ titulo: 'Casa no Curral', precoTexto: 'R$ 28.000.000' }),
+      ix,
+      HOJE,
+    );
+    expect(cara).toHaveProperty('imovel');
+  });
+
   it('lê a finalidade do título, não do menu do site que veio junto no card', () => {
     const r = normalizarAnuncio(
       bruto({

@@ -80,6 +80,8 @@ export interface PropsMapa {
   mostrarPinos: boolean;
   usarTiles: boolean;
   destacado: string | null;
+  /** Imóvel com a ficha aberta — o mapa vai até ele se estiver fora da tela. */
+  selecionado: string | null;
   favoritos: Set<string>;
   bairrosSelecionados: string[];
   poligono: [number, number][] | null;
@@ -102,6 +104,7 @@ export function Mapa(props: PropsMapa) {
     mostrarPinos,
     usarTiles,
     destacado,
+    selecionado,
     favoritos,
     bairrosSelecionados,
     poligono,
@@ -121,6 +124,8 @@ export function Mapa(props: PropsMapa) {
     desenho: L.LayerGroup;
     tiles: L.TileLayer | null;
   } | null>(null);
+  /** Marcador individual por id, para mexer no destaque sem refazer a camada. */
+  const marcadoresRef = useRef(new Map<string, L.Marker>());
   const [zoom, setZoom] = useState(11);
   const [pontosDesenho, setPontosDesenho] = useState<[number, number][]>([]);
 
@@ -305,6 +310,7 @@ export function Mapa(props: PropsMapa) {
     const camadas = camadasRef.current;
     if (!camadas) return;
     camadas.pinos.clearLayers();
+    marcadoresRef.current.clear();
     if (!mostrarPinos) return;
 
     // Agrupamento por célula: sem isso, o miolo urbano vira uma mancha de rótulos.
@@ -324,8 +330,7 @@ export function Mapa(props: PropsMapa) {
     for (const grupo of grupos.values()) {
       if (grupo.length === 1) {
         const im = grupo[0];
-        const ativo = destacado === im.id;
-        const classe = ['pino-preco', ativo ? 'ativo' : '', favoritos.has(im.id) ? 'favorito' : '']
+        const classe = ['pino-preco', favoritos.has(im.id) ? 'favorito' : '']
           .filter(Boolean)
           .join(' ');
         const marcador = L.marker([im.lat, im.lon], {
@@ -336,12 +341,12 @@ export function Mapa(props: PropsMapa) {
             iconAnchor: [0, 0],
           }),
           keyboard: false,
-          zIndexOffset: ativo ? 1000 : 0,
         });
         marcador.on('click', () => aoSelecionar(im.id));
         marcador.on('mouseover', () => aoDestacar(im.id));
         marcador.on('mouseout', () => aoDestacar(null));
         marcador.addTo(camadas.pinos);
+        marcadoresRef.current.set(im.id, marcador);
       } else {
         const lat = grupo.reduce((s, i) => s + i.lat, 0) / grupo.length;
         const lon = grupo.reduce((s, i) => s + i.lon, 0) / grupo.length;
@@ -377,7 +382,44 @@ export function Mapa(props: PropsMapa) {
         marcador.addTo(camadas.pinos);
       }
     }
-  }, [imoveis, zoom, mostrarPinos, destacado, favoritos, aoSelecionar, aoDestacar]);
+    // `destacado` de propósito fora da lista: ver o efeito logo abaixo.
+  }, [imoveis, zoom, mostrarPinos, favoritos, aoSelecionar, aoDestacar]);
+
+  /**
+   * Passar o mouse pela lista muda o destaque dezenas de vezes por segundo. Antes isso
+   * entrava na dependência do efeito acima e reconstruía a camada inteira de marcadores a
+   * cada movimento — a lista rolava aos trancos. Agora só troca uma classe no pino que mudou.
+   */
+  useEffect(() => {
+    for (const [id, marcador] of marcadoresRef.current) {
+      const alvo = marcador.getElement()?.firstElementChild;
+      if (!alvo) continue;
+      const ativo = id === destacado;
+      alvo.classList.toggle('ativo', ativo);
+      marcador.setZIndexOffset(ativo ? 1000 : 0);
+    }
+  }, [destacado, imoveis, zoom, mostrarPinos, favoritos]);
+
+  /**
+   * Abrir um imóvel que está fora do enquadramento — vindo da lista ou de um link — sem o
+   * mapa acompanhar deixa a pessoa sem referência de onde aquilo fica. Só mexe quando o
+   * ponto está mesmo fora da tela: mapa que salta a cada clique cansa.
+   */
+  useEffect(() => {
+    const mapa = mapaRef.current;
+    if (!mapa || !selecionado) return;
+
+    // No celular, com a aba da lista aberta, o mapa fica com display:none e o Leaflet passa a
+    // devolver limites NaN — animar para lá quebraria a tela inteira. Sem tamanho, sem voo.
+    const tamanho = mapa.getSize();
+    if (tamanho.x < 40 || tamanho.y < 40) return;
+
+    const alvo = imoveis.find((i) => i.id === selecionado);
+    if (!alvo || !Number.isFinite(alvo.lat) || !Number.isFinite(alvo.lon)) return;
+    const ponto = L.latLng(alvo.lat, alvo.lon);
+    if (mapa.getBounds().pad(-0.18).contains(ponto)) return;
+    mapa.flyTo(ponto, Math.max(mapa.getZoom(), 14), { duration: 0.6 });
+  }, [selecionado, imoveis]);
 
   // ---- desenho de área ----------------------------------------------------
   const finalizarDesenho = useCallback(() => {

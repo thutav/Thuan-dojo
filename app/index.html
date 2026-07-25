@@ -13,10 +13,25 @@
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!--
+      A folha de estilo do Google bloqueia a renderização: enquanto ela não chega, a tela fica
+      em branco. Num 3G fraco — a fila da balsa, a estrada de Castelhanos — isso são segundos
+      de nada. Carregada como "print", o navegador não espera por ela; quando ela chega, o
+      onload promove para "all" e a tipografia entra por cima. O <noscript> cobre quem
+      desligou o JavaScript, e o fallback de sistema segura o texto no intervalo.
+    -->
     <link
       href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Sora:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
       rel="stylesheet"
+      media="print"
+      onload="this.media='all';this.onload=null"
     />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Sora:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
   </head>
   <body>
     <div id="root"></div>

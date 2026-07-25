@@ -12,7 +12,14 @@ import {
   rotuloTipo,
 } from '@core/format';
 import type { Imovel } from '@core/types';
-import { IconeAlerta, IconeComparar, IconeCoracao, IconeFechar, IconeLink } from './icones';
+import {
+  IconeAlerta,
+  IconeComparar,
+  IconeCoracao,
+  IconeFechar,
+  IconeLink,
+  IconeVoltar,
+} from './icones';
 import { Foto } from './Foto';
 
 /** Fecha no Esc e devolve o foco a quem abriu — o modal é usado no teclado o tempo todo. */
@@ -26,18 +33,24 @@ export function Modal(props: {
 }) {
   const caixaRef = useRef<HTMLDivElement>(null);
 
+  // O Esc muda a cada render junto com as props; o efeito, não. Guardar o retorno numa ref é
+  // o que impede o efeito de rodar de novo a cada tecla — quando ele rodava, o foco voltava
+  // para a caixa do modal e não dava para digitar duas letras seguidas em campo nenhum.
+  const fecharRef = useRef(props.aoFechar);
+  fecharRef.current = props.aoFechar;
+
   useEffect(() => {
     const anterior = document.activeElement as HTMLElement | null;
     caixaRef.current?.focus();
     const aoTeclar = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') props.aoFechar();
+      if (e.key === 'Escape') fecharRef.current();
     };
     addEventListener('keydown', aoTeclar);
     return () => {
       removeEventListener('keydown', aoTeclar);
       anterior?.focus?.();
     };
-  }, [props]);
+  }, []);
 
   return (
     <div
@@ -55,7 +68,12 @@ export function Modal(props: {
         ref={caixaRef}
       >
         <header className="cabecalho-modal">
-          <div>
+          {/* A seta existe para quem está no celular e para quem chegou por link: o gesto de
+              voltar do sistema faz a mesma coisa, mas nem todo mundo confia nele. */}
+          <button className="voltar" onClick={props.aoFechar} aria-label="Voltar">
+            <IconeVoltar />
+          </button>
+          <div className="titulo-modal">
             <h2>{props.titulo}</h2>
             {props.subtitulo && <div className="sub">{props.subtitulo}</div>}
           </div>

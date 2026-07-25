@@ -1,4 +1,5 @@
-import { formatarPreco, rotuloCaracteristica, rotuloTipo } from '@core/format';
+import { useState } from 'react';
+import { formatarNumero, formatarPreco, rotuloCaracteristica, rotuloTipo } from '@core/format';
 import type { Caracteristica, Finalidade, Setor, TipoImovel, Zona } from '@core/types';
 import { FILTROS_PADRAO, type Filtros } from './dados';
 import { Modal } from './Ficha';
@@ -53,20 +54,35 @@ function CampoNumero(props: {
   );
 }
 
+/**
+ * O modal trabalha sobre um rascunho e só devolve os filtros quando a pessoa confirma.
+ *
+ * Isso existe por dois motivos. O primeiro é de navegação: fechar o modal anda para trás no
+ * histórico, e o passo de trás é justamente o de antes de mexer nos filtros — aplicando a
+ * cada clique, a escolha se perderia ao fechar. O segundo é de sensação: mexer em cinco
+ * campos não deve refazer o mapa e a lista cinco vezes atrás do modal.
+ *
+ * O botão mostra quantos imóveis o rascunho encontra, então dá para calibrar antes de sair.
+ */
 export function ModalFiltros(props: {
   filtros: Filtros;
   zonas: Zona[];
   faixaPreco: [number, number];
   finalidade: Finalidade;
-  aoMudar: (atualizar: (f: Filtros) => Filtros) => void;
+  /** Quantos imóveis um rascunho encontraria — para o rótulo do botão de confirmar. */
+  contar: (f: Filtros) => number;
+  aoAplicar: (f: Filtros) => void;
   aoFechar: () => void;
 }) {
-  const { filtros, zonas, faixaPreco, finalidade } = props;
+  const { zonas, faixaPreco, finalidade } = props;
+  const [rascunho, setRascunho] = useState<Filtros>(props.filtros);
+  const filtros = rascunho;
 
   const alternarEmLista = <T extends string>(lista: T[], item: T): T[] =>
     lista.includes(item) ? lista.filter((x) => x !== item) : [...lista, item];
 
   const passoPreco = finalidade === 'venda' ? 50_000 : finalidade === 'aluguel' ? 500 : 50;
+  const quantos = props.contar(rascunho);
 
   return (
     <Modal
@@ -78,7 +94,7 @@ export function ModalFiltros(props: {
           <button
             className="botao"
             onClick={() =>
-              props.aoMudar((f) => ({
+              setRascunho((f) => ({
                 ...FILTROS_PADRAO,
                 finalidade: f.finalidade,
                 ordenacao: f.ordenacao,
@@ -88,8 +104,14 @@ export function ModalFiltros(props: {
           >
             Limpar tudo
           </button>
-          <button className="botao primario" onClick={props.aoFechar}>
-            Ver resultados
+          <button
+            className="botao primario"
+            onClick={() => props.aoAplicar(rascunho)}
+            disabled={quantos === 0}
+          >
+            {quantos === 0
+              ? 'Nenhum imóvel com esses filtros'
+              : `Ver ${formatarNumero(quantos)} ${quantos === 1 ? 'imóvel' : 'imóveis'}`}
           </button>
         </>
       }
@@ -101,13 +123,13 @@ export function ModalFiltros(props: {
             rotulo="Mínimo"
             valor={filtros.precoMin}
             passo={passoPreco}
-            aoMudar={(v) => props.aoMudar((f) => ({ ...f, precoMin: v }))}
+            aoMudar={(v) => setRascunho((f) => ({ ...f, precoMin: v }))}
           />
           <CampoNumero
             rotulo="Máximo"
             valor={filtros.precoMax}
             passo={passoPreco}
-            aoMudar={(v) => props.aoMudar((f) => ({ ...f, precoMax: v }))}
+            aoMudar={(v) => setRascunho((f) => ({ ...f, precoMax: v }))}
           />
         </div>
       </div>
@@ -120,32 +142,32 @@ export function ModalFiltros(props: {
             sufixo="m²"
             valor={filtros.areaMin}
             passo={10}
-            aoMudar={(v) => props.aoMudar((f) => ({ ...f, areaMin: v }))}
+            aoMudar={(v) => setRascunho((f) => ({ ...f, areaMin: v }))}
           />
           <CampoNumero
             rotulo="Área máxima"
             sufixo="m²"
             valor={filtros.areaMax}
             passo={10}
-            aoMudar={(v) => props.aoMudar((f) => ({ ...f, areaMax: v }))}
+            aoMudar={(v) => setRascunho((f) => ({ ...f, areaMax: v }))}
           />
           <CampoNumero
             rotulo="Quartos"
             sufixo="mín."
             valor={filtros.quartosMin}
-            aoMudar={(v) => props.aoMudar((f) => ({ ...f, quartosMin: v }))}
+            aoMudar={(v) => setRascunho((f) => ({ ...f, quartosMin: v }))}
           />
           <CampoNumero
             rotulo="Suítes"
             sufixo="mín."
             valor={filtros.suitesMin}
-            aoMudar={(v) => props.aoMudar((f) => ({ ...f, suitesMin: v }))}
+            aoMudar={(v) => setRascunho((f) => ({ ...f, suitesMin: v }))}
           />
           <CampoNumero
             rotulo="Vagas"
             sufixo="mín."
             valor={filtros.vagasMin}
-            aoMudar={(v) => props.aoMudar((f) => ({ ...f, vagasMin: v }))}
+            aoMudar={(v) => setRascunho((f) => ({ ...f, vagasMin: v }))}
           />
         </div>
       </div>
@@ -158,7 +180,7 @@ export function ModalFiltros(props: {
               key={t}
               className="chip"
               aria-pressed={filtros.tipos.includes(t)}
-              onClick={() => props.aoMudar((f) => ({ ...f, tipos: alternarEmLista(f.tipos, t) }))}
+              onClick={() => setRascunho((f) => ({ ...f, tipos: alternarEmLista(f.tipos, t) }))}
             >
               {rotuloTipo(t)}
             </button>
@@ -175,7 +197,7 @@ export function ModalFiltros(props: {
               className="chip"
               aria-pressed={filtros.caracteristicas.includes(c)}
               onClick={() =>
-                props.aoMudar((f) => ({
+                setRascunho((f) => ({
                   ...f,
                   caracteristicas: alternarEmLista(f.caracteristicas, c),
                 }))
@@ -195,7 +217,7 @@ export function ModalFiltros(props: {
               key={s.id}
               className="chip"
               aria-pressed={filtros.setores.includes(s.id)}
-              onClick={() => props.aoMudar((f) => ({ ...f, setores: alternarEmLista(f.setores, s.id) }))}
+              onClick={() => setRascunho((f) => ({ ...f, setores: alternarEmLista(f.setores, s.id) }))}
             >
               {s.rotulo}
             </button>
@@ -211,7 +233,7 @@ export function ModalFiltros(props: {
               key={z.id}
               className="chip"
               aria-pressed={filtros.bairros.includes(z.id)}
-              onClick={() => props.aoMudar((f) => ({ ...f, bairros: alternarEmLista(f.bairros, z.id) }))}
+              onClick={() => setRascunho((f) => ({ ...f, bairros: alternarEmLista(f.bairros, z.id) }))}
             >
               {z.nome}
             </button>
@@ -225,14 +247,14 @@ export function ModalFiltros(props: {
           <button
             className="chip"
             aria-pressed={filtros.somenteFavoritos}
-            onClick={() => props.aoMudar((f) => ({ ...f, somenteFavoritos: !f.somenteFavoritos }))}
+            onClick={() => setRascunho((f) => ({ ...f, somenteFavoritos: !f.somenteFavoritos }))}
           >
             Somente favoritos
           </button>
           <button
             className="chip"
             aria-pressed={filtros.somenteComFoto}
-            onClick={() => props.aoMudar((f) => ({ ...f, somenteComFoto: !f.somenteComFoto }))}
+            onClick={() => setRascunho((f) => ({ ...f, somenteComFoto: !f.somenteComFoto }))}
           >
             Somente com foto
           </button>
@@ -240,7 +262,7 @@ export function ModalFiltros(props: {
             <button
               className="chip"
               aria-pressed
-              onClick={() => props.aoMudar((f) => ({ ...f, poligono: null }))}
+              onClick={() => setRascunho((f) => ({ ...f, poligono: null }))}
             >
               Área desenhada · remover
             </button>

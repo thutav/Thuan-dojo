@@ -188,6 +188,13 @@ function acharCartao($: cheerio.CheerioAPI, elemento: AnyNode): cheerio.Cheerio<
 const PARAMS_DE_NAVEGACAO = /^(page|pagina|p|o|offset|start|sort|ordem|order|view|limit|utm_\w+)$/i;
 
 /**
+ * O que faz um link de mesma página apontar para um imóvel específico é carregar a
+ * identificação dele. Qualquer outra coisa na query — faixa de preço, número de quartos,
+ * bairro — é filtro da própria vitrine, e filtro não é anúncio.
+ */
+const PARAM_DE_IDENTIFICACAO = /^(id|cod|codigo|ref|referencia|imovel|imv|item|codigo_imovel)$/i;
+
+/**
  * Paginação, ordenação e migalhas de pão apontam para a própria listagem ou para um nível
  * acima dela — nunca para um imóvel.
  */
@@ -208,10 +215,11 @@ export function ehLinkDeNavegacao(href: string, urlBase: string): boolean {
   // Migalha de pão: um nível acima da própria listagem.
   if (caminho !== caminhoBase && caminhoBase.startsWith(caminho + '/')) return true;
 
-  // Mesma página: só é navegação quando o que muda é paginação ou ordenação.
+  // Mesma página: é navegação a menos que o link identifique um imóvel. Foi assim que a
+  // barra lateral "Até R$ 100.000 / De R$ 100.000 a R$ 200.000" da Abidoia entrou na base
+  // como se fossem três imóveis — eram três links de filtro para a mesma vitrine.
   if (caminho === caminhoBase) {
-    const chaves = [...alvo.searchParams.keys()];
-    return chaves.length === 0 || chaves.every((c) => PARAMS_DE_NAVEGACAO.test(c));
+    return ![...alvo.searchParams.keys()].some((c) => PARAM_DE_IDENTIFICACAO.test(c));
   }
   return false;
 }
@@ -222,6 +230,13 @@ export function ehLinkDeNavegacao(href: string, urlBase: string): boolean {
  */
 const TITULOS_GENERICOS =
   /^(os? mais (acessad|vist|procurad)|destaques?|lancamentos?|imoveis em destaque|ultimos imoveis|novidades|busca|newsletter|receba|filtrar)/;
+
+/**
+ * Título que é só uma faixa de preço — "Até R$ 100.000", "De R$ 200.000 a R$ 400.000" — é
+ * rótulo de filtro, não nome de imóvel. Segunda linha de defesa, independente do formato de
+ * URL de cada site.
+ */
+const TITULO_DE_FAIXA = /^(ate|de|acima de|abaixo de|a partir de)\s+r\$\s*[\d.,]+(\s*(a|ate)\s*r\$\s*[\d.,]+)?$/;
 
 /** Logos, ícones e placeholders de carregamento não são foto do imóvel. */
 const IMAGEM_IRRELEVANTE = /(logo|icone|icon|placeholder|blank|sprite|avatar|selo|bandeira|whatsapp\.(png|svg))/i;
@@ -320,7 +335,8 @@ export function extrairPorHeuristica(html: string, urlBase: string): AnuncioBrut
     // Vários links apontam para a mesma ficha (foto, título, botão): fica o mais completo.
     const existente = porUrl.get(url);
     const titulo = melhorTitulo(cartao, link);
-    if (TITULOS_GENERICOS.test(normalizar(titulo))) return;
+    const tituloNormal = normalizar(titulo);
+    if (TITULOS_GENERICOS.test(tituloNormal) || TITULO_DE_FAIXA.test(tituloNormal)) return;
     if (existente && (existente.titulo?.length ?? 0) >= titulo.length) return;
 
     porUrl.set(url, {

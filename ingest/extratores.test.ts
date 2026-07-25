@@ -105,9 +105,20 @@ describe('ehLinkDeNavegacao', () => {
     expect(ehLinkDeNavegacao(listagem, listagem)).toBe(true);
   });
 
+  it('reconhece filtro da barra lateral, que aponta para a própria vitrine', () => {
+    // Três desses viraram "imóveis" de R$ 100.000 e R$ 200.000 na coleta real.
+    const vitrine = 'https://abidoia.com.br/imovel/';
+    expect(ehLinkDeNavegacao(`${vitrine}?vma=100000`, vitrine)).toBe(true);
+    expect(ehLinkDeNavegacao(`${vitrine}?vmi=100000&vma=200000`, vitrine)).toBe(true);
+    expect(ehLinkDeNavegacao(`${vitrine}?quartos=3&bairro=curral`, vitrine)).toBe(true);
+  });
+
   it('não confunde a ficha de um imóvel com navegação', () => {
     expect(ehLinkDeNavegacao('https://www.olx.com.br/imovel/casa-curral-123', listagem)).toBe(false);
     expect(ehLinkDeNavegacao('https://www.olx.com.br/imoveis/vendas-especiais', listagem)).toBe(false);
+    // Vitrine que serve a ficha na mesma página, identificando o imóvel na query.
+    expect(ehLinkDeNavegacao(`${listagem}?id=4471`, listagem)).toBe(false);
+    expect(ehLinkDeNavegacao(`${listagem}?codigo=CA-88`, listagem)).toBe(false);
   });
 
   it('ignora link para outro site', () => {
