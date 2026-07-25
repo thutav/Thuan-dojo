@@ -12,7 +12,8 @@ import {
 } from '@core/format';
 import type { Caracteristica, Finalidade, Imovel, TipoImovel } from '@core/types';
 import type { Filtros, Ordenacao } from './dados';
-import { IconeCasa, IconeComparar, IconeCoracao, IconeLupa } from './icones';
+import { IconeComparar, IconeCoracao, IconeLink, IconeLupa } from './icones';
+import { Foto } from './Foto';
 
 const TIPOS_RAPIDOS: TipoImovel[] = ['casa', 'apartamento', 'terreno'];
 const CARACTERISTICAS_RAPIDAS: Caracteristica[] = [
@@ -47,6 +48,8 @@ export const CardImovel = memo(function CardImovel(props: PropsCard) {
   const { imovel, estatisticas, favorito, comparando, destacado } = props;
   const score = dealScore(imovel, estatisticas);
   const quantidadeFontes = imovel.fontes.length;
+  // A fonte principal é a do menor preço: a deduplicação já ordena as fontes por valor.
+  const principal = imovel.fontes[0];
 
   return (
     <div
@@ -59,10 +62,9 @@ export const CardImovel = memo(function CardImovel(props: PropsCard) {
         onClick={() => props.aoAbrir(imovel.id)}
         aria-label={`Abrir ficha de ${imovel.titulo}`}
       >
-        {imovel.fotos[0] ? (
-          <img src={imovel.fotos[0]} alt="" loading="lazy" />
-        ) : (
-          <IconeCasa tamanho={26} />
+        <Foto src={imovel.fotos[0]} alt={`Foto de ${imovel.titulo}`} tamanhoIcone={28} />
+        {imovel.fotos.length > 1 && (
+          <span className="contador-fotos mono">{imovel.fotos.length}</span>
         )}
       </button>
 
@@ -120,6 +122,23 @@ export const CardImovel = memo(function CardImovel(props: PropsCard) {
             <span className="selo fontes">{quantidadeFontes} anúncios</span>
           )}
         </div>
+
+        {/* O anúncio original é o próximo passo de quem gostou do imóvel: fica no card, e
+            não escondido atrás de mais um clique. */}
+        {principal?.url && !principal.url.startsWith('#') && (
+          <a
+            className="link-fonte"
+            href={principal.url}
+            target="_blank"
+            rel="noreferrer noopener"
+            onClick={(e) => e.stopPropagation()}
+            title={`Abrir o anúncio em ${principal.nomeFonte}`}
+          >
+            <IconeLink />
+            {principal.nomeFonte}
+            {quantidadeFontes > 1 && ` +${quantidadeFontes - 1}`}
+          </a>
+        )}
       </div>
 
       <div className="acoes-card">

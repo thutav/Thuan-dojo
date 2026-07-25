@@ -1,7 +1,15 @@
 import * as cheerio from 'cheerio';
 import type { AnyNode } from 'domhandler';
 import type { AnuncioBruto } from '../core/types';
-import { PADROES, parseArea, parsePreco, parseQuantidade } from '../core/normalize';
+import {
+  PADROES,
+  ROTULO_CONSTRUIDO,
+  ROTULO_TERRENO,
+  acharAreaRotulada,
+  parseArea,
+  parsePreco,
+  parseQuantidade,
+} from '../core/normalize';
 import { normalizar } from '../core/texto';
 
 /**
@@ -168,6 +176,58 @@ function acharCartao($: cheerio.CheerioAPI, elemento: AnyNode): cheerio.Cheerio<
 const TITULOS_GENERICOS =
   /^(os? mais (acessad|vist|procurad)|destaques?|lancamentos?|imoveis em destaque|ultimos imoveis|novidades|busca|newsletter|receba|filtrar)/;
 
+/** Logos, ícones e placeholders de carregamento não são foto do imóvel. */
+const IMAGEM_IRRELEVANTE = /(logo|icone|icon|placeholder|blank|sprite|avatar|selo|bandeira|whatsapp\.(png|svg))/i;
+
+/**
+ * Sites modernos quase nunca põem a foto no `src`: ela fica em `data-src`, `data-lazy` ou no
+ * `srcset`, e o `src` carrega um pixel transparente. Ler só o `src` devolvia zero foto em
+ * alguns sites — e foto é metade da decisão de quem procura casa.
+ */
+function extrairFotos(
+  $: cheerio.CheerioAPI,
+  cartao: cheerio.Cheerio<AnyNode>,
+  urlBase: string,
+  limite = 4,
+): string[] {
+  const achadas: string[] = [];
+
+  cartao.find('img, source').each((_, el) => {
+    if (achadas.length >= limite) return;
+    const alvo = $(el);
+    const candidatos = [
+      alvo.attr('src'),
+      alvo.attr('data-src'),
+      alvo.attr('data-original'),
+      alvo.attr('data-lazy'),
+      alvo.attr('data-lazy-src'),
+      alvo.attr('data-image'),
+      // No srcset a última entrada costuma ser a de maior resolução.
+      alvo.attr('srcset')?.split(',').pop()?.trim().split(/\s+/)[0],
+      alvo.attr('data-srcset')?.split(',').pop()?.trim().split(/\s+/)[0],
+    ];
+
+    for (const candidato of candidatos) {
+      if (!candidato || candidato.startsWith('data:')) continue;
+      if (IMAGEM_IRRELEVANTE.test(candidato)) continue;
+      const url = absoluta(candidato, urlBase);
+      if (!achadas.includes(url)) achadas.push(url);
+      break;
+    }
+  });
+
+  // Fundo definido por style="background-image:url(...)" também é foto de imóvel.
+  if (!achadas.length) {
+    const estilo = cartao.find('[style*="background-image"]').first().attr('style') ?? '';
+    const url = estilo.match(/url\((["']?)(.*?)\1\)/)?.[2];
+    if (url && !url.startsWith('data:') && !IMAGEM_IRRELEVANTE.test(url)) {
+      achadas.push(absoluta(url, urlBase));
+    }
+  }
+
+  return achadas;
+}
+
 function melhorTitulo(cartao: cheerio.Cheerio<AnyNode>, link: cheerio.Cheerio<AnyNode>): string {
   const candidatos = [
     link.attr('title'),
@@ -198,10 +258,15 @@ export function extrairPorHeuristica(html: string, urlBase: string): AnuncioBrut
 
     const textoCartao = cartao.text().replace(/\s+/g, ' ').trim();
     const preco = parsePreco(textoCartao.match(RE_PRECO_NO_TEXTO)?.[0] ?? null);
-    const areaUtil = parseArea(
-      textoCartao.match(/(\d[\d.,]*)\s*(?:m²|m2)/i)?.[0] ?? null,
-    );
-    if (preco === null && areaUtil === null) return;
+
+    // Quando o card diz qual metragem é qual, respeita o rótulo: sem isso, "terreno de
+    // 1.680 m²" virava área construída e o imóvel aparecia como 93% abaixo do bairro.
+    const areaTerreno = acharAreaRotulada(textoCartao, ROTULO_TERRENO);
+    const areaConstruida = acharAreaRotulada(textoCartao, ROTULO_CONSTRUIDO);
+    const primeiraMedida = parseArea(textoCartao.match(/(\d[\d.,]*)\s*(?:m²|m2)/i)?.[0] ?? null);
+    const areaUtil =
+      areaConstruida ?? (primeiraMedida !== null && primeiraMedida !== areaTerreno ? primeiraMedida : null);
+    if (preco === null && areaUtil === null && areaTerreno === null) return;
 
     const url = absoluta(href, urlBase);
     // Vários links apontam para a mesma ficha (foto, título, botão): fica o mais completo.
@@ -219,15 +284,13 @@ export function extrairPorHeuristica(html: string, urlBase: string): AnuncioBrut
       preco,
       bairroTexto: textoCartao,
       areaUtilTexto: areaUtil !== null ? String(areaUtil) : null,
-      areaTerrenoTexto: null,
+      areaTerrenoTexto: areaTerreno !== null ? String(areaTerreno) : null,
       quartos: parseQuantidade(textoCartao, PADROES.quartos),
       suites: parseQuantidade(textoCartao, PADROES.suites),
       banheiros: parseQuantidade(textoCartao, PADROES.banheiros),
       vagas: parseQuantidade(textoCartao, PADROES.vagas),
       descricao: textoCartao.slice(0, 400),
-      fotos: [cartao.find('img[src]').first().attr('src')]
-        .filter((s): s is string => !!s && !s.startsWith('data:'))
-        .map((s) => absoluta(s, urlBase)),
+      fotos: extrairFotos($, cartao, urlBase),
     });
   });
 

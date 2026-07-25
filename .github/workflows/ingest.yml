@@ -69,14 +69,34 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git add data ilhabela
-          if git diff --cached --quiet; then
-            echo 'Nada mudou desde a última coleta.'
-            exit 0
-          fi
-          total=$(node -e "console.log(require('./data/listings.json').imoveis.length)")
-          git commit -m "Coleta automática: ${total} imóveis em Ilhabela"
-          git push
+
+          # A coleta leva minutos, e um push na main durante esse tempo faz o push daqui ser
+          # recusado — foi o que aconteceu e custou uma coleta inteira. Em vez de falhar, o
+          # commit é refeito sobre a main atualizada. data/ e ilhabela/ são gerados por este
+          # job, então sobrescrever a versão do repositório é sempre o certo.
+          for tentativa in 1 2 3; do
+            git add data ilhabela
+            if git diff --cached --quiet; then
+              echo 'Nada mudou desde a última coleta.'
+              exit 0
+            fi
+            total=$(node -e "console.log(require('./data/listings.json').imoveis.length)")
+            git commit -m "Coleta automática: ${total} imóveis em Ilhabela"
+            if git push; then
+              exit 0
+            fi
+
+            echo "A main mudou durante a coleta; refazendo o commit sobre ela (tentativa ${tentativa})."
+            guardado=$(mktemp -d)
+            cp -r data ilhabela "$guardado"/
+            git fetch origin main
+            git reset --hard origin/main
+            rm -rf data ilhabela
+            cp -r "$guardado"/data "$guardado"/ilhabela .
+          done
+
+          echo 'Não foi possível publicar a coleta depois de três tentativas.'
+          exit 1
 
       # O aviso sai como issue do repositório: o GitHub manda o e-mail para quem acompanha,
       # sem servidor de e-mail nem senha guardada em lugar nenhum.

@@ -53,8 +53,26 @@ export function normalizarAnuncio(
 
   const finalidade: Finalidade = completo.finalidade ?? 'venda';
   const tipo: TipoImovel = completo.tipo ?? 'outro';
-  const areaUtil = parseArea(completo.areaUtilTexto);
-  const areaTerreno = parseArea(completo.areaTerrenoTexto);
+  let areaUtil = parseArea(completo.areaUtilTexto);
+  let areaTerreno = parseArea(completo.areaTerrenoTexto);
+
+  // A vitrine costuma mostrar uma metragem só, sem dizer qual é. Num terreno ela é sempre o
+  // lote; numa casa, mais de mil metros de área construída praticamente não existe — é o
+  // terreno mal rotulado. Tomada como construção, essa metragem faz o imóvel aparecer como
+  // "90% abaixo da mediana do bairro", que foi o que se viu na primeira coleta.
+  const AREA_CONSTRUIDA_IMPLAUSIVEL = 1_000;
+  if (areaUtil !== null && areaTerreno === null) {
+    const ehLote = tipo === 'terreno';
+    const grandeDemaisParaConstrucao =
+      areaUtil > AREA_CONSTRUIDA_IMPLAUSIVEL && (tipo === 'casa' || tipo === 'apartamento');
+    if (ehLote || grandeDemaisParaConstrucao) {
+      areaTerreno = areaUtil;
+      areaUtil = null;
+    }
+  }
+
+  // No terreno, o preço por m² é o do chão; nos demais, o da construção.
+  const areaParaPrecoM2 = tipo === 'terreno' ? areaTerreno : areaUtil;
 
   // Aluguel anunciado com preço de venda (e vice-versa) contamina a mediana do bairro
   // inteiro; é melhor descartar do que publicar um número absurdo.
@@ -76,7 +94,7 @@ export function normalizarAnuncio(
       bairro: pos.bairro,
       setor: pos.setor,
       preco,
-      precoM2: calcularPrecoM2(preco, areaUtil),
+      precoM2: calcularPrecoM2(preco, areaParaPrecoM2),
       condominio: null,
       iptu: null,
       areaUtil,

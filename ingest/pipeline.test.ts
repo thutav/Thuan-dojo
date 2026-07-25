@@ -90,6 +90,54 @@ describe('normalizarAnuncio', () => {
     expect(vendaAbsurda).toEqual({ descarte: 'preço baixo demais para venda' });
   });
 
+  it('lê a finalidade do título, não do menu do site que veio junto no card', () => {
+    const r = normalizarAnuncio(
+      bruto({
+        titulo: 'Casa de luxo a venda em Ilhabela',
+        descricao: 'Início Comprar Locação temporada Contato — casa no Curral com piscina',
+        precoTexto: 'R$ 3.500.000',
+      }),
+      ix,
+      HOJE,
+    );
+    if (!('imovel' in r)) throw new Error('deveria normalizar');
+    expect(r.imovel.finalidade).toBe('venda');
+  });
+
+  it('trata a metragem de um terreno como lote, não como construção', () => {
+    const r = normalizarAnuncio(
+      bruto({ titulo: 'Terreno no Curral', areaUtilTexto: '1.200 m²', precoTexto: 'R$ 600.000' }),
+      ix,
+      HOJE,
+    );
+    if (!('imovel' in r)) throw new Error('deveria normalizar');
+    expect(r.imovel.tipo).toBe('terreno');
+    expect(r.imovel.areaUtil).toBeNull();
+    expect(r.imovel.areaTerreno).toBe(1_200);
+    expect(r.imovel.precoM2).toBe(500);
+  });
+
+  it('não aceita mil metros de área construída numa casa sem terreno informado', () => {
+    // Vitrine que mostra só uma metragem: numa casa, 1.680 m² é o lote. Tomado como
+    // construção, o imóvel apareceria como "90% abaixo da mediana do bairro".
+    const r = normalizarAnuncio(
+      bruto({ titulo: 'Casa no Curral', areaUtilTexto: '1.680 m²', precoTexto: 'R$ 1.500.000' }),
+      ix,
+      HOJE,
+    );
+    if (!('imovel' in r)) throw new Error('deveria normalizar');
+    expect(r.imovel.areaUtil).toBeNull();
+    expect(r.imovel.areaTerreno).toBe(1_680);
+    expect(r.imovel.precoM2).toBeNull();
+  });
+
+  it('mantém a área construída de uma casa de tamanho normal', () => {
+    const r = normalizarAnuncio(bruto(), ix, HOJE);
+    if (!('imovel' in r)) throw new Error('deveria normalizar');
+    expect(r.imovel.areaUtil).toBe(182);
+    expect(r.imovel.areaTerreno).toBeNull();
+  });
+
   it('usa a coordenada do anúncio quando ela vem no JSON-LD', () => {
     const zona = zonas.zonas.find((z) => z.id === 'pereque')!;
     const r = normalizarAnuncio(
