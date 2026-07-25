@@ -1,0 +1,40 @@
+{
+  "name": "ilhabela-imoveis",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Agregador de imóveis de Ilhabela: venda, aluguel mensal e temporada, com mapa de preço por m².",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit -p tsconfig.json && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "build:geo": "tsx scripts/build-geo.ts",
+    "build:demo": "tsx scripts/build-demo.ts",
+    "ingest": "tsx ingest/cli.ts",
+    "verify:ui": "tsx scripts/verify-ui.ts"
+  },
+  "dependencies": {
+    "chart.js": "^4.4.7",
+    "d3-delaunay": "^6.0.4",
+    "leaflet": "^1.9.4",
+    "polygon-clipping": "^0.15.7",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/d3-delaunay": "^6.0.4",
+    "@types/leaflet": "^1.9.15",
+    "@types/node": "^22.10.2",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "cheerio": "^1.0.0",
+    "playwright": "^1.49.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.7",
+    "vitest": "^2.1.8"
+  }
+}
