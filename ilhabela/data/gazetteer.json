@@ -9,7 +9,10 @@
       "lat": -23.7302,
       "lon": -45.3455,
       "praia": true,
-      "apelidos": ["ponta das canas", "pta das canas"]
+      "apelidos": [
+        "ponta das canas",
+        "pta das canas"
+      ]
     },
     {
       "id": "pacuiba",
@@ -19,7 +22,10 @@
       "lat": -23.7402,
       "lon": -45.3523,
       "praia": true,
-      "apelidos": ["pacuiba", "pacuíba"]
+      "apelidos": [
+        "pacuiba",
+        "pacuíba"
+      ]
     },
     {
       "id": "armacao",
@@ -29,7 +35,11 @@
       "lat": -23.7521,
       "lon": -45.3578,
       "praia": true,
-      "apelidos": ["armacao", "armação", "praia da armacao"]
+      "apelidos": [
+        "armacao",
+        "armação",
+        "praia da armacao"
+      ]
     },
     {
       "id": "viana",
@@ -39,7 +49,10 @@
       "lat": -23.7592,
       "lon": -45.3608,
       "praia": true,
-      "apelidos": ["viana", "praia do viana"]
+      "apelidos": [
+        "viana",
+        "praia do viana"
+      ]
     },
     {
       "id": "siriuba",
@@ -49,7 +62,11 @@
       "lat": -23.7659,
       "lon": -45.3634,
       "praia": true,
-      "apelidos": ["siriuba", "siriúba", "praia da siriuba"]
+      "apelidos": [
+        "siriuba",
+        "siriúba",
+        "praia da siriuba"
+      ]
     },
     {
       "id": "pinto",
@@ -59,7 +76,10 @@
       "lat": -23.7701,
       "lon": -45.3651,
       "praia": true,
-      "apelidos": ["pinto", "praia do pinto"]
+      "apelidos": [
+        "pinto",
+        "praia do pinto"
+      ]
     },
     {
       "id": "engenho-dagua",
@@ -69,7 +89,12 @@
       "lat": -23.7748,
       "lon": -45.3637,
       "praia": true,
-      "apelidos": ["engenho d agua", "engenho dagua", "engenho d'água", "engenho"]
+      "apelidos": [
+        "engenho d agua",
+        "engenho dagua",
+        "engenho d'água",
+        "engenho"
+      ]
     },
     {
       "id": "santa-teresa",
@@ -79,7 +104,11 @@
       "lat": -23.7776,
       "lon": -45.3614,
       "praia": false,
-      "apelidos": ["santa teresa", "sta teresa", "santa tereza"]
+      "apelidos": [
+        "santa teresa",
+        "sta teresa",
+        "santa tereza"
+      ]
     },
     {
       "id": "vila",
@@ -89,7 +118,13 @@
       "lat": -23.7806,
       "lon": -45.3585,
       "praia": false,
-      "apelidos": ["vila", "centro", "centro historico", "centro histórico", "vila ilhabela"]
+      "apelidos": [
+        "vila",
+        "centro",
+        "centro historico",
+        "centro histórico",
+        "vila ilhabela"
+      ]
     },
     {
       "id": "itaguacu",
@@ -99,187 +134,296 @@
       "lat": -23.7871,
       "lon": -45.3571,
       "praia": true,
-      "apelidos": ["itaguacu", "itaguaçu", "itaguassu"]
+      "apelidos": [
+        "itaguacu",
+        "itaguaçu",
+        "itaguassu"
+      ]
+    },
+    {
+      "id": "serraria",
+      "nome": "Serraria",
+      "setor": "centro",
+      "ordemCosteira": 11,
+      "lat": -23.7845,
+      "lon": -45.3548,
+      "praia": false,
+      "apelidos": [
+        "serraria"
+      ]
     },
     {
       "id": "itaquanduba",
       "nome": "Itaquanduba",
       "setor": "centro",
-      "ordemCosteira": 11,
+      "ordemCosteira": 12,
       "lat": -23.7934,
       "lon": -45.3568,
       "praia": true,
-      "apelidos": ["itaquanduba", "itaquanduva"]
+      "apelidos": [
+        "itaquanduba",
+        "itaquanduva"
+      ]
     },
     {
       "id": "cocaia",
       "nome": "Cocaia",
       "setor": "centro",
-      "ordemCosteira": 12,
+      "ordemCosteira": 13,
       "lat": -23.7984,
       "lon": -45.3567,
       "praia": false,
-      "apelidos": ["cocaia"]
+      "apelidos": [
+        "cocaia"
+      ]
     },
     {
       "id": "barra-velha",
       "nome": "Barra Velha",
       "setor": "centro",
-      "ordemCosteira": 13,
+      "ordemCosteira": 14,
       "lat": -23.8041,
       "lon": -45.3559,
       "praia": true,
-      "apelidos": ["barra velha", "balsa"]
+      "apelidos": [
+        "barra velha",
+        "balsa"
+      ]
     },
     {
       "id": "pereque",
       "nome": "Perequê",
       "setor": "centro",
-      "ordemCosteira": 14,
+      "ordemCosteira": 15,
       "lat": -23.8123,
       "lon": -45.3541,
       "praia": true,
-      "apelidos": ["pereque", "perequê", "perequeaçu"]
+      "apelidos": [
+        "pereque",
+        "perequê",
+        "perequeaçu"
+      ]
+    },
+    {
+      "id": "reino",
+      "nome": "Reino",
+      "setor": "centro",
+      "ordemCosteira": 16,
+      "lat": -23.8168,
+      "lon": -45.3552,
+      "praia": false,
+      "apelidos": [
+        "reino",
+        "bairro do reino"
+      ]
     },
     {
       "id": "saco-da-capela",
       "nome": "Saco da Capela",
       "setor": "sul",
-      "ordemCosteira": 15,
+      "ordemCosteira": 17,
       "lat": -23.8203,
       "lon": -45.3558,
       "praia": true,
-      "apelidos": ["saco da capela", "capela"]
+      "apelidos": [
+        "saco da capela",
+        "capela"
+      ]
     },
     {
       "id": "portinho",
       "nome": "Portinho",
       "setor": "sul",
-      "ordemCosteira": 16,
+      "ordemCosteira": 18,
       "lat": -23.8281,
       "lon": -45.3572,
       "praia": true,
-      "apelidos": ["portinho", "praia do portinho"]
+      "apelidos": [
+        "portinho",
+        "praia do portinho"
+      ]
+    },
+    {
+      "id": "cambaquara",
+      "nome": "Cambaquara",
+      "setor": "sul",
+      "ordemCosteira": 19,
+      "lat": -23.8322,
+      "lon": -45.3566,
+      "praia": true,
+      "apelidos": [
+        "cambaquara"
+      ]
     },
     {
       "id": "praia-grande",
       "nome": "Praia Grande",
       "setor": "sul",
-      "ordemCosteira": 17,
+      "ordemCosteira": 20,
       "lat": -23.8398,
       "lon": -45.3563,
       "praia": true,
-      "apelidos": ["praia grande"]
+      "apelidos": [
+        "praia grande"
+      ]
+    },
+    {
+      "id": "ilha-das-cabras",
+      "nome": "Ilha das Cabras",
+      "setor": "sul",
+      "ordemCosteira": 21,
+      "lat": -23.8452,
+      "lon": -45.3524,
+      "praia": true,
+      "apelidos": [
+        "ilha das cabras",
+        "ilhas das cabras"
+      ]
     },
     {
       "id": "curral",
       "nome": "Curral",
       "setor": "sul",
-      "ordemCosteira": 18,
+      "ordemCosteira": 22,
       "lat": -23.8512,
       "lon": -45.3581,
       "praia": true,
-      "apelidos": ["curral", "praia do curral"]
+      "apelidos": [
+        "curral",
+        "praia do curral"
+      ]
     },
     {
       "id": "feiticeira",
       "nome": "Feiticeira",
       "setor": "sul",
-      "ordemCosteira": 19,
+      "ordemCosteira": 23,
       "lat": -23.8621,
       "lon": -45.3622,
       "praia": true,
-      "apelidos": ["feiticeira", "praia da feiticeira"]
+      "apelidos": [
+        "feiticeira",
+        "praia da feiticeira"
+      ]
     },
     {
       "id": "juliao",
       "nome": "Julião",
       "setor": "sul",
-      "ordemCosteira": 20,
+      "ordemCosteira": 24,
       "lat": -23.8702,
       "lon": -45.3663,
       "praia": true,
-      "apelidos": ["juliao", "julião", "praia do juliao"]
+      "apelidos": [
+        "juliao",
+        "julião",
+        "praia do juliao"
+      ]
     },
     {
       "id": "veloso",
       "nome": "Veloso",
       "setor": "sul",
-      "ordemCosteira": 21,
+      "ordemCosteira": 25,
       "lat": -23.8779,
       "lon": -45.3704,
       "praia": true,
-      "apelidos": ["veloso", "praia do veloso"]
+      "apelidos": [
+        "veloso",
+        "praia do veloso"
+      ]
     },
     {
       "id": "sepituba",
       "nome": "Sepituba",
       "setor": "sul",
-      "ordemCosteira": 22,
+      "ordemCosteira": 26,
       "lat": -23.8868,
       "lon": -45.3767,
       "praia": true,
-      "apelidos": ["sepituba", "sepetiba"]
+      "apelidos": [
+        "sepituba",
+        "sepetiba"
+      ]
     },
     {
       "id": "agua-branca",
       "nome": "Água Branca",
       "setor": "sul",
-      "ordemCosteira": 23,
+      "ordemCosteira": 27,
       "lat": -23.8958,
       "lon": -45.3858,
       "praia": true,
-      "apelidos": ["agua branca", "água branca"]
+      "apelidos": [
+        "agua branca",
+        "água branca"
+      ]
     },
     {
       "id": "borrifos",
       "nome": "Borrifos",
       "setor": "sul",
-      "ordemCosteira": 24,
+      "ordemCosteira": 28,
       "lat": -23.9081,
       "lon": -45.3976,
       "praia": true,
-      "apelidos": ["borrifos", "praia dos borrifos"]
+      "apelidos": [
+        "borrifos",
+        "praia dos borrifos"
+      ]
     },
     {
       "id": "ponta-da-sela",
       "nome": "Ponta da Sela",
       "setor": "sul",
-      "ordemCosteira": 25,
+      "ordemCosteira": 29,
       "lat": -23.9288,
       "lon": -45.4152,
       "praia": true,
-      "apelidos": ["ponta da sela", "sela"]
+      "apelidos": [
+        "ponta da sela",
+        "sela"
+      ]
     },
     {
       "id": "bonete",
       "nome": "Bonete",
       "setor": "costeira-sul",
-      "ordemCosteira": 26,
+      "ordemCosteira": 30,
       "lat": -23.9245,
       "lon": -45.4338,
       "praia": true,
-      "apelidos": ["bonete", "praia do bonete"]
+      "apelidos": [
+        "bonete",
+        "praia do bonete"
+      ]
     },
     {
       "id": "castelhanos",
       "nome": "Castelhanos",
       "setor": "leste",
-      "ordemCosteira": 27,
+      "ordemCosteira": 31,
       "lat": -23.8256,
       "lon": -45.2662,
       "praia": true,
-      "apelidos": ["castelhanos", "baia de castelhanos", "baía dos castelhanos"]
+      "apelidos": [
+        "castelhanos",
+        "baia de castelhanos",
+        "baía dos castelhanos"
+      ]
     },
     {
       "id": "jabaquara",
       "nome": "Jabaquara",
       "setor": "norte",
-      "ordemCosteira": 28,
+      "ordemCosteira": 32,
       "lat": -23.7368,
       "lon": -45.3213,
       "praia": true,
-      "apelidos": ["jabaquara", "praia do jabaquara"]
+      "apelidos": [
+        "jabaquara",
+        "praia do jabaquara"
+      ]
     }
   ]
 }

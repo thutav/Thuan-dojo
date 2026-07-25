@@ -161,6 +161,13 @@ function acharCartao($: cheerio.CheerioAPI, elemento: AnyNode): cheerio.Cheerio<
   return null;
 }
 
+/**
+ * Blocos de vitrine que não são imóvel: "Os mais acessados", "Destaques" e afins agrupam
+ * vários anúncios e têm preço dentro, então a heurística os confundia com um card.
+ */
+const TITULOS_GENERICOS =
+  /^(os? mais (acessad|vist|procurad)|destaques?|lancamentos?|imoveis em destaque|ultimos imoveis|novidades|busca|newsletter|receba|filtrar)/;
+
 function melhorTitulo(cartao: cheerio.Cheerio<AnyNode>, link: cheerio.Cheerio<AnyNode>): string {
   const candidatos = [
     link.attr('title'),
@@ -200,6 +207,7 @@ export function extrairPorHeuristica(html: string, urlBase: string): AnuncioBrut
     // Vários links apontam para a mesma ficha (foto, título, botão): fica o mais completo.
     const existente = porUrl.get(url);
     const titulo = melhorTitulo(cartao, link);
+    if (TITULOS_GENERICOS.test(normalizar(titulo))) return;
     if (existente && (existente.titulo?.length ?? 0) >= titulo.length) return;
 
     porUrl.set(url, {
@@ -244,6 +252,13 @@ export function extrair(
   }
   if (porJsonLd.length) return { anuncios: porJsonLd, estrategia: 'json-ld' };
   return { anuncios: [], estrategia: 'nenhuma' };
+}
+
+/** Texto visível da página, sem script nem estilo — base para achar o bairro numa ficha. */
+export function textoVisivel(html: string): string {
+  const $ = cheerio.load(html);
+  $('script, style, noscript, svg').remove();
+  return $('body').text().replace(/\s+/g, ' ').trim().slice(0, 6000);
 }
 
 /** Descobre links de paginação para o coletor não depender de um padrão fixo de URL. */

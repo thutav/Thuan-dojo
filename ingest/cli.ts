@@ -17,6 +17,7 @@ import type { Dataset, Gazetteer, ZonesFile } from '../core/types';
 import { criarIndiceGeo } from '../core/geocode';
 import { adaptersImobiliarias } from './adapters/imobiliarias';
 import { adaptersPortais } from './adapters/portais';
+import { decodificar } from './http';
 import { coletar } from './pipeline';
 import type { Adapter, ContextoColeta } from './tipos';
 
@@ -44,6 +45,7 @@ const CABECALHOS = {
 
 const esperar = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+
 function criarContexto(registrar: (m: string) => void): {
   ctx: ContextoColeta;
   fechar: () => Promise<void>;
@@ -70,7 +72,7 @@ function criarContexto(registrar: (m: string) => void): {
       const controle = AbortSignal.timeout(12_000);
       const res = await fetch(url, { headers: CABECALHOS, signal: controle, redirect: 'follow' });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return res.text();
+      return decodificar(await res.arrayBuffer(), res.headers.get('content-type'));
     },
 
     async buscarComNavegador(url: string, esperarPor?: string) {
@@ -139,7 +141,10 @@ async function main() {
   console.log(`coletando de ${adapters.length} fontes${USAR_FIXTURES ? ' (modo fixtures)' : ''}…`);
   let resultado;
   try {
-    resultado = await coletar(adapters, ctx, ix, anterior?.imoveis ?? null);
+    // No modo fixtures toda requisição devolve a mesma página de exemplo, então abrir fichas
+    // não diria nada — o teto vai a zero.
+    const tetoFichas = USAR_FIXTURES ? 0 : Number(valorFlag('max-fichas') ?? 150);
+    resultado = await coletar(adapters, ctx, ix, anterior?.imoveis ?? null, tetoFichas);
   } finally {
     await fechar();
   }

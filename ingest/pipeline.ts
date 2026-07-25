@@ -15,7 +15,7 @@ import {
   parseArea,
 } from '../core/normalize';
 import { deduplicar } from '../core/dedupe';
-import { pareceAnuncioDeIlhabela } from './extratores';
+import { pareceAnuncioDeIlhabela, textoVisivel } from './extratores';
 import type { Adapter, ContextoColeta } from './tipos';
 
 /** Id estável a partir da URL: o mesmo anúncio mantém o mesmo id entre coletas. */
@@ -140,11 +140,59 @@ export interface ResultadoColeta {
 
 const EXEMPLOS_POR_MOTIVO = 8;
 
+/**
+ * Boa parte das vitrines não escreve o bairro no card — só "Casa em Ilhabela". O bairro está
+ * na ficha do imóvel. Sem esta passagem, um terço da coleta seria descartado por falta de
+ * localização; com ela, o coletor abre a ficha de quem ficou sem bairro e lê de lá.
+ *
+ * O custo é uma requisição por anúncio órfão, então há um teto por execução.
+ */
+export async function enriquecerBairros(
+  brutos: AnuncioBruto[],
+  ctx: ContextoColeta,
+  ix: IndiceGeo,
+  teto: number,
+): Promise<{ resolvidos: number; tentativas: number }> {
+  let tentativas = 0;
+  let resolvidos = 0;
+
+  for (const bruto of brutos) {
+    if (tentativas >= teto) break;
+    const jaTem =
+      resolverBairro(bruto.bairroTexto, ix) ??
+      resolverBairro(bruto.titulo, ix) ??
+      resolverBairro(bruto.descricao, ix) ??
+      resolverBairro(bruto.url, ix);
+    if (jaTem) continue;
+    if (!bruto.url || !/^https?:/.test(bruto.url)) continue;
+
+    tentativas++;
+    try {
+      const html = await ctx.buscarHtml(bruto.url);
+      const texto = textoVisivel(html);
+      if (resolverBairro(texto, ix)) {
+        bruto.bairroTexto = `${bruto.bairroTexto ?? ''} ${texto}`.slice(0, 4000);
+        resolvidos++;
+      }
+    } catch {
+      // Ficha fora do ar não invalida o anúncio; ele segue para o descarte normal.
+    }
+  }
+
+  if (tentativas) {
+    ctx.registrar(
+      `fichas abertas para achar o bairro: ${tentativas}, resolvidos ${resolvidos}`,
+    );
+  }
+  return { resolvidos, tentativas };
+}
+
 export async function coletar(
   adapters: Adapter[],
   ctx: ContextoColeta,
   ix: IndiceGeo,
   anterior: Imovel[] | null,
+  tetoFichas = 150,
 ): Promise<ResultadoColeta> {
   const hoje = new Date().toISOString().slice(0, 10);
   const status: StatusFonte[] = [];
@@ -175,6 +223,8 @@ export async function coletar(
       });
     }
   }
+
+  if (tetoFichas > 0) await enriquecerBairros(brutos, ctx, ix, tetoFichas);
 
   const descartes: Record<string, number> = {};
   const exemplosDescartados: Record<string, string[]> = {};
