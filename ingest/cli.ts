@@ -62,7 +62,9 @@ function criarContexto(registrar: (m: string) => void): ContextoColeta {
       if (espera > 0) await esperar(espera);
       ultimaRequisicao = Date.now();
 
-      const controle = AbortSignal.timeout(25_000);
+      // Uma vitrine que não responde em 12s provavelmente não existe mais. Esperar 25s por
+      // cada palpite de URL fazia a coleta inteira levar mais de vinte minutos.
+      const controle = AbortSignal.timeout(12_000);
       const res = await fetch(url, { headers: CABECALHOS, signal: controle, redirect: 'follow' });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return res.text();
@@ -83,9 +85,9 @@ function criarContexto(registrar: (m: string) => void): ContextoColeta {
       });
       const pagina = await contexto.newPage();
       try {
-        await pagina.goto(url, { waitUntil: 'domcontentloaded', timeout: 45_000 });
+        await pagina.goto(url, { waitUntil: 'domcontentloaded', timeout: 30_000 });
         if (esperarPor) {
-          await pagina.waitForSelector(esperarPor, { timeout: 20_000 }).catch(() => {
+          await pagina.waitForSelector(esperarPor, { timeout: 12_000 }).catch(() => {
             registrar(`aviso: seletor "${esperarPor}" não apareceu em ${url}`);
           });
         }
