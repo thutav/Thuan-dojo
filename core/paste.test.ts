@@ -27,6 +27,20 @@ Contato (12) 99123-4567`;
     expect(r.titulo).toContain('CURRAL');
   });
 
+  it('separa área construída de terreno nas duas ordens de escrita', () => {
+    const rotuloDepois = parseAnuncioColado(
+      'Casa no Curral com 180 m² de área construída em terreno de 450 m². R$ 1.500.000',
+    );
+    expect(rotuloDepois.areaUtil).toBe(180);
+    expect(rotuloDepois.areaTerreno).toBe(450);
+
+    const rotuloAntes = parseAnuncioColado(
+      'Casa no Curral, área construída de 180 m², terreno de 450 m². R$ 1.500.000',
+    );
+    expect(rotuloAntes.areaUtil).toBe(180);
+    expect(rotuloAntes.areaTerreno).toBe(450);
+  });
+
   it('não confunde condomínio com o aluguel', () => {
     const post = `Aluguel anual em Itaguaçu
 Apartamento 2 dormitórios, 70 m², mobiliado.

@@ -136,18 +136,27 @@ function extrairTelefone(texto: string): string | null {
   return digitos.length >= 10 && digitos.length <= 13 ? m[0].trim() : null;
 }
 
+const MEDIDA = '(?:m2|m²|metros(?:\\s+quadrados)?)';
+
+/**
+ * Procura uma metragem pelo rótulo, nas duas ordens em que as pessoas escrevem:
+ * "180 m² de área construída" e "área construída de 180 m²". Olhar só uma ordem faz o
+ * rótulo capturar o número do vizinho — em "180 m² de área construída em terreno de 450 m²",
+ * a busca por "área construída …" acharia 450.
+ */
+function acharArea(t: string, rotulo: string): number | null {
+  // O conectivo aceito é só "de": em "180 m² em terreno de 450 m²", o "em terreno" diz onde
+  // a casa está, e o número do terreno é o que vem depois — não o 180.
+  const antesDoRotulo = new RegExp(`(\\d[\\d.,]*)\\s*${MEDIDA}\\s*(?:de\\s+)?(?:${rotulo})`);
+  const depoisDoRotulo = new RegExp(`(?:${rotulo})[^\\d]{0,20}(\\d[\\d.,]*)\\s*${MEDIDA}`);
+  const m = t.match(antesDoRotulo) ?? t.match(depoisDoRotulo);
+  return m ? parseArea(`${m[1]} m2`) : null;
+}
+
 function extrairAreas(texto: string): { areaUtil: number | null; areaTerreno: number | null } {
   const t = normalizar(texto);
-  let areaUtil: number | null = null;
-  let areaTerreno: number | null = null;
-
-  const terreno = t.match(/(?:terreno|lote|area total do terreno)[^\d]{0,20}(\d[\d.,]*)\s*(?:m2|m²|metros)/);
-  if (terreno) areaTerreno = parseArea(terreno[1] + ' m2');
-
-  const construida = t.match(
-    /(?:area (?:util|construida)|construcao|casa com|imovel com)[^\d]{0,20}(\d[\d.,]*)\s*(?:m2|m²|metros)/,
-  );
-  if (construida) areaUtil = parseArea(construida[1] + ' m2');
+  const areaTerreno = acharArea(t, 'terreno|lote|area do terreno');
+  let areaUtil = acharArea(t, 'area (?:util|construida)|area de construcao|construidos|construcao');
 
   if (areaUtil === null) {
     // Sem rótulo: pega a primeira medida que não seja a do terreno.
