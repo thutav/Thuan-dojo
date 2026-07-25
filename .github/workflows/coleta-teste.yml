@@ -1,0 +1,52 @@
+name: Coleta de teste (modo seco)
+
+# Os sites das imobiliárias não podem ser abertos do ambiente onde este projeto foi escrito,
+# que não tem saída para a internet. Este workflow existe para conferir os adapters contra os
+# sites de verdade antes de qualquer merge: ele coleta, mostra o que cada fonte devolveu e
+# não grava nada. É o teste que diz se o extrator está lendo as vitrines certas.
+on:
+  push:
+    branches: ['claude/**']
+  workflow_dispatch:
+
+concurrency:
+  group: coleta-teste-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  seco:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      - name: Instalar Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Coletar sem gravar
+        run: npm run ingest -- --seco 2>&1 | tee coleta-teste.log
+        continue-on-error: true
+
+      - name: Resumo
+        if: always()
+        run: |
+          {
+            echo '## Coleta de teste — nada foi gravado'
+            echo '```'
+            cat coleta-teste.log 2>/dev/null || echo 'sem log'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: log-coleta-teste
+          path: coleta-teste.log
+          retention-days: 14
