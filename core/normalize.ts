@@ -166,7 +166,9 @@ export function completarPorTexto(a: AnuncioBruto): AnuncioBruto {
   const corpo = [a.titulo, a.descricao ?? ''].join(' . ');
   return {
     ...a,
-    finalidade: a.finalidade ?? detectFinalidade(corpo),
+    // A finalidade sai do título antes do corpo: o texto do card arrasta o menu do site
+    // junto ("Locação temporada"), e uma casa à venda acabava classificada como diária.
+    finalidade: a.finalidade ?? detectFinalidade(a.titulo) ?? detectFinalidade(corpo),
     tipo: a.tipo ?? detectTipo(corpo),
     preco: a.preco ?? parsePreco(a.precoTexto ?? corpo),
     quartos: a.quartos ?? parseQuantidade(corpo, PADROES.quartos),

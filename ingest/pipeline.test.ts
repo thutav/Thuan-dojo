@@ -90,6 +90,20 @@ describe('normalizarAnuncio', () => {
     expect(vendaAbsurda).toEqual({ descarte: 'preço baixo demais para venda' });
   });
 
+  it('lê a finalidade do título, não do menu do site que veio junto no card', () => {
+    const r = normalizarAnuncio(
+      bruto({
+        titulo: 'Casa de luxo a venda em Ilhabela',
+        descricao: 'Início Comprar Locação temporada Contato — casa no Curral com piscina',
+        precoTexto: 'R$ 3.500.000',
+      }),
+      ix,
+      HOJE,
+    );
+    if (!('imovel' in r)) throw new Error('deveria normalizar');
+    expect(r.imovel.finalidade).toBe('venda');
+  });
+
   it('trata a metragem de um terreno como lote, não como construção', () => {
     const r = normalizarAnuncio(
       bruto({ titulo: 'Terreno no Curral', areaUtilTexto: '1.200 m²', precoTexto: 'R$ 600.000' }),
