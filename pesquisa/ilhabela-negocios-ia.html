@@ -1,0 +1,3608 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ilhabela × IA × Claude Code — Dossiê de pesquisa e brainstorm</title>
+<meta name="description" content="Pesquisa profunda e brainstorm estratégico sobre apps, serviços e negócios de IA com base em Ilhabela.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Sora:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+/* ============================================================
+   TEMA — mesmos tokens do deck (index.html). Para reaproveitar
+   este documento com outra identidade, troque apenas este bloco.
+   ============================================================ */
+:root{
+  --ink:#0B0F0E;
+  --surface:#141A18;
+  --card:#171E1B;
+  --line:#26332C;
+  --text:#EEF4F1;
+  --muted:#8FA39B;
+  --mar:#2BE0C8;
+  --coral:#FF6A4D;
+  --grad:linear-gradient(90deg,var(--mar),var(--coral));
+  --f-display:'Archivo Black',sans-serif;
+  --f-body:'Sora',sans-serif;
+  --f-mono:'IBM Plex Mono',monospace;
+  --sidebar:290px;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:28px}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{background:var(--ink);color:var(--text);font-family:var(--f-body);
+     font-size:16px;line-height:1.72;-webkit-font-smoothing:antialiased}
+::selection{background:var(--mar);color:var(--ink)}
+
+/* ---------- barra de progresso ---------- */
+.belt{position:fixed;top:0;left:0;height:4px;width:100%;background:#1a2320;z-index:80}
+.belt-fill{height:100%;width:0;background:var(--grad)}
+
+/* ---------- layout ---------- */
+.shell{display:flex;align-items:flex-start;max-width:1500px;margin:0 auto}
+
+nav.toc{
+  position:sticky;top:0;flex:0 0 var(--sidebar);width:var(--sidebar);
+  height:100vh;overflow-y:auto;padding:34px 20px 60px 26px;
+  border-right:1px solid var(--line);background:var(--surface);
+}
+nav.toc .brand{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.16em;
+  color:var(--muted);text-transform:uppercase;margin-bottom:6px}
+nav.toc .who{font-family:var(--f-display);font-size:17px;line-height:1.25;margin-bottom:22px}
+nav.toc .who span{background:var(--grad);-webkit-background-clip:text;
+  background-clip:text;-webkit-text-fill-color:transparent}
+nav.toc a{display:block;color:var(--muted);text-decoration:none;font-size:13.5px;
+  padding:6px 10px;border-radius:7px;border-left:2px solid transparent;line-height:1.4}
+nav.toc a:hover{color:var(--text);background:#1c2522}
+nav.toc a.on{color:var(--mar);border-left-color:var(--mar);background:#182220}
+nav.toc a:focus-visible{outline:2px solid var(--mar);outline-offset:2px}
+
+main{flex:1 1 auto;min-width:0;padding:56px clamp(20px,4vw,72px) 140px}
+.doc{max-width:900px}
+
+/* ---------- tipografia ---------- */
+h1{font-family:var(--f-display);font-size:clamp(30px,4.6vw,50px);line-height:1.08;
+   letter-spacing:-.02em;margin:0 0 6px}
+h2{font-family:var(--f-display);font-size:clamp(22px,3vw,32px);line-height:1.18;
+   letter-spacing:-.01em;margin:64px 0 14px;padding-top:22px;border-top:1px solid var(--line)}
+h2:first-of-type{border-top:none}
+h3{font-family:var(--f-body);font-weight:700;font-size:20px;margin:38px 0 10px;color:var(--mar)}
+h4{font-family:var(--f-mono);font-size:12px;letter-spacing:.13em;text-transform:uppercase;
+   color:var(--muted);margin:26px 0 8px}
+p{margin:0 0 15px}
+ul,ol{margin:0 0 16px 22px}
+li{margin-bottom:7px}
+a{color:var(--mar);text-decoration:none;border-bottom:1px solid rgba(43,224,200,.3)}
+a:hover{border-bottom-color:var(--mar)}
+strong{color:#fff;font-weight:700}
+em{color:var(--muted)}
+hr{border:none;border-top:1px solid var(--line);margin:44px 0}
+
+/* ---------- código e diagramas ---------- */
+code{font-family:var(--f-mono);font-size:.86em;background:#1b2422;color:var(--mar);
+     padding:1px 6px;border-radius:5px}
+pre{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--mar);
+    border-radius:11px;padding:18px 20px;margin:0 0 20px;overflow-x:auto}
+pre code{background:none;color:var(--text);padding:0;font-size:12.5px;line-height:1.6;
+         white-space:pre;display:block}
+
+/* ---------- tabelas ---------- */
+.tw{overflow-x:auto;margin:0 0 22px;border:1px solid var(--line);border-radius:11px;
+    background:var(--card)}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px}
+thead th{background:#1b2422;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--muted);text-align:left;padding:11px 14px;
+  border-bottom:1px solid var(--line);white-space:nowrap;font-weight:500}
+tbody td{padding:11px 14px;border-bottom:1px solid #1e2926;vertical-align:top;line-height:1.55}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#1a2320}
+
+/* ---------- citação / alerta ---------- */
+blockquote{border-left:3px solid var(--coral);background:#1d1917;border-radius:0 11px 11px 0;
+  padding:16px 20px;margin:0 0 20px}
+blockquote p:last-child{margin-bottom:0}
+blockquote strong{color:var(--coral)}
+
+/* ---------- cabeçalho do documento ---------- */
+header.hero{margin-bottom:44px}
+header.hero .kicker{font-family:var(--f-mono);font-size:11px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--mar);margin-bottom:16px}
+header.hero .sub{font-size:19px;color:var(--muted);max-width:640px;margin-top:10px}
+header.hero .meta{font-family:var(--f-mono);font-size:11.5px;color:var(--muted);
+  margin-top:22px;letter-spacing:.06em}
+
+/* ---------- rodapé ---------- */
+footer{margin-top:80px;padding-top:24px;border-top:1px solid var(--line);
+  font-family:var(--f-mono);font-size:11px;color:var(--muted);letter-spacing:.05em}
+
+/* ---------- responsivo ---------- */
+.navtoggle{display:none}
+@media(max-width:1000px){
+  nav.toc{position:fixed;left:0;top:0;z-index:70;transform:translateX(-100%);
+    padding-top:66px;transition:transform .25s ease;box-shadow:0 0 40px rgba(0,0,0,.5)}
+  nav.toc.open{transform:translateX(0)}
+  main{padding:76px 20px 100px}
+  .navtoggle{display:flex;align-items:center;gap:8px;position:fixed;top:14px;left:14px;z-index:75;
+    background:var(--surface);border:1px solid var(--line);color:var(--text);
+    font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+    padding:9px 14px;border-radius:9px;cursor:pointer}
+  h2{margin-top:46px}
+}
+@media print{
+  nav.toc,.belt,.navtoggle{display:none}
+  body{background:#fff;color:#111}
+  main{padding:0}
+  h2{page-break-after:avoid}
+  .tw,pre{page-break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<div class="belt"><div class="belt-fill"></div></div>
+<button class="navtoggle" aria-label="Abrir índice">☰ Índice</button>
+
+<div class="shell">
+  <nav class="toc" aria-label="Índice do documento">
+    <div class="brand">Pesquisa · Julho 2026</div>
+    <div class="who">Ilhabela <span>× IA ×</span> Claude Code</div>
+    <a href="#ponto-de-partida-o-que-ja-existe">Ponto de partida: o que já existe</a>
+<a href="#tres-insights-que-mudam-o-jogo">⚡ Três insights que mudam o jogo</a>
+<a href="#base-factual">Base factual</a>
+<a href="#parte-1-mapa-da-economia-local">Parte 1 — Mapa da economia local</a>
+<a href="#parte-2-brainstorm-massivo-70-ideias">Parte 2 — Brainstorm massivo (70 ideias)</a>
+<a href="#parte-3-matriz-de-ranqueamento">Parte 3 — Matriz de ranqueamento</a>
+<a href="#parte-4-top-5-aprofundadas">Parte 4 — Top 5 aprofundadas</a>
+<a href="#parte-5-portfolio-e-sequenciamento">Parte 5 — Portfólio e sequenciamento</a>
+<a href="#parte-6-ativos-compostos">Parte 6 — Ativos compostos</a>
+<a href="#parte-7-realidade-brasileira">Parte 7 — Realidade brasileira</a>
+<a href="#o-que-fazer-na-segunda-feira-de-manha">O que fazer na segunda-feira de manhã</a>
+<a href="#autocritica">Autocrítica</a>
+<a href="#fontes">Fontes</a>
+  </nav>
+
+  <main>
+    <div class="doc">
+      <header class="hero">
+        <div class="kicker">Dossiê de pesquisa profunda e brainstorm estratégico</div>
+        <h1>Ilhabela × IA × Claude&nbsp;Code</h1>
+        <p class="sub">Que apps, serviços, produtos e negócios uma pessoa com domínio de IA aplicada
+        e Claude Code consegue construir tendo Ilhabela como base — 70 ideias, ranqueadas,
+        com as cinco melhores aprofundadas.</p>
+        <p class="meta">Preparado para Thuan · Engenharia de Dados &amp; IA · Julho de 2026<br>
+        <strong>[FATO]</strong> dado de fonte pública ·
+        <strong>[EST]</strong> estimativa com conta visível ·
+        <strong>[HIP]</strong> hipótese a testar</p>
+      </header>
+<h2 id="ponto-de-partida-o-que-ja-existe">Ponto de partida: o que já existe</h2>
+<p>Este dossiê <strong>não</strong> assume alguém começando do zero. O repositório contém uma proposta comercial pronta e sofisticada — <em>Dojo Fitness Club × Inteligência de Dados</em> — que já estabelece:</p>
+<ul>
+<li>Uma <strong>oferta produtizada em três níveis</strong>: R$ 397 / R$ 697 / R$ 1.197 por mês, com implantação de R$ 2.500 / R$ 4.500 / R$ 7.500, sem fidelidade.</li>
+<li>Uma <strong>tese de produto reutilizável</strong>: camada de IA sobre o sistema de gestão que o cliente já usa, agente de WhatsApp, funil de turista com Pix, painel executivo, predição de churn.</li>
+<li>Um <strong>argumento de venda calibrado para a ilha</strong>: a sazonalidade como problema central e o turista como receita nova que preenche o vale da baixa temporada.</li>
+<li>Uma <strong>máquina de propostas</strong>: o próprio CSS do deck declara que ele é um template — troque os tokens de cor e o logo e ele serve outro cliente.</li>
+</ul>
+<p>Isso muda tudo na análise. O ativo mais valioso hoje não é uma ideia — é <strong>um motor de proposta comercial replicável, com preço já ancorado, e pelo menos um cliente-alvo real na ilha</strong>. A pergunta certa não é "o que fazer?", é: <em>qual o próximo movimento, e qual o portfólio que esse motor financia?</em></p>
+<hr>
+<h2 id="tres-insights-que-mudam-o-jogo">⚡ Três insights que mudam o jogo</h2>
+<h3>⚡ 1. O PIB per capita de Ilhabela é uma ficção contábil — e quase todo mundo que analisa a cidade cai nessa</h3>
+<p>Ilhabela tem PIB per capita de <strong>R$ 424.535 (2023), o 6º maior do Brasil</strong> [FATO]. Ao mesmo tempo, o salário médio do trabalhador formal é de <strong>R$ 3,3 mil, abaixo da média estadual de R$ 3,9 mil</strong> [FATO].</p>
+<p>Os dois fatos só coexistem por uma razão: a produção de petróleo e gás offshore é contabilizada no município confrontante. O PIB é <strong>estatística, não dinheiro circulante</strong>. Multiplicando, o PIB municipal daria ~R$ 15,5 bilhões [EST: R$ 424.535 × 36.559 hab] para uma cidade cujo maior empregador é a administração pública, com 2.213 postos [FATO].</p>
+<p><strong>Implicação prática:</strong> qualquer plano de negócios que dimensione o mercado local por PIB vai errar por uma ordem de grandeza. O dinheiro que de fato circula em Ilhabela vem de quatro bolsos, todos de fora: o turista, o proprietário de segunda residência, a folha pública e a construção civil que atende os dois primeiros. <strong>Precifique para esses bolsos, não para o PIB.</strong></p>
+<h3>⚡ 2. A prefeitura quebrou em 2026 — e isso não fecha o B2G, inverte o modelo dele</h3>
+<p>Os royalties de petróleo caíram para cerca de <strong>R$ 17 milhões, uma queda de mais de 75% em seis anos</strong> [FATO]. Em março de 2026, cerca de <strong>R$ 14 milhões em pagamentos deixaram de ser feitos — a primeira vez em 20 anos</strong> [FATO]. O Decreto nº 11.801 cortou <strong>30% dos gastos custeados por royalties até 31/12/2026</strong> [FATO]. Contratos de obras, transporte público e fornecedores foram afetados [FATO].</p>
+<p>A leitura ingênua é: "não venda para a prefeitura, ela não paga." A leitura correta é outra. Um município que perdeu 75% de uma receita e cortou 30% do custeio tem <strong>uma única saída: aumentar receita própria e eficiência.</strong> E ele já começou:</p>
+<ul>
+<li>Criou a <strong>Taxa de Preservação Ambiental (TPA)</strong>, em operação desde 31/03/2026, de R$ 10 a R$ 140 por entrada de veículo, com reconhecimento automático de placa e prestação de contas trimestral à Câmara [FATO].</li>
+<li>O Conselho Municipal de Turismo articula <strong>regulamentar e taxar o aluguel por temporada</strong>, espelhando a lei de Caldas Novas [FATO].</li>
+</ul>
+<p><strong>Implicação prática:</strong> vender licença de software para essa prefeitura hoje é ruim. Vender <strong>percentual da arrecadação recuperada</strong> é excelente — não entra no orçamento apertado, se paga sozinho, e o produto é exatamente o tipo de coisa que um operador com IA constrói sozinho: cruzar anúncios de temporada públicos contra cadastro municipal e IPTU. É a jogada assimétrica deste dossiê.</p>
+<h3>⚡ 3. O mercado de serviço de IA dentro de Ilhabela tem teto — e o teto é confortável demais para ser percebido a tempo</h3>
+<p>Conta bottom-up [EST]:</p>
+<pre><code>4.912 empresas registradas em Ilhabela                          [FATO]
+− 3.313 MEIs, majoritariamente sem capacidade de pagar retainer [FATO]
+≈ 1.600 empresas não-MEI
+× ~40% com faturamento e dor compatíveis com R$ 697/mês         [HIP]
+≈ 640 empresas endereçáveis (SOM local)
+
+Cenário otimista: 5% de penetração = 32 clientes
+32 × R$ 697/mês × 12                    = R$ 268 mil/ano de recorrência
++ 32 × R$ 4.500 de setup (uma vez)      = R$ 144 mil no ano de conquista
+</code></pre>
+<p><strong>R$ 250–400 mil por ano de ARR é o teto realista do jogo puramente local para um operador solo.</strong> É um resultado excelente de vida — e um resultado medíocre de construção de patrimônio, porque ARR de serviço não tem múltiplo: se você para, ele para.</p>
+<p>O problema é que esse teto é alto o bastante para ser confortável e baixo o bastante para não construir nada permanente. <strong>É uma armadilha de conforto.</strong> A conclusão estratégica do dossiê inteiro sai daqui: o serviço local é o <em>financiador</em>, nunca o destino.</p>
+<hr>
+<h2 id="base-factual">Base factual</h2>
+<h3>Território, gente e restrição</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Indicador</th>
+<th>Valor</th>
+<th>Rótulo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>População estimada (2025)</td>
+<td>36.559 hab</td>
+<td>[FATO]</td>
+</tr>
+<tr>
+<td>População — Censo 2022</td>
+<td>34.934 hab</td>
+<td>[FATO]</td>
+</tr>
+<tr>
+<td>Área territorial</td>
+<td>346,389 km²</td>
+<td>[FATO]</td>
+</tr>
+<tr>
+<td>Densidade demográfica</td>
+<td>100,85 hab/km²</td>
+<td>[FATO]</td>
+</tr>
+<tr>
+<td>Moradores por domicílio</td>
+<td>2,74</td>
+<td>[FATO]</td>
+</tr>
+<tr>
+<td>Salário médio do trabalhador formal</td>
+<td>R$ 3,3 mil (SP: R$ 3,9 mil)</td>
+<td>[FATO]</td>
+</tr>
+<tr>
+<td>PIB per capita (2023)</td>
+<td>R$ 424.535 — 6º do Brasil, distorcido por royalties</td>
+<td>[FATO]</td>
+</tr>
+<tr>
+<td>Empresas registradas</td>
+<td>4.912</td>
+<td>[FATO]</td>
+</tr>
+<tr>
+<td>MEIs registrados</td>
+<td>3.313</td>
+<td>[FATO]</td>
+</tr>
+<tr>
+<td>Maiores empregadores</td>
+<td>Administração pública (2.213), hotéis (1.117), atendimento hospitalar (1.049)</td>
+<td>[FATO]</td>
+</tr>
+<tr>
+<td>Parque Estadual de Ilhabela</td>
+<td>27.025 ha ≈ <strong>85% do arquipélago</strong>, proteção integral, edificação proibida</td>
+<td>[FATO]</td>
+</tr>
+<tr>
+<td>Comunidades tradicionais caiçaras</td>
+<td>18 núcleos, ~1.200 moradores</td>
+<td>[FATO]</td>
+</tr>
+</tbody>
+</table></div>
+<p>A restrição ambiental é o fato estrutural mais subestimado. Com 85% do território indisponível para edificação [FATO], <strong>Ilhabela não pode crescer em área — só em intensidade.</strong> Isso significa que todo ganho econômico futuro da ilha tem que vir de <em>fazer mais com o mesmo estoque físico</em>: mais receita por leito, mais receita por barco, mais receita por metro quadrado de restaurante. Otimização de intensidade é literalmente a definição do que software e IA fazem bem. <strong>A restrição ambiental é o melhor amigo comercial de quem vende inteligência aqui.</strong></p>
+<h3>Fluxo, sazonalidade e dinheiro do turismo</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Indicador</th>
+<th>Valor</th>
+<th>Rótulo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Travessia São Sebastião–Ilhabela</td>
+<td>2ª mais movimentada do estado</td>
+<td>[FATO]</td>
+</tr>
+<tr>
+<td>Média diária da travessia</td>
+<td>~4.000 veículos, ~5.000 passageiros, 700 bicicletas, 500 motos</td>
+<td>[FATO]</td>
+</tr>
+<tr>
+<td>Operação</td>
+<td>24 h/dia; a cada 30 min entre 5h30 e 23h30</td>
+<td>[FATO]</td>
+</tr>
+<tr>
+<td>Visitantes projetados — verão 2026</td>
+<td>&gt; 1 milhão, alta de 8%</td>
+<td>[FATO]</td>
+</tr>
+<tr>
+<td>Visitantes no Carnaval 2026</td>
+<td>&gt; 40 mil (Observatório de Turismo)</td>
+<td>[FATO]</td>
+</tr>
+<tr>
+<td>Ocupação hoteleira no Carnaval</td>
+<td>87%</td>
+<td>[FATO]</td>
+</tr>
+<tr>
+<td>Ocupação em fins de semana de baixa</td>
+<td>~65–70%</td>
+<td>[FATO]</td>
+</tr>
+<tr>
+<td>Ocupação média do Circuito Litoral Norte, 2025</td>
+<td>51,46%</td>
+<td>[FATO]</td>
+</tr>
+<tr>
+<td>Ticket médio regional, 2025</td>
+<td>R$ 505,34 (+1,1%)</td>
+<td>[FATO]</td>
+</tr>
+<tr>
+<td>Leitos em hotéis, pousadas e hostels</td>
+<td>&gt; 5.000</td>
+<td>[FATO]</td>
+</tr>
+<tr>
+<td>Leitos em casas de temporada</td>
+<td>&gt; 7.000</td>
+<td>[FATO]</td>
+</tr>
+<tr>
+<td>Taxa de Preservação Ambiental (TPA)</td>
+<td>R$ 10 a R$ 140 por entrada de veículo, desde 31/03/2026</td>
+<td>[FATO]</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Tamanho do bolo turístico — triangulação [EST]:</strong></p>
+<p><em>Caminho A — por visitante:</em>
+<code>1,5 milhão de visitantes/ano × R$ 505 de ticket médio ≈ R$ 758 milhões/ano</code>
+(o número de visitantes é extrapolado: se o verão sozinho passa de 1 milhão, o ano fica entre 1,3 e 1,8 milhão)</p>
+<p><em>Caminho B — por leito:</em>
+<code>12.000 leitos × 365 noites × 40% de ocupação média ponderada = 1,75 milhão de pernoites</code>
+<code>1,75 milhão × R$ 250 de gasto total por pernoite ≈ R$ 438 milhões/ano</code></p>
+<p>Os dois caminhos convergem na mesma ordem de grandeza. <strong>Trabalhe com R$ 450–750 milhões por ano de gasto turístico direto em Ilhabela</strong> [EST]. Esse, e não o PIB, é o bolo real.</p>
+<h3>Náutica — o setor mais rico e o mais analógico</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Indicador</th>
+<th>Valor</th>
+<th>Rótulo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Marinas e garagens náuticas no Litoral Norte</td>
+<td>150, sendo <strong>32 em Ilhabela</strong></td>
+<td>[FATO]</td>
+</tr>
+<tr>
+<td>Exemplo de escala</td>
+<td>Centro Náutico Ilhabela: 17.000 m², 260 barcos</td>
+<td>[FATO]</td>
+</tr>
+<tr>
+<td>Semana Internacional de Vela (SIVI)</td>
+<td>53ª edição, jul–ago 2026, &gt; 120 barcos, BR/ARG/URU</td>
+<td>[FATO]</td>
+</tr>
+<tr>
+<td>Movimentação econômica da SIVI 2025</td>
+<td>~R$ 50 milhões</td>
+<td>[FATO]</td>
+</tr>
+<tr>
+<td>Preços de charter</td>
+<td>Lancha R$ 1.800/4h · Veleiro R$ 2.200/4h · Catamarã R$ 4.000/4h · Iate R$ 5.000/4h</td>
+<td>[FATO]</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Estimativa de estoque náutico [EST]:</strong>
+<code>32 instalações × ~150 barcos em média (Centro Náutico tem 260) ≈ 4.800 embarcações guardadas em Ilhabela</code></p>
+<p><code>4.800 barcos × R$ 1.200/mês de vaga [HIP, faixa típica] ≈ R$ 69 milhões/ano só de guarda</code>
+<code>+ manutenção estimada em 8% do valor do barco/ano, com barco médio de R$ 250 mil ≈ R$ 96 milhões/ano de serviços</code></p>
+<p><strong>A economia náutica de Ilhabela movimenta algo entre R$ 150 e R$ 250 milhões por ano</strong> [EST] — comparável a um terço de todo o gasto turístico — e é, de longe, o setor com maior ticket e menor maturidade digital da ilha. Guarde isso: é a resposta da Parte 4.</p>
+<p><em>Dado não encontrado:</em> número exato de embarcações registradas em Ilhabela e receita agregada do setor. <strong>Validação em 7 dias:</strong> visitar 5 das 32 marinas, perguntar número de vagas, ocupação, valor médio da vaga e qual sistema usam. Cinco conversas resolvem a estimativa.</p>
+<hr>
+<h2 id="parte-1-mapa-da-economia-local">Parte 1 — Mapa da economia local</h2>
+<h3>O sistema em uma página</h3>
+<p>Ilhabela funciona como uma <strong>economia de renda importada com capacidade instalada rígida</strong>. Quatro bolsos externos injetam dinheiro; um conjunto pequeno de operadores locais captura esse dinheiro; e um gargalo físico — a balsa — media tudo.</p>
+<pre><code>   BOLSOS EXTERNOS                CAPTURA LOCAL                    GARGALOS
+┌──────────────────────┐    ┌──────────────────────────┐    ┌─────────────────┐
+│ Turista              │───▶│ Hospedagem (12k leitos)  │    │ BALSA           │
+│ ~R$ 450–750 mi/ano   │    │ Gastronomia              │◀──▶│ 4k veículos/dia │
+├──────────────────────┤    │ Passeios e receptivo     │    │ TPA R$10–140    │
+│ 2ª residência        │───▶│ Comércio                 │    ├─────────────────┤
+│ (dono ausente)       │    │ Transporte               │    │ MÃO DE OBRA     │
+├──────────────────────┤    ├──────────────────────────┤    │ pico 3–4×       │
+│ Proprietário náutico │───▶│ Marinas (32)             │    │ base fixa       │
+│ ~R$ 150–250 mi/ano   │    │ Manutenção e charter     │    ├─────────────────┤
+├──────────────────────┤    ├──────────────────────────┤    │ PARQUE (85%)    │
+│ Estado / royalties   │───▶│ Folha pública (2.213)    │    │ sem expansão    │
+│ ▼ −75% em 6 anos     │    │ Obras e fornecedores     │    │ física possível │
+└──────────────────────┘    └──────────────────────────┘    └─────────────────┘
+                                        │
+                                        ▼
+                          ┌──────────────────────────────┐
+                          │ VAZAMENTOS                   │
+                          │ • Comissão de OTA (15–18%)   │
+                          │ • Comissão de administradora │
+                          │   de temporada (20–40%)      │
+                          │ • Compras fora da ilha       │
+                          │ • Lead perdido / venda não   │
+                          │   respondida                 │
+                          └──────────────────────────────┘
+</code></pre>
+<p><strong>A lei física da economia local:</strong> a capacidade instalada é dimensionada para o vale, a demanda é dimensionada para o pico, e o pico é 3 a 4 vezes o vale. Consequência: <strong>em nenhum momento do ano o operador local está calibrado.</strong> De dezembro a fevereiro ele está perdendo venda por falta de braço; de maio a novembro está queimando custo fixo por falta de cliente. Os dois estados custam dinheiro.</p>
+<p>É exatamente aí que a IA entra com vantagem genuína, e não decorativa: <strong>IA é capacidade elástica.</strong> Ela custa quase nada no vale e absorve o pico sem contratar. Nenhuma outra tecnologia disponível a um pequeno empresário faz isso. Esse é o "por que agora" que sustenta metade das ideias deste documento.</p>
+<h3>As 22 dores mais caras</h3>
+<p>Ordenadas por custo anual estimado para o conjunto da ilha. A coluna <strong>IA-shaped</strong> é honesta: 5 = a IA resolve de fato o núcleo do problema; 1 = a IA é enfeite e o problema é de operação, capital ou regulação.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Dor</th>
+<th>Quem sofre</th>
+<th>Custo/ano na ilha</th>
+<th>Como resolvem hoje</th>
+<th style="text-align: center;">IA-shaped</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Comissão de OTA</strong> — Booking/Airbnb capturam 15–18% da reserva</td>
+<td>Pousadas, hotéis</td>
+<td><strong>R$ 10,6 mi</strong> [EST: 5.000 leitos × 365 × 45% ocup. × R$ 180 = R$ 148 mi de receita; 45% via OTA × 16%]</td>
+<td>Aceitam. Tentativas frágeis de venda direta</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Comissão de administradora de temporada</strong> — 20–40% da reserva [FATO]</td>
+<td>Proprietários de imóvel</td>
+<td><strong>R$ 30–60 mi</strong> [EST: 7.000 leitos ÷ 4 = 1.750 imóveis × R$ 90 mil de receita anual média × 30%]</td>
+<td>Aceitam, ou administram sozinhos e sofrem</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Lead não respondido fora do horário</strong></td>
+<td>Todo o trade turístico</td>
+<td><strong>R$ 18 mi</strong> [EST: 1.500 negócios × 150 leads perdidos/ano × 20% conv. × R$ 400 ticket]</td>
+<td>Nada. Perde-se em silêncio</td>
+<td style="text-align: center;"><strong>5</strong></td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Ociosidade da baixa temporada</strong> — custo fixo rodando com 51% de ocupação [FATO]</td>
+<td>Hospedagem, gastronomia, passeios</td>
+<td><strong>R$ 40–80 mi</strong> de margem não realizada [EST]</td>
+<td>Fecham, demitem, promoção improvisada</td>
+<td style="text-align: center;">3</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Barco parado esperando orçamento e peça</strong></td>
+<td>Proprietários náuticos, marinas</td>
+<td><strong>R$ 15–25 mi</strong> [EST: 4.800 barcos × 20% com parada evitável/ano × R$ 18 mil de valor de uso perdido]</td>
+<td>WhatsApp solto, foto sem contexto, dono decidindo de longe</td>
+<td style="text-align: center;"><strong>5</strong></td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>Turnover de hóspede</strong> — faxina e vistoria concentradas no sábado</td>
+<td>Administradoras, faxineiras, proprietários</td>
+<td><strong>R$ 9,5 mi</strong> [EST: 1.750 imóveis × 30 trocas/ano × R$ 180]</td>
+<td>Planilha e grupo de WhatsApp</td>
+<td style="text-align: center;">3</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>Contratação e treinamento de temporada</strong> — 89% dos empresários do setor no país acham difícil preencher vagas [FATO]</td>
+<td>Gastronomia, hospedagem</td>
+<td><strong>R$ 12–20 mi</strong> [EST]</td>
+<td>Indicação, rotatividade alta, retrabalho</td>
+<td style="text-align: center;">3</td>
+</tr>
+<tr>
+<td>8</td>
+<td><strong>Manutenção invisível da casa de veraneio</strong> — maresia, mofo, piscina, cupim</td>
+<td>Proprietário ausente</td>
+<td><strong>R$ 20–35 mi</strong> [EST: 1.750+ imóveis × R$ 15 mil/ano de deterioração e reparo evitável]</td>
+<td>Caseiro sem processo, "confia"</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr>
+<td>9</td>
+<td><strong>Ruptura de estoque dependente da balsa</strong></td>
+<td>Restaurantes, mercados</td>
+<td><strong>R$ 8–14 mi</strong> [EST: 400 estabelecimentos × R$ 30 mil/ano entre falta e sobra]</td>
+<td>Instinto do dono</td>
+<td style="text-align: center;"><strong>5</strong></td>
+</tr>
+<tr>
+<td>10</td>
+<td><strong>Passeio cancelado por mar ou vento</strong> — sem realocação</td>
+<td>Operadores náuticos, turistas</td>
+<td><strong>R$ 6–10 mi</strong> [EST]</td>
+<td>Devolve dinheiro ou remarca no braço</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr>
+<td>11</td>
+<td><strong>Fila da balsa</strong> — atrito na porta de entrada do destino</td>
+<td>Turista, e por extensão todo o comércio</td>
+<td><strong>incalculável em receita</strong>; ~40+ min de espera em pico [HIP]</td>
+<td>Aplicativos de status, boca a boca</td>
+<td style="text-align: center;">3</td>
+</tr>
+<tr>
+<td>12</td>
+<td><strong>Informalidade do aluguel por temporada</strong> — ISS e taxa não arrecadados</td>
+<td>Prefeitura, hotelaria formal</td>
+<td><strong>R$ 5–12 mi/ano</strong> de receita municipal não capturada [EST]</td>
+<td>Regulamentação em discussão [FATO]</td>
+<td style="text-align: center;"><strong>5</strong></td>
+</tr>
+<tr>
+<td>13</td>
+<td><strong>Crise de caixa municipal</strong> — royalties −75%, R$ 14 mi não pagos [FATO]</td>
+<td>Prefeitura, fornecedores, cidade</td>
+<td><strong>R$ 17 mi/ano</strong> e caindo</td>
+<td>Decreto de corte de 30% [FATO]</td>
+<td style="text-align: center;">3</td>
+</tr>
+<tr>
+<td>14</td>
+<td><strong>Churn silencioso em negócio de recorrência</strong> (academia, escola, clube)</td>
+<td>Negócios de mensalidade</td>
+<td><strong>R$ 3–6 mi</strong> [EST]</td>
+<td>Ninguém olha aluno por aluno</td>
+<td style="text-align: center;"><strong>5</strong></td>
+</tr>
+<tr>
+<td>15</td>
+<td><strong>Precificação estática na temporada</strong> — mesmo preço em fim de semana comum e em SIVI/Carnaval</td>
+<td>Hospedagem, charter</td>
+<td><strong>R$ 15–30 mi</strong> de receita não capturada [EST]</td>
+<td>Tabela fixa, ajuste no olho</td>
+<td style="text-align: center;"><strong>5</strong></td>
+</tr>
+<tr>
+<td>16</td>
+<td><strong>Reputação online não trabalhada</strong> — avaliação só quando o cliente reclama</td>
+<td>Todo o trade</td>
+<td><strong>R$ 5–10 mi</strong> [EST]</td>
+<td>Pedido manual e esporádico</td>
+<td style="text-align: center;"><strong>5</strong></td>
+</tr>
+<tr>
+<td>17</td>
+<td><strong>Conteúdo e presença digital</strong> — Instagram parado, sem SEO local</td>
+<td>Pequenos operadores</td>
+<td><strong>R$ 4–8 mi</strong> [EST]</td>
+<td>Sobrinho, agência barata, nada</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr>
+<td>18</td>
+<td><strong>Fragmentação do inventário de barcos</strong> — nenhuma visão unificada de disponibilidade</td>
+<td>Charters, receptivos, pousadas que indicam</td>
+<td><strong>R$ 10–20 mi</strong> de venda não realizada [EST]</td>
+<td>Ligação e WhatsApp entre operadores</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr>
+<td>19</td>
+<td><strong>Conformidade dispersa</strong> — Cadastur, TPA, alvará, bombeiros, sanitária</td>
+<td>PMEs turísticas</td>
+<td><strong>R$ 3–6 mi</strong> entre multa e tempo [EST]</td>
+<td>Contador e susto</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr>
+<td>20</td>
+<td><strong>Turismo de base comunitária sem canal</strong> — 18 núcleos caiçaras, ~1.200 pessoas [FATO]</td>
+<td>Comunidades tradicionais</td>
+<td><strong>R$ 2–5 mi</strong> de renda não acessada [EST]</td>
+<td>Intermediários, informalidade</td>
+<td style="text-align: center;">2</td>
+</tr>
+<tr>
+<td>21</td>
+<td><strong>Conectividade instável em partes da ilha</strong></td>
+<td>Todos</td>
+<td>custo difuso</td>
+<td>Nada</td>
+<td style="text-align: center;">1 (mas define arquitetura: <strong>offline-first</strong>)</td>
+</tr>
+<tr>
+<td>22</td>
+<td><strong>Logística de última milha</strong> — carga cruza a balsa sem consolidação</td>
+<td>Comércio</td>
+<td><strong>R$ 5–10 mi</strong> [EST]</td>
+<td>Cada um por si</td>
+<td style="text-align: center;">2</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Leitura da tabela.</strong> As dores mais caras (1, 2, 4) são de <em>estrutura de mercado</em> — a IA ajuda, mas não é o núcleo. As dores mais IA-shaped (3, 5, 9, 12, 14, 15, 16) somam <strong>R$ 70–120 milhões por ano</strong> [EST] e têm em comum uma característica: são problemas de <em>decisão repetida com informação dispersa</em>. Ninguém em Ilhabela está deixando de resolvê-las por falta de vontade. Estão deixando por falta de braço em janeiro e falta de caixa em julho.</p>
+<p><em>Dado não encontrado</em> em todas as linhas marcadas [EST]: não existe pesquisa pública que quantifique perda por dor no comércio de Ilhabela. <strong>Validação em 7 dias:</strong> 12 entrevistas de 30 minutos — 3 pousadas, 3 marinas, 2 restaurantes, 2 administradoras de temporada, 1 charter, 1 receptivo. Pergunta única e decisiva em cada uma: <em>"Quanto você acha que perde por ano com isso, e o que você já tentou?"</em> A resposta ao "o que já tentou" vale mais que o número.</p>
+<hr>
+<h2 id="parte-2-brainstorm-massivo-70-ideias">Parte 2 — Brainstorm massivo (70 ideias)</h2>
+<p>Regra desta seção: quantidade primeiro, julgamento depois. O filtro vem na Parte 3. Cada linha traz cliente, dor, o "por que agora", o modelo de receita e — o mais importante — <strong>quem é o primeiro cliente pagante que dá para procurar nesta semana</strong>.</p>
+<p>Na coluna "primeiro cliente", <em>nomeável</em> significa um alvo concreto e identificável em campo, não uma persona genérica.</p>
+<h3>A. Micro-SaaS vertical para nicho local — 12 ideias</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Ideia</th>
+<th>Cliente e dor</th>
+<th>Por que só agora</th>
+<th>Modelo e ticket</th>
+<th>Primeiro cliente</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A1</td>
+<td><strong>Marina OS</strong> — fila de descida de barco, agenda de mar, vaga, cobrança</td>
+<td>32 marinas e garagens náuticas [FATO]; hoje operam em planilha e rádio</td>
+<td>Agente entende áudio e foto do marinheiro; antes exigiria app e treinamento</td>
+<td>SaaS R$ 900–2.500/mês por marina</td>
+<td>Centro Náutico Ilhabela (260 barcos) e vizinhas do Perequê</td>
+</tr>
+<tr>
+<td>A2</td>
+<td><strong>Ordem de Serviço Náutica</strong> — mecânico manda foto e áudio, IA gera orçamento estruturado, dono aprova por WhatsApp</td>
+<td>Oficinas náuticas e proprietários ausentes; barco parado é dor nº 5</td>
+<td>Visão + transcrição em português técnico só ficou confiável agora</td>
+<td>R$ 600–1.500/mês + % sobre OS aprovada</td>
+<td>Oficinas dentro das marinas do Perequê e Itaquanduba</td>
+</tr>
+<tr>
+<td>A3</td>
+<td><strong>Charter OS</strong> — disponibilidade, contrato, checklist de segurança, briefing, Pix, avaliação</td>
+<td>Operadores de lancha, veleiro e escuna; ticket R$ 1.800–5.000 por saída [FATO]</td>
+<td>Agente lida com o ida-e-volta de negociação que hoje consome o dono</td>
+<td>R$ 400–900/mês + 2–3% do booking</td>
+<td>Terra &amp; Mar, Eva Turismo, operadores independentes de lancha</td>
+</tr>
+<tr>
+<td>A4</td>
+<td><strong>Pousada Copiloto</strong> — pré-check-in, upsell, resposta a OTA, reputação</td>
+<td>&gt; 5.000 leitos de hotelaria [FATO]; dono responde tudo no celular</td>
+<td>Custo por conversa caiu ao ponto de caber em pousada de 12 quartos</td>
+<td>R$ 397–997/mês (a régua do deck já existente)</td>
+<td>Pousadas do Curral, Feiticeira e Vila</td>
+</tr>
+<tr>
+<td>A5</td>
+<td><strong>Motor de tarifa dinâmica do Litoral Norte</strong> — preço por evento local (SIVI, Carnaval, temporada de baleia, feriado paulista)</td>
+<td>Hospedagem e charter com preço estático (dor 15)</td>
+<td>Só agora dá para cruzar sinais de demanda sem time de dados</td>
+<td>R$ 300–800/mês, ou 1% do incremento</td>
+<td>Qualquer pousada que já usa Stays ou HITS</td>
+</tr>
+<tr>
+<td>A6</td>
+<td><strong>Anfitrião Copiloto</strong> — conciliação multi-plataforma, faxina, manutenção, repasse ao proprietário</td>
+<td>~1.750 imóveis de temporada [EST]; administradora cobra 20–40% [FATO]</td>
+<td>Agente resolve o atendimento 24 h que justifica metade da comissão</td>
+<td>R$ 49–99 por imóvel/mês</td>
+<td>ALITI (associação de locadores) e Mar Azul Imóveis</td>
+</tr>
+<tr>
+<td>A7</td>
+<td><strong>Caseiro Digital</strong> — relatório mensal automático da casa fechada: fotos, consumo, manutenções, alertas de maresia e mofo</td>
+<td>Proprietário de 2ª residência que mora em SP (dor 8)</td>
+<td>Visão computacional em foto de celular do caseiro, sem sensor caro</td>
+<td>R$ 79–199 por imóvel/mês, pago pelo dono</td>
+<td>Caseiros e zeladores do Barra Velha, Pequeá e Portinho</td>
+</tr>
+<tr>
+<td>A8</td>
+<td><strong>Previsão de compra para restaurante</strong> — demanda por dia, considerando balsa, feriado, clima e evento</td>
+<td>~400 estabelecimentos [EST]; ruptura de estoque (dor 9)</td>
+<td>Previsão decente com 6 meses de histórico, sem cientista de dados</td>
+<td>R$ 297–697/mês</td>
+<td>Restaurantes do Perequê e da Vila com movimento alto</td>
+</tr>
+<tr>
+<td>A9</td>
+<td><strong>Escala Sazonal</strong> — contratação, escala, ponto e banco de horas para pico de temporada</td>
+<td>Gastronomia e hospedagem; 89% acham difícil contratar [FATO]</td>
+<td>Triagem de candidato por conversa, não por currículo</td>
+<td>R$ 197–497/mês</td>
+<td>Restaurantes com 20+ funcionários na alta</td>
+</tr>
+<tr>
+<td>A10</td>
+<td><strong>Roteirizador de passeio com mar</strong> — remarcação automática quando vento e ondulação inviabilizam</td>
+<td>Operadores de passeio (dor 10)</td>
+<td>Modelos meteo-oceânicos abertos + agente que renegocia com o cliente</td>
+<td>R$ 297–597/mês</td>
+<td>Escunas e speedboats da Vila</td>
+</tr>
+<tr>
+<td>A11</td>
+<td><strong>Camada de Inteligência para negócio de recorrência</strong> — churn, renovação, reativação</td>
+<td>Academias, escolas, clubes, clínicas (dor 14)</td>
+<td><strong>Já construído e precificado no deck do Dojo</strong></td>
+<td>R$ 397 / 697 / 1.197 por mês</td>
+<td>Dojo Fitness Club — proposta pronta</td>
+</tr>
+<tr>
+<td>A12</td>
+<td><strong>Agenda sem no-show</strong> — clínicas, estética, pet, personal</td>
+<td>Serviços de hora marcada na ilha</td>
+<td>Confirmação conversacional custa centavos</td>
+<td>R$ 197–397/mês</td>
+<td>Clínicas e estúdios da Vila e Perequê</td>
+</tr>
+</tbody>
+</table></div>
+<h3>B. Serviço de IA "agência de uma pessoa só" — 10 ideias</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Ideia</th>
+<th>Cliente e dor</th>
+<th>Por que só agora</th>
+<th>Modelo e ticket</th>
+<th>Primeiro cliente</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B1</td>
+<td><strong>Diagnóstico de IA pago</strong> — 1 semana, entrega um mapa de oportunidades e um número de perda anual</td>
+<td>Qualquer PME local; ninguém sabe por onde começar</td>
+<td>Dá para produzir análise séria em dias, não semanas</td>
+<td>R$ 1.500–3.500, abatível do setup</td>
+<td>Qualquer conversa que hoje termina em "vou pensar"</td>
+</tr>
+<tr>
+<td>B2</td>
+<td><strong>Agente de WhatsApp produtizado por vertical</strong></td>
+<td>Pousada, restaurante, marina, clínica</td>
+<td>Mercado nacional cobra R$ 3–5 mil de setup + R$ 1,5–2,5 mil/mês [FATO]</td>
+<td>Réplica do modelo Dojo por vertical</td>
+<td>Segunda e terceira academia/pousada da ilha</td>
+</tr>
+<tr>
+<td>B3</td>
+<td><strong>Camada sobre o sistema que o cliente já tem</strong> — Tecnofit, Stays, HITS, Omie, Bling</td>
+<td>PMEs que odeiam trocar de sistema</td>
+<td>Integração via API virou trabalho de dias com Claude Code</td>
+<td>Setup R$ 2,5–7,5 mil + retainer</td>
+<td>Já é a tese central do deck</td>
+</tr>
+<tr>
+<td>B4</td>
+<td><strong>Back-office fiscal automatizado para pousada</strong> — nota, conciliação, repasse de OTA</td>
+<td>Pousadas sem administrativo</td>
+<td>Leitura de PDF e extrato ficou confiável</td>
+<td>R$ 497–997/mês</td>
+<td>Pousadas de 10–30 quartos</td>
+</tr>
+<tr>
+<td>B5</td>
+<td><strong>Máquina de conteúdo local</strong> — SEO de destino + Instagram + resposta a review</td>
+<td>Todo o trade (dor 17)</td>
+<td>Conteúdo com contexto local real, não genérico</td>
+<td>R$ 697–1.497/mês</td>
+<td>Charters e pousadas sem marketing</td>
+</tr>
+<tr>
+<td>B6</td>
+<td><strong>Motor de reputação</strong> — pedido de avaliação no momento certo, resposta a review, alerta de crise</td>
+<td>Todo o trade (dor 16)</td>
+<td>Detecção de momento de satisfação virou trivial</td>
+<td>R$ 297/mês, ou pacote com B2</td>
+<td>Restaurantes com nota abaixo de 4,5</td>
+</tr>
+<tr>
+<td>B7</td>
+<td><strong>Auditoria "o que seu sistema sabe e você não vê"</strong> — entregável de 7 dias</td>
+<td>Negócios com 2+ anos de dados parados</td>
+<td>Análise exploratória automatizada</td>
+<td>R$ 2.500–6.000 por auditoria</td>
+<td>Marinas e academias com histórico longo</td>
+</tr>
+<tr>
+<td>B8</td>
+<td><strong>Onboarding de conformidade</strong> — Cadastur, TPA, alvará, cadastro de temporada</td>
+<td>PMEs turísticas (dor 19)</td>
+<td>Regulamentação de temporada chegando [FATO]</td>
+<td>R$ 800–2.000 por empresa + manutenção</td>
+<td>Locadores de temporada informais</td>
+</tr>
+<tr>
+<td>B9</td>
+<td><strong>CTO fracionário</strong> para empresa média local — marina grande, rede de pousadas, imobiliária</td>
+<td>Empresa de R$ 5–30 mi que não tem tecnologia</td>
+<td>Um operador com IA entrega o que exigia squad</td>
+<td>R$ 6–15 mil/mês, 1–2 clientes no máximo</td>
+<td>Maior marina e maior imobiliária da ilha</td>
+</tr>
+<tr>
+<td>B10</td>
+<td><strong>Treinamento de IA para equipes</strong> — turmas via ACEI, Convention Bureau, Sebrae</td>
+<td>Trade inteiro</td>
+<td>Demanda explodiu e não há oferta local</td>
+<td>R$ 4–12 mil por turma</td>
+<td>ACEI e Ilhabela Convention &amp; Visitors Bureau</td>
+</tr>
+</tbody>
+</table></div>
+<h3>C. Produto para turista (B2C) — 8 ideias</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Ideia</th>
+<th>Cliente e dor</th>
+<th>Por que só agora</th>
+<th>Modelo e ticket</th>
+<th>Primeiro cliente</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C1</td>
+<td><strong>Concierge de Ilhabela no WhatsApp</strong> — "o que fazer hoje" dado maré, vento, chuva, fila de balsa e lotação</td>
+<td>&gt; 1 milhão de visitantes no verão [FATO]</td>
+<td>Um agente com contexto local supera qualquer app de listagem</td>
+<td>Grátis ao turista; afiliação e destaque pago do trade</td>
+<td>Turista; o pagante é a pousada que indica</td>
+</tr>
+<tr>
+<td>C2</td>
+<td><strong>Previsor de fila de balsa</strong> — estimativa de espera por horário e dia</td>
+<td>Turista e morador; 4.000 veículos/dia [FATO]</td>
+<td>Séries temporais + sinais públicos; barato de manter</td>
+<td>Gratuito como isca; monetiza via C1</td>
+<td>Ninguém paga direto — é ativo de audiência</td>
+</tr>
+<tr>
+<td>C3</td>
+<td><strong>Assistente de chegada</strong> — TPA, estacionamento, regras do parque, o que é proibido</td>
+<td>Turista de primeira viagem; TPA nova desde 03/2026 [FATO]</td>
+<td>Regra nova, ninguém entende, ninguém explica</td>
+<td>Feature de C1; possível patrocínio institucional</td>
+<td>Integrar com pousadas como brinde de reserva</td>
+</tr>
+<tr>
+<td>C4</td>
+<td><strong>Roteiro sob medida com reserva</strong> — 3 dias montados de verdade, com disponibilidade real</td>
+<td>Turista que perde meio dia decidindo</td>
+<td>Agente que consulta disponibilidade e fecha</td>
+<td>Comissão de 8–15% sobre o que reserva</td>
+<td>Operadores que já pagam comissão a receptivos</td>
+</tr>
+<tr>
+<td>C5</td>
+<td><strong>Guia offline de trilhas e praias</strong> — funciona sem sinal, que falta em boa parte da ilha</td>
+<td>Trilheiros e visitantes de praias remotas</td>
+<td>Modelo pequeno embarcado + conteúdo local curado</td>
+<td>R$ 19–39 por download ou assinatura anual</td>
+<td>Público de Castelhanos, Bonete e Baepi</td>
+</tr>
+<tr>
+<td>C6</td>
+<td><strong>Companheiro de mergulho</strong> — condições, visibilidade, naufrágios, briefing</td>
+<td>Mergulhadores; Ilhabela é destino de naufrágio</td>
+<td>Cruzamento de dados oceanográficos abertos</td>
+<td>R$ 29/mês ou pacote com operadora</td>
+<td>Operadoras de mergulho da Vila</td>
+</tr>
+<tr>
+<td>C7</td>
+<td><strong>Vitrine de experiências caiçaras</strong> — 18 núcleos, ~1.200 moradores [FATO]</td>
+<td>Comunidades sem canal (dor 20)</td>
+<td>Tradução, agendamento e pagamento sem estrutura</td>
+<td>10–15% de comissão</td>
+<td>Associações de Castelhanos e Bonete</td>
+</tr>
+<tr>
+<td>C8</td>
+<td><strong>Álbum do passeio</strong> — IA monta vídeo e álbum do dia de barco e entrega no WhatsApp</td>
+<td>Turista que quer memória; operador que quer upsell</td>
+<td>Edição automática de vídeo ficou boa e barata</td>
+<td>R$ 39–79 por grupo, vendido pelo operador</td>
+<td>Escunas com 40+ passageiros por saída</td>
+</tr>
+</tbody>
+</table></div>
+<h3>D. Infraestrutura de dados, marketplace e intermediação — 8 ideias</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Ideia</th>
+<th>Cliente e dor</th>
+<th>Por que só agora</th>
+<th>Modelo e ticket</th>
+<th>Primeiro cliente</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D1</td>
+<td><strong>Índice Ilhabela</strong> — base proprietária de oferta, preço, disponibilidade e reputação de todo o trade</td>
+<td>O trade não sabe o que o vizinho cobra</td>
+<td>Coleta e estruturação contínua ficou barata</td>
+<td>Assinatura R$ 297–997/mês por assinante</td>
+<td>Pousadas médias e imobiliárias de temporada</td>
+</tr>
+<tr>
+<td>D2</td>
+<td><strong>Disponibilidade unificada de barcos</strong> — o inventário mais fragmentado da ilha (dor 18)</td>
+<td>Charters, receptivos e pousadas que indicam</td>
+<td>Agente que negocia entre operadores</td>
+<td>5–10% da reserva intermediada</td>
+<td>Rede informal de charters que já se telefonam</td>
+</tr>
+<tr>
+<td>D3</td>
+<td><strong>Rede pousada → experiência</strong> — indicação com comissão rastreada</td>
+<td>Pousadas (receita nova sem custo) e operadores (canal novo)</td>
+<td>Rastreamento e repasse automático por Pix</td>
+<td>10% do GMV</td>
+<td>Já desenhado no deck do Dojo, generalizável</td>
+</tr>
+<tr>
+<td>D4</td>
+<td><strong>Central de reservas white-label do trade</strong> — venda direta contra a comissão de OTA (dor 1)</td>
+<td>Pousadas pagando 15–18% ao Booking [EST]</td>
+<td>Motor de reserva próprio virou barato de construir</td>
+<td>R$ 297/mês + 3% (vs. 16% da OTA)</td>
+<td>Grupo de 5 pousadas dispostas a testar juntas</td>
+</tr>
+<tr>
+<td>D5</td>
+<td><strong>Benchmark de diária e ocupação</strong> — o RevPAR de Ilhabela, mês a mês, por região da ilha</td>
+<td>Trade, imobiliárias, investidores</td>
+<td>Dado hoje só existe agregado no CLN [FATO]</td>
+<td>R$ 197–497/mês</td>
+<td>Imobiliárias e investidores de temporada</td>
+</tr>
+<tr>
+<td>D6</td>
+<td><strong>Mercado do Peixe digital</strong> — pescado direto do caiçara ao restaurante</td>
+<td>Pescadores e restaurantes; prefeitura já apoia o Mercado do Peixe [FATO]</td>
+<td>Pedido por voz no WhatsApp, sem app</td>
+<td>5–8% da transação</td>
+<td>Restaurantes de frutos do mar da Vila</td>
+</tr>
+<tr>
+<td>D7</td>
+<td><strong>Cadastro sombra de temporada</strong> — quais imóveis anunciam e não estão regularizados</td>
+<td>Prefeitura (dor 12) e hotelaria formal</td>
+<td>Cruzamento de anúncio público com cadastro</td>
+<td>Licença ou % da arrecadação recuperada</td>
+<td>Secretaria de Turismo e Fazenda municipal</td>
+</tr>
+<tr>
+<td>D8</td>
+<td><strong>Inteligência de fluxo</strong> — TPA + balsa + ocupação + eventos como produto para o trade</td>
+<td>Todo negócio que precisa dimensionar semana</td>
+<td>A TPA criou uma fonte nova de dado em 2026 [FATO]</td>
+<td>R$ 197–697/mês</td>
+<td>Restaurantes e supermercados</td>
+</tr>
+</tbody>
+</table></div>
+<h3>E. Híbrido físico + IA — 8 ideias</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Ideia</th>
+<th>Cliente e dor</th>
+<th>Por que só agora</th>
+<th>Modelo e ticket</th>
+<th>Primeiro cliente</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>E1</td>
+<td><strong>Rouparia de temporada roteirizada</strong> — enxoval limpo entregue na janela certa</td>
+<td>~52.500 turnovers/ano [EST]</td>
+<td>Roteirização e previsão de pico automatizadas</td>
+<td>R$ 25–45 por jogo de cama</td>
+<td>Administradoras de temporada</td>
+</tr>
+<tr>
+<td>E2</td>
+<td><strong>Turnover as a service</strong> — faxina, vistoria com foto e laudo automático (dor 6)</td>
+<td>Administradoras e proprietários</td>
+<td>Vistoria por foto com IA elimina discussão de dano</td>
+<td>R$ 180–280 por turnover, margem de 25%</td>
+<td>ALITI e anfitriões independentes</td>
+</tr>
+<tr>
+<td>E3</td>
+<td><strong>Manutenção preventiva de casa fechada</strong> — técnico em campo + diagnóstico por IA (dor 8)</td>
+<td>Proprietário ausente</td>
+<td>Diagnóstico por foto e histórico</td>
+<td>R$ 300–600/mês por imóvel</td>
+<td>Condomínios de alto padrão</td>
+</tr>
+<tr>
+<td>E4</td>
+<td><strong>Consolidação de carga na balsa</strong> — uma travessia, várias lojas</td>
+<td>Comércio local (dor 22)</td>
+<td>Otimização de carga e janela é problema clássico resolvido</td>
+<td>R$ 800–2.500/mês por comerciante</td>
+<td>Lojistas da Vila e Perequê</td>
+</tr>
+<tr>
+<td>E5</td>
+<td><strong>Dark store de alta temporada</strong> — estoque avançado com previsão de demanda</td>
+<td>Comércio e restaurantes</td>
+<td>Previsão confiável viabiliza o risco de estoque</td>
+<td>Margem de varejo + assinatura</td>
+<td>Restaurantes com ruptura recorrente</td>
+</tr>
+<tr>
+<td>E6</td>
+<td><strong>Estúdio de conteúdo náutico e imobiliário</strong> — drone + IA para anúncio de barco e imóvel</td>
+<td>Marinas, brokers, imobiliárias</td>
+<td>Geração e edição automatizadas</td>
+<td>R$ 800–3.000 por ativo</td>
+<td>Brokers de barco e imobiliárias</td>
+</tr>
+<tr>
+<td>E7</td>
+<td><strong>Quiosque autônomo com visão computacional</strong> em praia remota</td>
+<td>Turista onde não há comércio</td>
+<td>Visão embarcada barata e offline</td>
+<td>Margem de varejo</td>
+<td>Praias com fluxo e sem estrutura</td>
+</tr>
+<tr>
+<td>E8</td>
+<td><strong>Escola e cowork de IA na ilha</strong> — formação e residência de projetos</td>
+<td>Moradores e nômades</td>
+<td>Demanda nacional por formação prática</td>
+<td>R$ 400–900 por aluno/mês</td>
+<td>Jovens da ilha e nômades digitais</td>
+</tr>
+</tbody>
+</table></div>
+<h3>F. B2G, terceiro setor e ambiental — 8 ideias</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Ideia</th>
+<th>Cliente e dor</th>
+<th>Por que só agora</th>
+<th>Modelo e ticket</th>
+<th>Primeiro cliente</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F1</td>
+<td><strong>Recuperação de receita própria</strong> — cruzar anúncio de temporada × cadastro × IPTU × ISS (dor 12)</td>
+<td>Prefeitura em crise fiscal [FATO]</td>
+<td>Regulamentação em articulação + crise dos royalties</td>
+<td><strong>Success fee de 8–15% da arrecadação recuperada</strong></td>
+<td>Secretarias de Fazenda e Turismo</td>
+</tr>
+<tr>
+<td>F2</td>
+<td><strong>Vigilância de entorno do parque</strong> — satélite + IA para construção e desmate irregular</td>
+<td>Fundação Florestal, prefeitura, MP</td>
+<td>Imagem de satélite pública + detecção automatizada</td>
+<td>Contrato ou edital; R$ 3–10 mil/mês</td>
+<td>Parque Estadual e Instituto Ilhabela Sustentável</td>
+</tr>
+<tr>
+<td>F3</td>
+<td><strong>Monitor de fauna marinha</strong> — baleia e golfinho por áudio e imagem</td>
+<td>Parque, ONGs, operadores de turismo</td>
+<td>Modelos de bioacústica abertos</td>
+<td>Edital, patrocínio, licença ao trade</td>
+<td>Temporada de baleia atrai 120 mil ao litoral norte [FATO]</td>
+</tr>
+<tr>
+<td>F4</td>
+<td><strong>Atendimento ao cidadão</strong> — ouvidoria e protocolo com agente</td>
+<td>Prefeitura com 30% menos custeio [FATO]</td>
+<td>Reduz custo de atendimento sem demitir</td>
+<td>R$ 3–8 mil/mês, justificável por economia</td>
+<td>Ouvidoria municipal</td>
+</tr>
+<tr>
+<td>F5</td>
+<td><strong>Leitor de edital</strong> — avisa fornecedor local quando sai licitação que ele pode ganhar</td>
+<td>Fornecedores locais</td>
+<td>Leitura e classificação de edital em escala</td>
+<td>R$ 197–497/mês por fornecedor</td>
+<td>Empresas que já vendem para a prefeitura</td>
+</tr>
+<tr>
+<td>F6</td>
+<td><strong>Vigia da transparência</strong> — leitura automatizada do portal, alerta para Câmara, imprensa e sociedade</td>
+<td>Câmara, IIS, imprensa local</td>
+<td>Crise fiscal aumentou o apetite por fiscalização</td>
+<td>Patrocínio, edital, ou produto de mídia</td>
+<td>Instituto Ilhabela Sustentável</td>
+</tr>
+<tr>
+<td>F7</td>
+<td><strong>Rota de coleta preditiva</strong> — resíduo dispara no pico de temporada</td>
+<td>Prefeitura e concessionária</td>
+<td>Previsão a partir de fluxo de entrada</td>
+<td>R$ 3–8 mil/mês</td>
+<td>Secretaria de Serviços Urbanos</td>
+</tr>
+<tr>
+<td>F8</td>
+<td><strong>Prestação de contas da TPA automatizada</strong> — relatório trimestral obrigatório à Câmara [FATO]</td>
+<td>Prefeitura</td>
+<td>Obrigação legal nova, criada em 2026</td>
+<td>R$ 2–5 mil/mês</td>
+<td>Secretaria de Fazenda</td>
+</tr>
+</tbody>
+</table></div>
+<h3>G. Alavancas não óbvias e exportação a partir da ilha — 8 ideias</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Ideia</th>
+<th>Cliente e dor</th>
+<th>Por que só agora</th>
+<th>Modelo e ticket</th>
+<th>Primeiro cliente</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G1</td>
+<td><strong>Náutica além de Ilhabela</strong> — mesmo produto para Angra, Paraty, Búzios, Balneário, Floripa; depois Baleares, Croácia, Grécia</td>
+<td>150 marinas só no Litoral Norte [FATO]; milhares no Mediterrâneo</td>
+<td>Produto construído uma vez, traduzido por IA</td>
+<td>SaaS em R$ e depois em €</td>
+<td>Marinas de Angra e Paraty, após 3 casos na ilha</td>
+</tr>
+<tr>
+<td>G2</td>
+<td><strong>Gerador de proposta comercial</strong> — produtizar o próprio deck do Dojo como ferramenta</td>
+<td>Agências de uma pessoa e freelancers de IA</td>
+<td>O deck já existe e é declaradamente um template</td>
+<td>R$ 97–297/mês, mercado nacional</td>
+<td>Comunidades de agências de IA</td>
+</tr>
+<tr>
+<td>G3</td>
+<td><strong>Curso "IA para negócios de turismo"</strong> — vendido nacionalmente, filmado na ilha</td>
+<td>Trade turístico do Brasil inteiro</td>
+<td>Nenhuma oferta vertical boa existe</td>
+<td>R$ 497–1.997 por aluno</td>
+<td>Turmas do trade local viram case e prova</td>
+</tr>
+<tr>
+<td>G4</td>
+<td><strong>Observatório independente de Ilhabela</strong> — newsletter com dados que ninguém compila</td>
+<td>Trade, imobiliárias, imprensa, poder público</td>
+<td>Coleta e síntese automatizadas</td>
+<td>Grátis → patrocínio → dado pago (D5)</td>
+<td>Audiência é o produto; vira distribuição</td>
+</tr>
+<tr>
+<td>G5</td>
+<td><strong>Consultoria de dados remota</strong> — clientes de São Paulo, vida em Ilhabela</td>
+<td>Empresas grandes fora da ilha</td>
+<td>Trabalho remoto consolidado</td>
+<td>R$ 15–40 mil/mês por projeto</td>
+<td>Rede profissional pré-existente</td>
+</tr>
+<tr>
+<td>G6</td>
+<td><strong>Produto de vela</strong> — regata, tracking, briefing tático, usando a SIVI como vitrine</td>
+<td>Circuito nacional e sul-americano de vela</td>
+<td>SIVI reúne 120+ barcos e 3 países [FATO]</td>
+<td>R$ 39–99 por velejador/mês</td>
+<td>Iate Clube de Ilhabela</td>
+</tr>
+<tr>
+<td>G7</td>
+<td><strong>Boilerplate vertical</strong> — vender o esqueleto de "camada de IA sobre ERP de nicho"</td>
+<td>Devs e agências</td>
+<td>Padrão já validado em campo</td>
+<td>R$ 1.500–5.000 por licença</td>
+<td>Mercado de templates e comunidades dev</td>
+</tr>
+<tr>
+<td>G8</td>
+<td><strong>Micro-aquisição local</strong> — comprar um portal, guia ou base de contatos da ilha e turbinar com IA</td>
+<td>Você mesmo</td>
+<td>Ativos locais são baratos e subexplorados</td>
+<td>R$ 20–150 mil de aquisição</td>
+<td>Portais e guias de Ilhabela com tráfego</td>
+</tr>
+</tbody>
+</table></div>
+<h3>H. Contra-intuitivas e assimétricas — 8 ideias</h3>
+<p>Estas são as que a maioria descartaria de cara. A defesa de cada uma está na coluna final.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Ideia</th>
+<th>Por que parece ruim</th>
+<th>Por que pode funcionar</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>H1</td>
+<td><strong>Vender resultado, não software</strong> — CFO fracionário de pousada, remunerado por % do ganho</td>
+<td>Difícil de medir, difícil de cobrar, risco todo seu</td>
+<td>Elimina a objeção de preço que trava toda venda local. Com dados do próprio cliente, você mede melhor que ele. Um cliente a 10% de um ganho de R$ 300 mil paga mais que dez assinaturas</td>
+</tr>
+<tr>
+<td>H2</td>
+<td><strong>Comprar ou operar um imóvel de temporada e ser o próprio cliente-zero</strong></td>
+<td>Capital intensivo, operação física, distração</td>
+<td>Resolve de vez o problema de não ter dados nem prova. Você vira o caso de sucesso, não o vendedor dele. E o ativo se valoriza enquanto o software amadurece</td>
+</tr>
+<tr>
+<td>H3</td>
+<td><strong>Vender para a prefeitura justamente agora que ela está sem caixa</strong></td>
+<td>Ela atrasou R$ 14 mi em março [FATO]; ninguém quer ser fornecedor</td>
+<td>Success fee sobre arrecadação recuperada <strong>não passa pelo orçamento apertado</strong> — se paga com o dinheiro que traz. Crise fiscal é o único momento em que uma prefeitura aceita modelo de risco compartilhado. Janela de 12–18 meses</td>
+</tr>
+<tr>
+<td>H4</td>
+<td><strong>Vender "horas de IA" como mão de obra sazonal, não como sistema</strong></td>
+<td>Soa como commodity, sem recorrência</td>
+<td>A ilha literalmente não tem gente em janeiro [FATO: 89% do setor não consegue contratar]. Vender "três atendentes de IA para a temporada, R$ 2.500/mês, dezembro a março" é uma compra que o dono entende sem nenhuma explicação técnica. Sazonal vira anual depois</td>
+</tr>
+<tr>
+<td>H5</td>
+<td><strong>Cooperativa de dados do trade</strong> — concorrentes compartilham dado anônimo e recebem inteligência coletiva</td>
+<td>Ninguém compartilha nada com concorrente</td>
+<td>Já existe estrutura associativa — ACEI, Convention Bureau, ALITI [FATO]. Em mercado pequeno, todos perdem para o Booking, não um para o outro. O inimigo comum viabiliza a cooperação. Quem opera a cooperativa fica com o dado</td>
+</tr>
+<tr>
+<td>H6</td>
+<td><strong>Virar mídia antes de virar fornecedor</strong> — publicar o Observatório antes de vender qualquer coisa</td>
+<td>Demora, não monetiza no começo, parece vaidade</td>
+<td>Em cidade pequena, autoridade <strong>é</strong> o canal de vendas. Publicar o número que ninguém tem inverte a relação: o trade te procura. Reduz CAC a quase zero e é o ativo mais difícil de copiar</td>
+</tr>
+<tr>
+<td>H7</td>
+<td><strong>Ponto físico na fila da balsa</strong> — totem ou atendimento onde o turista espera</td>
+<td>Operação física, autorização, baixa margem aparente</td>
+<td>4.000 veículos por dia [FATO] com público cativo por dezenas de minutos, no exato momento em que estão decidindo o que fazer na ilha. É o melhor ponto de captura de intenção do destino inteiro, e está vago</td>
+</tr>
+<tr>
+<td>H8</td>
+<td><strong>Tratar Ilhabela como laboratório fechado e vender o case, não o produto</strong></td>
+<td>Mercado pequeno demais para importar</td>
+<td>Uma ilha é um sistema fechado e mensurável — a fantasia de qualquer pesquisador de destino inteligente. "Digitalizamos um destino turístico inteiro" é uma narrativa nacional que vale mais que o ARR local. A prefeitura já se posiciona como destino inteligente [FATO]</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Total: 70 ideias.</strong> A seguir, o filtro.</p>
+<hr>
+<h2 id="parte-3-matriz-de-ranqueamento">Parte 3 — Matriz de ranqueamento</h2>
+<h3>Critérios e pesos</h3>
+<p>Os pesos não são neutros — eles codificam uma tese. A tese é: <strong>um operador solo com IA não ganha por tamanho de mercado, ganha por alavancagem.</strong> Por isso "escape da ilha" pesa o dobro de "mercado local", e "fosso" pesa mais que "velocidade até a primeira receita".</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Critério</th>
+<th style="text-align: right;">Peso</th>
+<th>O que mede</th>
+<th>Por que esse peso</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ESC</strong> — Escape da ilha</td>
+<td style="text-align: right;"><strong>20%</strong></td>
+<td>O mesmo produto serve Ubatuba, Paraty, Angra, Búzios, Bombinhas, e depois Mediterrâneo?</td>
+<td>O maior peso. O teto local é de ~R$ 300 mil de ARR (insight ⚡3). Sem replicabilidade geográfica, o esforço tem teto baixo</td>
+</tr>
+<tr>
+<td><strong>FOS</strong> — Fosso competitivo</td>
+<td style="text-align: right;"><strong>15%</strong></td>
+<td>Por que outro dev com IA não copia isso numa tarde?</td>
+<td>Em 2026 a construção deixou de ser barreira. O moat vem de dado proprietário, relacionamento, distribuição ou regulação — nunca do código</td>
+</tr>
+<tr>
+<td><strong>MER</strong> — Mercado local real</td>
+<td style="text-align: right;">10%</td>
+<td>SAM/SOM em Ilhabela e Litoral Norte, não TAM de fantasia</td>
+<td>Importa, mas é o que menos escala</td>
+</tr>
+<tr>
+<td><strong>SAZ</strong> — Resistência à sazonalidade</td>
+<td style="text-align: right;">10%</td>
+<td>O que se fatura de maio a novembro?</td>
+<td>Metade do ano a ilha esvazia. Negócio que só funciona no verão é meio negócio</td>
+</tr>
+<tr>
+<td><strong>TTR</strong> — Tempo até a primeira receita</td>
+<td style="text-align: right;">10%</td>
+<td>Dias até o primeiro real</td>
+<td>Financia o resto do portfólio</td>
+</tr>
+<tr>
+<td><strong>CAC</strong> — Facilidade de aquisição no contexto local</td>
+<td style="text-align: right;">10%</td>
+<td>Mercado de relacionamento e boca a boca: barato ou caro?</td>
+<td>B2C na ilha tem CAC alto; B2B por indicação tem CAC quase zero</td>
+</tr>
+<tr>
+<td><strong>OPS</strong> — Baixa carga operacional sobre mim</td>
+<td style="text-align: right;">10%</td>
+<td>Quanto do meu tempo consome depois de pronto?</td>
+<td>O recurso escasso é tempo, não capital</td>
+</tr>
+<tr>
+<td><strong>CC</strong> — Vantagem desproporcional do Claude Code</td>
+<td style="text-align: right;">10%</td>
+<td>Minha habilidade específica é decisiva aqui, ou marginal?</td>
+<td>Se qualquer um faz, não é minha jogada</td>
+</tr>
+<tr>
+<td><strong>RIS</strong> — Baixo risco regulatório e de plataforma</td>
+<td style="text-align: right;">5%</td>
+<td>Dependência de Meta, OTA, prefeitura, órgão ambiental</td>
+<td>Real, mas gerenciável</td>
+</tr>
+</tbody>
+</table></div>
+<p>Escala 1–5 em cada critério. Nota final normalizada de 0 a 100.</p>
+<h3>Tabela completa — as 70 ideias ranqueadas</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th style="text-align: right;">Pos</th>
+<th>#</th>
+<th>Ideia</th>
+<th style="text-align: center;">MER</th>
+<th style="text-align: center;">ESC</th>
+<th style="text-align: center;">SAZ</th>
+<th style="text-align: center;">FOS</th>
+<th style="text-align: center;">TTR</th>
+<th style="text-align: center;">CAC</th>
+<th style="text-align: center;">OPS</th>
+<th style="text-align: center;">RIS</th>
+<th style="text-align: center;">CC</th>
+<th style="text-align: right;"><strong>Nota</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">1</td>
+<td>D7</td>
+<td>Cadastro sombra de temporada</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: right;"><strong>84.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td>A2</td>
+<td>Ordem de Serviço Náutica</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: right;"><strong>84.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>H3</td>
+<td>B2G por success fee (= F1)</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: right;"><strong>83.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td>F1</td>
+<td>Recuperação de receita própria (B2G)</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: right;"><strong>83.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">5</td>
+<td>D5</td>
+<td>Benchmark de diária e ocupação</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: right;"><strong>83.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">6</td>
+<td>A1</td>
+<td>Marina OS</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: right;"><strong>82.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">7</td>
+<td>D1</td>
+<td>Índice Ilhabela</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: right;"><strong>80.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">8</td>
+<td>A6</td>
+<td>Anfitrião Copiloto</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: right;"><strong>80.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">9</td>
+<td>G4</td>
+<td>Observatório independente</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: right;"><strong>79.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">10</td>
+<td>G1</td>
+<td>Náutica além de Ilhabela</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: right;"><strong>79.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">11</td>
+<td>F5</td>
+<td>Leitor de edital</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: right;"><strong>78.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">12</td>
+<td>A7</td>
+<td>Caseiro Digital</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: right;"><strong>78.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">13</td>
+<td>H6</td>
+<td>Mídia antes de fornecedor</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: right;"><strong>77.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">14</td>
+<td>A11</td>
+<td>Camada de Inteligência (recorrência)</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: right;"><strong>76.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">15</td>
+<td>G5</td>
+<td>Consultoria de dados remota</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: right;"><strong>75.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">16</td>
+<td>D8</td>
+<td>Inteligência de fluxo</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: right;"><strong>75.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">17</td>
+<td>B1</td>
+<td>Diagnóstico de IA pago</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: right;"><strong>75.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">18</td>
+<td>A5</td>
+<td>Motor de tarifa dinâmica</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: right;"><strong>75.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">19</td>
+<td>A3</td>
+<td>Charter OS</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: right;"><strong>74.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">20</td>
+<td>H4</td>
+<td>Horas de IA como mão de obra sazonal</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: right;"><strong>73.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">21</td>
+<td>H1</td>
+<td>CFO fracionário por resultado</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: right;"><strong>72.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">22</td>
+<td>G2</td>
+<td>Gerador de proposta comercial</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: right;"><strong>72.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">23</td>
+<td>B3</td>
+<td>Camada sobre o sistema existente</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: right;"><strong>72.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">24</td>
+<td>H8</td>
+<td>Ilhabela como laboratório</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: right;"><strong>71.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">25</td>
+<td>C1</td>
+<td>Concierge de Ilhabela</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: right;"><strong>71.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">26</td>
+<td>A4</td>
+<td>Pousada Copiloto</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: right;"><strong>71.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">27</td>
+<td>G3</td>
+<td>Curso IA para negócios de turismo</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: right;"><strong>70.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">28</td>
+<td>F2</td>
+<td>Vigilância de entorno do parque</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: right;"><strong>70.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">29</td>
+<td>B7</td>
+<td>Auditoria de dados parados</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: right;"><strong>70.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">30</td>
+<td>G6</td>
+<td>Produto de vela</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: right;"><strong>69.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">31</td>
+<td>C8</td>
+<td>Álbum do passeio</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: right;"><strong>69.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">32</td>
+<td>B2</td>
+<td>Agente WhatsApp produtizado</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: right;"><strong>69.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">33</td>
+<td>H2</td>
+<td>Ser o próprio cliente-zero</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: right;"><strong>68.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">34</td>
+<td>F6</td>
+<td>Vigia da transparência</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: right;"><strong>68.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">35</td>
+<td>G7</td>
+<td>Boilerplate vertical</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: right;"><strong>67.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">36</td>
+<td>G8</td>
+<td>Micro-aquisição local</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: right;"><strong>66.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">37</td>
+<td>A8</td>
+<td>Previsão de compra p/ restaurante</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: right;"><strong>66.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">38</td>
+<td>H5</td>
+<td>Cooperativa de dados do trade</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: right;"><strong>65.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">39</td>
+<td>D2</td>
+<td>Disponibilidade unificada de barcos</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: right;"><strong>64.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">40</td>
+<td>B10</td>
+<td>Treinamento de IA p/ equipes</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: right;"><strong>64.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">41</td>
+<td>E6</td>
+<td>Estúdio de conteúdo náutico</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: right;"><strong>63.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">42</td>
+<td>D3</td>
+<td>Rede pousada → experiência</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: right;"><strong>63.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">43</td>
+<td>C4</td>
+<td>Roteiro sob medida com reserva</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: right;"><strong>63.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">44</td>
+<td>B9</td>
+<td>CTO fracionário</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: right;"><strong>63.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">45</td>
+<td>B6</td>
+<td>Motor de reputação</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: right;"><strong>63.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">46</td>
+<td>A12</td>
+<td>Agenda sem no-show</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: right;"><strong>63.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">47</td>
+<td>E3</td>
+<td>Manutenção preventiva de casa fechada</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: right;"><strong>62.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">48</td>
+<td>B4</td>
+<td>Back-office fiscal de pousada</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: right;"><strong>62.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">49</td>
+<td>A10</td>
+<td>Roteirizador de passeio com mar</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: right;"><strong>62.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">50</td>
+<td>F8</td>
+<td>Prestação de contas da TPA</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: right;"><strong>61.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">51</td>
+<td>D4</td>
+<td>Central de reservas white-label</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: right;"><strong>61.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">52</td>
+<td>F3</td>
+<td>Monitor de fauna marinha</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: right;"><strong>60.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">53</td>
+<td>F4</td>
+<td>Atendimento ao cidadão</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: right;"><strong>59.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">54</td>
+<td>B8</td>
+<td>Onboarding de conformidade</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: right;"><strong>59.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">55</td>
+<td>A9</td>
+<td>Escala Sazonal</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: right;"><strong>59.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">56</td>
+<td>F7</td>
+<td>Rota de coleta preditiva</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: right;"><strong>58.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">57</td>
+<td>C5</td>
+<td>Guia offline de trilhas</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: right;"><strong>58.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">58</td>
+<td>B5</td>
+<td>Máquina de conteúdo local</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: right;"><strong>57.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">59</td>
+<td>E2</td>
+<td>Turnover as a service</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: right;"><strong>56.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">60</td>
+<td>C6</td>
+<td>Companheiro de mergulho</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: right;"><strong>56.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">61</td>
+<td>C3</td>
+<td>Assistente de chegada (TPA)</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: right;"><strong>55.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">62</td>
+<td>C2</td>
+<td>Previsor de fila de balsa</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: right;"><strong>54.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">63</td>
+<td>C7</td>
+<td>Vitrine de experiências caiçaras</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: right;"><strong>53.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">64</td>
+<td>E8</td>
+<td>Escola e cowork de IA</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: right;"><strong>52.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">65</td>
+<td>D6</td>
+<td>Mercado do Peixe digital</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: right;"><strong>50.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">66</td>
+<td>H7</td>
+<td>Ponto físico na fila da balsa</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: right;"><strong>48.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">67</td>
+<td>E1</td>
+<td>Rouparia de temporada roteirizada</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: right;"><strong>48.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">68</td>
+<td>E4</td>
+<td>Consolidação de carga na balsa</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: right;"><strong>43.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">69</td>
+<td>E7</td>
+<td>Quiosque autônomo em praia remota</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: right;"><strong>38.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">70</td>
+<td>E5</td>
+<td>Dark store de alta temporada</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: right;"><strong>38.0</strong></td>
+</tr>
+</tbody>
+</table></div>
+<h3>Por que as 10 primeiras subiram</h3>
+<ul>
+<li><strong>D7 (84) — Cadastro sombra de temporada.</strong> Ganhou porque acerta os dois critérios de maior peso ao mesmo tempo. O fosso é o dataset: uma vez que você tem o mapeamento de qual imóvel anuncia e não está regularizado, ninguém refaz isso rápido. E o produto é literalmente o mesmo em qualquer cidade turística do Brasil que esteja regulamentando temporada — que é todas elas.</li>
+<li><strong>A2 (84) — Ordem de Serviço Náutica.</strong> Ticket alto, cliente com dinheiro, setor quase intocado por software, e um problema que só ficou resolvível agora: transformar foto e áudio de mecânico em orçamento estruturado. Náutica é o mesmo negócio em Angra, Paraty, Búzios e depois no Mediterrâneo, onde se cobra em euro.</li>
+<li><strong>F1 e H3 (83) — Recuperação de receita municipal.</strong> São a mesma aposta: o produto (F1) e o modelo comercial que a viabiliza (H3, success fee). Subiram pela combinação de timing e assimetria — a prefeitura perdeu 75% dos royalties [FATO] e precisa de receita própria agora. Ver a análise completa na Parte 4.</li>
+<li><strong>D5 (83) — Benchmark de diária e ocupação.</strong> A maior nota de carga operacional da lista inteira: depois de construído, roda praticamente sozinho. Fosso alto porque a série histórica só se acumula com tempo — quem começar depois nunca alcança o histórico.</li>
+<li><strong>A1 (82) — Marina OS.</strong> 32 instalações na ilha e 150 no Litoral Norte [FATO], todas operando em planilha e rádio. Mercado pequeno em número de logos, grande em ticket.</li>
+<li><strong>D1 (80) — Índice Ilhabela.</strong> O maior fosso da lista junto com D5 e D7. É infraestrutura de dado, não produto — e por isso alimenta várias outras ideias.</li>
+<li><strong>A6 (80) — Anfitrião Copiloto.</strong> Único 5 em mercado local: 7.000 leitos de temporada [FATO] e administradoras cobrando 20–40% [FATO]. Perde pontos em fosso porque o mercado nacional de property management já é competitivo.</li>
+<li><strong>G4 (79) — Observatório independente.</strong> Nota 5 em CAC: publicar o dado que ninguém tem faz o cliente vir até você. É o menor custo de aquisição possível em cidade pequena.</li>
+<li><strong>G1 (79) — Náutica além de Ilhabela.</strong> Não é uma ideia separada de A1 e A2 — é o segundo tempo delas. Está listada à parte porque a decisão de quando expandir é uma decisão real, e ela precisa estar na matriz.</li>
+<li><strong>F5 (78) — Leitor de edital.</strong> Alta resistência à sazonalidade (licitação não tem verão), boa alavancagem, e um público que já tem o hábito de pagar por informação de negócio.</li>
+</ul>
+<h3>Por que ideias aparentemente atraentes caíram</h3>
+<p>Esta é a parte mais útil da matriz.</p>
+<ul>
+<li><strong>C1 Concierge de Ilhabela (71, posição 25).</strong> É a ideia mais sedutora do documento e provavelmente a que mais atrai. Caiu porque <strong>CAC 2 e TTR 2</strong>: mais de 1 milhão de visitantes por verão [FATO] não significa 1 milhão de usuários — significa 1 milhão de pessoas que você precisa alcançar, uma a uma, sem marca e sem verba, num mercado onde o Google e o Instagram já estão. Monetização por afiliação exige volume que leva anos. <strong>Faça como subproduto do Índice Ilhabela, nunca como aposta principal.</strong></li>
+<li><strong>B2 Agente WhatsApp produtizado (69, posição 32).</strong> É a coisa que está mais pronta para vender — e ainda assim caiu para o terço médio. Motivo: <strong>fosso 2</strong>. Qualquer pessoa com um fim de semana e uma plataforma pronta entrega algo parecido; o mercado nacional já cobra R$ 99/mês por versões genéricas [FATO]. Sua vantagem aqui não é o agente, é a integração com o sistema que o cliente já usa e a relação local. Continua sendo o motor de caixa — mas é caixa, não patrimônio.</li>
+<li><strong>D4 Central de reservas white-label (61, posição 51).</strong> Ataca a maior dor em valor absoluto — R$ 10,6 milhões por ano em comissão de OTA [EST]. Caiu porque essa dor é de <em>estrutura de mercado</em>, não de software: as pousadas pagam a OTA pela <strong>demanda</strong>, não pelo motor de reserva. Construir o motor não traz o hóspede. Já se tentou isso em todo destino turístico do Brasil e quase nunca funciona.</li>
+<li><strong>Toda a categoria E — híbrido físico (posições 41, 47, 59, 67, 68, 69, 70).</strong> Foi massacrada por um único critério: <strong>carga operacional 1</strong>. Rouparia, faxina, dark store e logística exigem gente, turno e presença física. Você trocaria alavancagem por trabalho — exatamente o oposto da sua vantagem. Se algum dia entrar em E, entre como <strong>software para quem já opera</strong>, nunca como operador.</li>
+<li><strong>H7 Ponto físico na fila da balsa (48, posição 66).</strong> O insight é excelente: 4.000 veículos por dia [FATO] de público cativo é o melhor ponto de captura de intenção do destino. Mas a execução é física, exige autorização em área de travessia estadual, e não escapa da ilha. <strong>Guarde como canal de distribuição para C1, não como negócio.</strong></li>
+<li><strong>E5 Dark store e E7 Quiosque autônomo (38, últimos lugares).</strong> Capital, estoque, perda, operação e nenhuma alavancagem de IA real. São ideias de outra pessoa, com outro perfil.</li>
+<li><strong>C7 Experiências caiçaras (53, posição 63).</strong> Caiu na matriz, e a matriz está certa pelos critérios que tem — mercado pequeno, operação alta, monetização baixa. <strong>Mas os critérios não capturam valor não-financeiro.</strong> É a única ideia da lista que constrói licença social e relacionamento com 18 comunidades e a Secretaria de Comunidades Tradicionais [FATO]. Se for feita, faça como projeto de reputação financiado por edital, não como linha de receita.</li>
+</ul>
+<h3>As armadilhas — o que parece ótimo em Ilhabela e destrói valor</h3>
+<ol>
+<li><strong>Negócio que só existe no verão.</strong> Três meses de faturamento pagando doze de custo. Todo negócio da ilha aprendeu isso na dor; quem chega de fora aprende caro.</li>
+<li><strong>Depender de um cliente âncora local.</strong> Em um mercado de 640 empresas endereçáveis [EST], perder o maior cliente é perder 20% da receita. E a prefeitura já mostrou em 2026 que âncora grande também atrasa pagamento [FATO].</li>
+<li><strong>Construir para o turista sem canal.</strong> O turista não te conhece, vem uma vez, e o custo de alcançá-lo é maior que o que ele gasta com você. Só funciona se você for dono de um canal — e canal, na ilha, é a pousada e o operador, não o app.</li>
+<li><strong>Commodity de IA replicável.</strong> Se a resposta para "o que impede alguém de copiar" for "eu faço melhor", não há fosso. Em 2026 isso vale por seis meses.</li>
+<li><strong>Dependência de plataforma única.</strong> Um agente inteiramente construído sobre a API do WhatsApp é um negócio cujo fornecedor pode mudar preço e política sozinho. Mitigue mantendo o dado e a lógica do lado de cá.</li>
+<li><strong>Confundir PIB com dinheiro</strong> (⚡1). Precificar como se Ilhabela fosse rica leva a propostas que ninguém assina.</li>
+<li><strong>O conforto do teto local</strong> (⚡3). A armadilha mais perigosa das sete, porque ela se disfarça de sucesso.</li>
+</ol>
+<hr>
+<h2 id="parte-4-top-5-aprofundadas">Parte 4 — Top 5 aprofundadas</h2>
+<p>Uma nota de método: as cinco apostas abaixo <strong>agrupam ideias adjacentes da Parte 2</strong>. Isso não é diluição — é a forma correta de ler a matriz. A2 sem A1 é um produto órfão; D7 sem D1 não tem base de dados; A11 sem B1 não tem funil. Cada aposta é a menor unidade que faz sentido construir.</p>
+<p>A quinta aposta (o serviço) está aqui apesar de ranquear em 14º. <strong>Isso é deliberado e é o ponto central do portfólio:</strong> ela não ganha na matriz porque não tem fosso, mas é ela que paga as outras quatro. Uma matriz de alavancagem não sabe medir folha de pagamento.</p>
+<hr>
+<h3>🥇 Aposta 1 — Náutica: Marina OS + Ordem de Serviço Náutica</h3>
+<p><em>(A1 + A2 + A3, notas 82 / 84 / 74)</em></p>
+<h4>1. Tese e hipótese central</h4>
+<p>A economia náutica de Ilhabela movimenta R$ 150–250 milhões por ano [EST] em 32 instalações [FATO] que operam com planilha, rádio VHF e grupo de WhatsApp. É o setor com maior ticket e menor maturidade digital da ilha, e o cliente final — o proprietário do barco — mora em São Paulo e toma decisões sobre um ativo que não vê há três semanas. Existe uma assimetria de informação estrutural entre quem cuida do barco e quem paga por ele, e essa assimetria custa dinheiro aos dois lados.</p>
+<blockquote>
+<p><strong>Hipótese central que, se falsa, mata o negócio:</strong>
+<em>Marinas e oficinas náuticas pagam por software mensal.</em></p>
+<p>Elas nunca pagaram. Podem ser um setor rico com clientes ricos e ainda assim um setor que compra ferramenta e não compra assinatura. Se em 15 conversas nenhuma marina tiver algum software pago hoje — nem gestão, nem financeiro, nem CRM — a tese muda de "vender SaaS para marina" para "vender para o proprietário do barco, usando a marina como canal".</p>
+</blockquote>
+<h4>2. Persona e ICP</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Tipo</th>
+<th>Perfil</th>
+<th>Quem é em Ilhabela</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Primário</strong></td>
+<td>Garagem náutica com 100–400 barcos guardados, 5–20 funcionários, dono presente</td>
+<td>Centro Náutico Ilhabela (260 barcos, 17.000 m² [FATO]) e as demais do Perequê, Itaquanduba e Barra Velha</td>
+</tr>
+<tr>
+<td><strong>Secundário</strong></td>
+<td>Oficina de manutenção náutica dentro ou ao lado de marina, 3–10 mecânicos</td>
+<td>Oficinas de motor, pintura e capotaria do eixo Perequê–Itaguaçu</td>
+</tr>
+<tr>
+<td><strong>Terciário</strong></td>
+<td>Operador de charter com 2–8 embarcações, ticket de R$ 1.800 a R$ 5.000 por saída [FATO]</td>
+<td>Terra &amp; Mar, Eva Turismo e independentes</td>
+</tr>
+<tr>
+<td><strong>Pagador oculto</strong></td>
+<td>Proprietário do barco, mora fora, paga vaga + manutenção</td>
+<td>~4.800 proprietários [EST]</td>
+</tr>
+</tbody>
+</table></div>
+<h4>3. Jobs to be done e o workflow atual</h4>
+<p>O fluxo de uma manutenção hoje, passo a passo, com o atrito marcado:</p>
+<pre><code>1. Marinheiro nota problema no barco                    ← sem registro
+2. Manda foto no WhatsApp do gerente               ⚠️ ATRITO: foto sem contexto,
+                                                       sem número de barco, some no grupo
+3. Gerente aciona a oficina                        ⚠️ ATRITO: telefonema, sem histórico
+4. Mecânico olha, estima de cabeça                 ⚠️ ATRITO: orçamento em papel ou áudio
+5. Gerente repassa ao dono, que está em SP         ⚠️ ATRITO: dono não entende
+                                                       o termo técnico, pede foto de novo
+6. Dono demora dias para aprovar                   ⚠️ ATRITO CARO: barco parado
+7. Peça é pedida — e cruza a balsa                 ⚠️ ATRITO: prazo imprevisível
+8. Serviço feito, cobrança em planilha             ⚠️ ATRITO: discussão sobre o combinado
+</code></pre>
+<p>Entre os passos 5 e 6 está o dinheiro: <strong>um barco parado esperando aprovação custa 20% da temporada de uso do dono.</strong> Esse é o momento que o produto ataca.</p>
+<h4>4. Solução e arquitetura técnica</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Camada</th>
+<th>Escolha</th>
+<th>Observação</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Entrada</td>
+<td>WhatsApp Business API via BSP nacional</td>
+<td>O marinheiro já vive lá. Nenhum app novo para o funcionário</td>
+</tr>
+<tr>
+<td>Ingestão</td>
+<td>Foto + áudio + localização → transcrição e visão</td>
+<td>O funcionário não digita. Isso é inegociável</td>
+</tr>
+<tr>
+<td>Núcleo</td>
+<td>LLM estrutura a OS: barco, sistema afetado, sintoma, urgência, peças prováveis</td>
+<td>Aqui o LLM é essencial e insubstituível</td>
+</tr>
+<tr>
+<td>Precificação</td>
+<td><strong>Tabela determinística, sem LLM</strong></td>
+<td>⚠️ Nunca deixe o modelo inventar preço. Regra fixa, catálogo, markup</td>
+</tr>
+<tr>
+<td>Aprovação</td>
+<td>Link único para o dono: foto, laudo em linguagem leiga, preço, botão de aprovar</td>
+<td>O produto inteiro se justifica nesta tela</td>
+</tr>
+<tr>
+<td>Pagamento</td>
+<td>Pix via Asaas ou Stripe; split para a marina</td>
+<td></td>
+</tr>
+<tr>
+<td>Dados</td>
+<td>Postgres + histórico por casco (HIN)</td>
+<td><strong>É o dataset que vira o fosso</strong></td>
+</tr>
+<tr>
+<td>Offline</td>
+<td>Fila local com sincronização</td>
+<td>Conectividade instável na ilha [FATO qualitativo]</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Onde o LLM NÃO deve entrar:</strong> cálculo de preço, controle de estoque de peça, emissão fiscal e qualquer decisão de segurança de navegação. Tudo determinístico.</p>
+<p><strong>Custo de inferência estimado:</strong> R$ 40–120 por cliente/mês [EST: ~600 OS/mês numa marina de 260 barcos, ~4k tokens por OS]. Margem bruta acima de 90%.</p>
+<p><strong>Riscos técnicos:</strong> qualidade do áudio em ambiente de marina (vento e motor); identificação correta do barco na foto — resolver com QR code no berço, não com visão computacional pura; integração com o financeiro que a marina já usa, que pode ser um Excel de 2011.</p>
+<h4>5. Como o Claude Code encurta o caminho</h4>
+<ul>
+<li><strong>Em 1 dia:</strong> protótipo do fluxo foto+áudio → OS estruturada → PDF de orçamento. O suficiente para mostrar numa marina e ver o gerente reagir.</li>
+<li><strong>Em 1 semana:</strong> WhatsApp real, cadastro de barcos, tela de aprovação do dono, Pix, painel do gerente.</li>
+<li><strong>Em 1 mês:</strong> multi-marina, catálogo de peças e serviços, histórico por casco, relatório mensal ao proprietário, app-web offline para o marinheiro.</li>
+</ul>
+<p>Sem IA de codificação isso é um projeto de 4 a 6 meses de duas pessoas. É exatamente o tipo de vantagem que se traduz em venda: <strong>você chega na segunda conversa com o produto rodando com os barcos daquela marina.</strong> Nenhum concorrente faz isso.</p>
+<h4>6. Precificação</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Plano</th>
+<th>Preço</th>
+<th>Escopo</th>
+<th>Lógica de valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Oficina</strong></td>
+<td>R$ 697/mês + setup R$ 2.500</td>
+<td>OS, orçamento, aprovação, histórico</td>
+<td>Uma aprovação acelerada em 5 dias já paga o mês</td>
+</tr>
+<tr>
+<td><strong>Marina</strong></td>
+<td>R$ 1.490/mês até 250 barcos · R$ 2.490 acima + setup R$ 6.000</td>
+<td>Tudo acima + vagas, fila de descida, relatório ao proprietário</td>
+<td>≈ 1,2 vaga/mês numa marina de 260 barcos. Irrisório</td>
+</tr>
+<tr>
+<td><strong>Charter</strong></td>
+<td>R$ 490/mês + 2,5% do booking</td>
+<td>Agenda, contrato, checklist, briefing, cobrança</td>
+<td>Uma saída extra por mês paga o ano</td>
+</tr>
+</tbody>
+</table></div>
+<p>Ancoragem certa na conversa: <strong>não</strong> "R$ 1.490 por mês", e sim <em>"o preço de uma vaga e meia, para não perder 20 aprovações por temporada"</em>.</p>
+<h4>7. Modelo financeiro</h4>
+<pre><code>Custos fixos mensais (infra, BSP WhatsApp, banco, contador)      R$ 1.200
+Custo variável por cliente (inferência + mensagens)              R$ 80
+Margem bruta por cliente Marina                                  R$ 1.410 (94%)
+
+Para R$ 5.000 de MRR:   4 clientes    → ~4 meses    (só Ilhabela)
+Para R$ 15.000 de MRR:  11 clientes   → 12–15 meses (Ilhabela + São Sebastião)
+Para R$ 50.000 de MRR:  35 clientes   → 24–30 meses (exige Angra, Paraty, Búzios)
+</code></pre>
+<p>O terceiro degrau é a prova de que <strong>essa aposta obriga a sair da ilha</strong> — e é bom que obrigue. Das 150 marinas do Litoral Norte [FATO], 118 estão fora de Ilhabela.</p>
+<h4>8. Go-to-market</h4>
+<p>O canal não é digital. É físico, e isso é uma vantagem — porque não é escalável para quem mora longe.</p>
+<ol>
+<li><strong>Semana 1:</strong> visitar 5 das 32 marinas. Não vender. Perguntar: <em>"Como funciona quando um barco precisa de reparo e o dono está em São Paulo?"</em> Ouvir. Anotar o vocabulário exato que eles usam.</li>
+<li><strong>Semana 2:</strong> construir o protótipo com os barcos reais de UMA marina. Voltar e mostrar.</li>
+<li><strong>Semana 3:</strong> oferta piloto — <strong>R$ 0 por 60 dias, R$ 1.490/mês depois, cancelável a qualquer momento.</strong> O piloto não é generosidade, é aquisição de dado.</li>
+<li><strong>Semana 4 em diante:</strong> usar a SIVI — 53ª edição, 120+ barcos, delegações de Argentina e Uruguai [FATO] — como concentração de todos os decisores do setor em uma semana. Nenhum outro momento do ano reúne esse público.</li>
+</ol>
+<p><strong>Roteiro de descoberta (5 perguntas):</strong>
+1. Quantos barcos vocês guardam e qual a taxa de ocupação das vagas hoje?
+2. Quando um barco precisa de serviço, como isso começa e quem decide?
+3. Quanto tempo em média entre "detectou o problema" e "dono aprovou"?
+4. Que sistema vocês usam hoje — e o que ele não faz?
+5. O que o proprietário mais reclama?</p>
+<p>A pergunta 3 é a que produz o número que vira a proposta.</p>
+<h4>9. Validação de 30 dias — critérios de kill/continue</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Marco</th>
+<th>Critério de CONTINUAR</th>
+<th>Critério de MATAR</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dia 7</td>
+<td>5 visitas feitas; ≥ 3 confirmam que a demora de aprovação custa dinheiro</td>
+<td>Nenhuma consegue estimar a perda → a dor não é sentida</td>
+</tr>
+<tr>
+<td>Dia 14</td>
+<td>Protótipo rodando com dados reais de 1 marina</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Dia 21</td>
+<td>≥ 2 marinas aceitam piloto gratuito de 60 dias</td>
+<td>0 aceitam algo <em>de graça</em> → o problema não existe</td>
+</tr>
+<tr>
+<td>Dia 30</td>
+<td>≥ 1 marina diz um preço que pagaria, sem você sugerir primeiro</td>
+<td>Todas dizem "traz depois que estiver pronto" → sinal clássico de não-dor</td>
+</tr>
+</tbody>
+</table></div>
+<h4>10. Pré-mortem — é 2028 e o negócio morreu</h4>
+<ol>
+<li><strong>Marina não compra software, compra ferramenta.</strong> Pagaram o setup e nunca renovaram a assinatura. → <em>Mitigação hoje:</em> cobrar mensalidade desde o primeiro dia, mesmo simbólica. Piloto gratuito com contrato de conversão automática assinado na largada.</li>
+<li><strong>O produto ficou preso ao maior cliente.</strong> Virou software sob medida de uma marina. → <em>Mitigação:</em> nenhuma funcionalidade entra sem servir a pelo menos 3 clientes.</li>
+<li><strong>O marinheiro não usou.</strong> Continuou mandando foto no grupo. → <em>Mitigação:</em> a entrada tem que ser o WhatsApp que ele já usa, e o gerente tem que ter incentivo para exigir.</li>
+<li><strong>A oficina viu o produto como fiscalização.</strong> Sabotou a adoção. → <em>Mitigação:</em> posicione como "mais serviço aprovado, mais rápido" — a oficina ganha volume, não perde liberdade.</li>
+<li><strong>Faturamento estagnou em R$ 12 mil/mês.</strong> Esgotou Ilhabela e a expansão nunca aconteceu. → <em>Mitigação:</em> colocar a primeira marina fora da ilha no cronograma do mês 9, não do "quando der".</li>
+<li><strong>Um concorrente nacional de gestão náutica chegou com preço menor.</strong> → <em>Mitigação:</em> o fosso não é o software, é o histórico por casco. Comece a acumular no dia 1.</li>
+<li><strong>A sazonalidade comeu o caixa.</strong> Junho a setembro sem vender nada. → <em>Mitigação:</em> manutenção acontece <strong>na baixa</strong>, quando o barco está parado. É contra-cíclico ao turismo. Use isso na venda.</li>
+</ol>
+<hr>
+<h3>🥈 Aposta 2 — Motor de Receita Própria Municipal</h3>
+<p><em>(F1 + H3 + D7, notas 83 / 83 / 84 — a aposta assimétrica)</em></p>
+<h4>1. Tese e hipótese central</h4>
+<p>Ilhabela perdeu mais de 75% da receita de royalties em seis anos, caiu para ~R$ 17 milhões, deixou de pagar R$ 14 milhões em março de 2026 pela primeira vez em 20 anos, e cortou 30% do custeio por decreto [todos FATO]. Simultaneamente, tem mais de 7.000 leitos em casas de temporada [FATO] cuja formalização é parcial, e um Conselho Municipal de Turismo articulando regulamentar e taxar esse mercado [FATO].</p>
+<p>Existe uma receita de R$ 5–12 milhões por ano [EST] que o município não arrecada porque não sabe quais imóveis anunciam. Esse cruzamento — anúncio público × cadastro municipal × IPTU × ISS — é um problema de dados que uma pessoa com IA resolve em semanas.</p>
+<blockquote>
+<p><strong>Hipótese central:</strong>
+<em>A prefeitura aceita um contrato remunerado por percentual da arrecadação recuperada.</em></p>
+<p>Se a resposta for "só por licitação de licença de software com preço fixo", a jogada morre — porque não há orçamento e há decreto de corte [FATO]. O modelo de risco compartilhado é o produto inteiro.</p>
+</blockquote>
+<h4>2. Persona e ICP</h4>
+<p>Não é uma empresa, são três pessoas: o <strong>Secretário de Fazenda</strong> (quer receita e não pode gastar), o <strong>Secretário de Turismo</strong> (quer ordenar o mercado e tem o Observatório de Turismo com o CIET [FATO]) e o <strong>Prefeito</strong> (precisa de uma boa notícia fiscal em ano de aperto). Aliado natural: a <strong>hotelaria formal</strong> — ACEI e Convention &amp; Visitors Bureau —, que hoje paga imposto competindo com quem não paga.</p>
+<h4>3. Jobs to be done</h4>
+<p>O município quer três coisas, nesta ordem: <strong>arrecadar sem aumentar imposto de quem já paga</strong>, <strong>ordenar um mercado que a hotelaria formal reclama</strong>, e <strong>mostrar resultado dentro do mandato</strong>. O workflow atual é: nenhum. Não existe cruzamento sistemático. A fiscalização é por denúncia.</p>
+<h4>4. Solução e arquitetura</h4>
+<pre><code>Coleta de anúncios públicos (plataformas de temporada)
+        │  respeitando robots.txt e termos de uso — ver alerta jurídico abaixo
+        ▼
+Normalização e deduplicação  ── o mesmo imóvel aparece em 3 plataformas
+        ▼
+Geolocalização aproximada + fotos ── LLM + visão para casar anúncio ↔ imóvel
+        ▼
+Cruzamento com base municipal (IPTU, cadastro, alvará)  ── dado da prefeitura
+        ▼
+Score de probabilidade de irregularidade + dossiê por imóvel
+        ▼
+Fila de trabalho para o fiscal + carta de regularização automática
+</code></pre>
+<p><strong>Onde o LLM entra:</strong> casamento de anúncios duplicados, extração de atributos de texto livre, e geração da carta de notificação. <strong>Onde não entra:</strong> a decisão fiscal. O produto <strong>sugere e prioriza</strong>; quem autua é o fiscal. Isso não é detalhe — é o que mantém o produto do lado certo da lei.</p>
+<blockquote>
+<p>⚠️ <strong>Alerta jurídico obrigatório.</strong> Coleta de anúncios tem limites: termos de uso das plataformas, LGPD quanto a dados pessoais de anunciante, e a linha entre dado público e dado tratado. <strong>Antes de qualquer linha de código, uma consulta com advogado de direito digital.</strong> O produto só é viável se operar sobre dado publicamente acessível, sem burlar proteção técnica, e com o município como controlador dos dados. Se isso não fechar juridicamente, a aposta cai inteira — e é melhor descobrir na semana 1 que no mês 12.</p>
+</blockquote>
+<h4>5. Como o Claude Code encurta o caminho</h4>
+<ul>
+<li><strong>1 dia:</strong> amostra de 200 anúncios de Ilhabela, normalizada, com estatística descritiva — já é uma apresentação que abre a porta de qualquer secretaria.</li>
+<li><strong>1 semana:</strong> pipeline completo de coleta e deduplicação, estimativa de universo total, e o número que vale a reunião: <em>"existem X imóveis anunciando em Ilhabela"</em>.</li>
+<li><strong>1 mês:</strong> cruzamento com base municipal (após convênio), score, dossiê e fila de fiscalização.</li>
+</ul>
+<h4>6. Precificação</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Modelo</th>
+<th>Números</th>
+<th>Quando usar</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Success fee</strong> (principal)</td>
+<td><strong>10% da arrecadação incremental</strong>, apurada por medição trimestral</td>
+<td>Sempre que possível. Não onera o orçamento em crise</td>
+</tr>
+<tr>
+<td><strong>Híbrido</strong></td>
+<td>R$ 4.000/mês + 6% do incremental</td>
+<td>Se a Procuradoria exigir valor fixo</td>
+</tr>
+<tr>
+<td><strong>Licença</strong></td>
+<td>R$ 8–15 mil/mês</td>
+<td>Último recurso — vira despesa e disputa orçamento [FATO: decreto de corte de 30%]</td>
+</tr>
+</tbody>
+</table></div>
+<h4>7. Modelo financeiro</h4>
+<pre><code>Receita potencial não arrecadada          R$ 5–12 milhões/ano   [EST]
+Captura realista no ano 1 (30%)           R$ 1,5–3,6 milhões
+Success fee a 10%                         R$ 150.000–360.000/ano
+
+Custo de construção                       6 semanas de trabalho
+Custo operacional mensal                  &lt; R$ 800 (infra e coleta)
+</code></pre>
+<p><strong>Um único contrato paga mais que 20 clientes de SaaS local.</strong> É o retorno mais assimétrico de todo o dossiê. Também é o de maior risco de execução — o dinheiro pode simplesmente não vir, e vir devagar quando vier.</p>
+<h4>8. Go-to-market</h4>
+<p>Ordem exata, e a ordem importa mais que o conteúdo:</p>
+<ol>
+<li><strong>Construa o dado antes de pedir a reunião.</strong> Chegue com "existem X imóveis anunciando temporada em Ilhabela e Y não constam no cadastro". Quem chega com o número não está pedindo, está oferecendo.</li>
+<li><strong>Comece pela hotelaria formal, não pela prefeitura.</strong> ACEI e Convention Bureau já querem isso e têm acesso político. Eles abrem a porta e legitimam.</li>
+<li><strong>Depois o Observatório de Turismo</strong> — a prefeitura já se posiciona como destino inteligente e tem parceria com o CIET [FATO]. Você é continuidade da agenda deles, não novidade.</li>
+<li><strong>Só então a Fazenda</strong>, com a Procuradoria na sala desde a primeira reunião. O obstáculo será jurídico, não técnico.</li>
+</ol>
+<p><strong>Oferta piloto:</strong> diagnóstico gratuito de 60 dias. Você entrega o mapeamento; eles avaliam. Se o número for grande, o contrato se vende sozinho.</p>
+<h4>9. Validação de 30 dias</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Marco</th>
+<th>CONTINUAR</th>
+<th>MATAR</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dia 5</td>
+<td>Parecer jurídico preliminar diz que a coleta é viável</td>
+<td>Advogado diz que não → <strong>mate imediatamente</strong></td>
+</tr>
+<tr>
+<td>Dia 12</td>
+<td>Mapeamento produz número plausível e defensável</td>
+<td>Universo pequeno demais para justificar</td>
+</tr>
+<tr>
+<td>Dia 20</td>
+<td>ACEI ou Convention Bureau topam levar o tema</td>
+<td>Trade não quer se indispor com locadores</td>
+</tr>
+<tr>
+<td>Dia 30</td>
+<td>Reunião marcada com Fazenda ou Turismo</td>
+<td>Nenhuma porta abriu em 30 dias → engavete por 6 meses e reveja após a regulamentação sair</td>
+</tr>
+</tbody>
+</table></div>
+<h4>10. Pré-mortem</h4>
+<ol>
+<li><strong>A Procuradoria vetou o success fee.</strong> Não há previsão legal confortável. → <em>Mitigação:</em> levar o jurídico junto desde a primeira reunião; ter o modelo híbrido pronto como plano B.</li>
+<li><strong>A regulamentação nunca saiu da discussão.</strong> Sem lei, não há o que fiscalizar. → <em>Mitigação:</em> o mesmo dataset serve ao trade privado (D5, benchmark) mesmo se o B2G travar. <strong>Nunca construa isso só para a prefeitura.</strong></li>
+<li><strong>Mudança política.</strong> Novo secretário, projeto engavetado. → <em>Mitigação:</em> contrato com prazo e marco de rescisão; não dependa de uma única pessoa.</li>
+<li><strong>Reação pública.</strong> Você vira "o cara que dedurou os vizinhos" numa cidade de 36 mil habitantes onde sua reputação é seu canal de vendas. → <em>Mitigação:</em> <strong>este é o risco mais subestimado da lista.</strong> Posicione-se como fornecedor de tecnologia do município, com o município comunicando; nunca apareça como o fiscalizador. Avalie honestamente se vale o custo social.</li>
+<li><strong>Plataformas bloquearam a coleta.</strong> → <em>Mitigação:</em> diversifique as fontes; parte do dado pode vir de convênio direto, como já ocorre em outras cidades [FATO].</li>
+<li><strong>A arrecadação subiu e ninguém conseguiu atribuir a você.</strong> → <em>Mitigação:</em> metodologia de medição acordada por escrito <strong>antes</strong> de começar, com linha de base congelada.</li>
+<li><strong>A prefeitura não pagou.</strong> Já atrasou R$ 14 milhões [FATO]. → <em>Mitigação:</em> success fee com retenção na fonte da arrecadação, se juridicamente possível; caso contrário, exija garantia contratual.</li>
+</ol>
+<hr>
+<h3>🥉 Aposta 3 — Anfitrião Copiloto + Caseiro Digital</h3>
+<p><em>(A6 + A7, notas 80 / 78 — o maior mercado local)</em></p>
+<h4>1. Tese e hipótese central</h4>
+<p>Mais de 7.000 leitos em casas de temporada [FATO], ~1.750 imóveis [EST], administradoras cobrando 20–40% da reserva [FATO]. E, atrás de cada imóvel, um proprietário que mora fora e tem duas perguntas permanentes: <em>quanto minha casa rendeu</em> e <em>em que estado ela está</em>. Ninguém responde bem às duas.</p>
+<blockquote>
+<p><strong>Hipótese central:</strong>
+<em>O proprietário paga por transparência sobre um ativo que não vê.</em></p>
+<p>Se o dono for indiferente ao estado da casa entre uma visita e outra, o Caseiro Digital não existe. Nesse caso resta só o B2B com administradoras — mercado menor e mais competitivo.</p>
+</blockquote>
+<h4>2. Persona e ICP</h4>
+<ul>
+<li><strong>Administradora de temporada</strong> com 20–150 imóveis. Vive de comissão, sofre com turnover de sábado e atendimento 24 h. Alvo: ALITI e as imobiliárias que operam temporada.</li>
+<li><strong>Anfitrião independente</strong> com 1–5 imóveis, que administra do celular e não larga o WhatsApp nas férias.</li>
+<li><strong>Proprietário ausente</strong> — o pagador do Caseiro Digital. Mora em SP, usa a casa 30 dias por ano, tem um caseiro em quem confia e nenhum processo.</li>
+</ul>
+<h4>3. Jobs to be done</h4>
+<p>Da administradora: encher o calendário, não ter overbooking, virar a casa entre hóspedes no sábado, e não perder o contrato do proprietário. Do proprietário: saber que a casa está inteira, saber quanto rendeu, e não ser surpreendido por um problema de R$ 20 mil que começou como uma infiltração de R$ 300.</p>
+<h4>4. Solução e arquitetura</h4>
+<p>Dois produtos que compartilham a mesma base:</p>
+<p><strong>Anfitrião Copiloto (B2B)</strong> — agente de WhatsApp para o hóspede (pré-check-in, dúvidas, upsell, regras da casa), conciliação de calendário multi-plataforma, escala de faxina e vistoria com laudo fotográfico, e repasse automático ao proprietário.</p>
+<p><strong>Caseiro Digital (B2C, pago pelo dono)</strong> — o caseiro manda 10 fotos por mês pelo WhatsApp; a IA compara com o histórico, detecta mofo, infiltração, corrosão de maresia, estado da piscina e da vegetação; gera um relatório mensal em linguagem de dono, com alerta quando algo muda.</p>
+<p><strong>Onde o LLM entra:</strong> conversa com hóspede, redação do relatório, comparação visual série-a-série. <strong>Onde não entra:</strong> cálculo de repasse financeiro e disponibilidade de calendário — determinístico, sempre.</p>
+<p><strong>Risco técnico principal:</strong> falso positivo em detecção de dano. Um relatório que grita "infiltração" onde há sombra destrói a confiança no primeiro mês. Calibrar para <strong>sensibilidade baixa e revisão humana</strong> no início.</p>
+<h4>5. Como o Claude Code encurta o caminho</h4>
+<ul>
+<li><strong>1 dia:</strong> pipeline de fotos → relatório mensal em PDF. É o produto inteiro do Caseiro Digital em forma bruta.</li>
+<li><strong>1 semana:</strong> WhatsApp do caseiro, histórico por imóvel, comparação temporal, alertas.</li>
+<li><strong>1 mês:</strong> o lado B2B — calendário, faxina, hóspede, repasse.</li>
+</ul>
+<h4>6. Precificação</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Produto</th>
+<th>Preço</th>
+<th>Quem paga</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Caseiro Digital</td>
+<td><strong>R$ 149/mês por imóvel</strong></td>
+<td>O proprietário. Cabe no custo de manter um imóvel de R$ 1,5 milhão</td>
+</tr>
+<tr>
+<td>Anfitrião Copiloto</td>
+<td><strong>R$ 69/imóvel/mês</strong>, mínimo de R$ 690</td>
+<td>A administradora</td>
+</tr>
+<tr>
+<td>Pacote administradora</td>
+<td>R$ 49/imóvel acima de 50 imóveis</td>
+<td>Volume</td>
+</tr>
+</tbody>
+</table></div>
+<h4>7. Modelo financeiro</h4>
+<pre><code>100 imóveis no Caseiro Digital × R$ 149        = R$ 14.900 MRR
+5 administradoras × 40 imóveis × R$ 69         = R$ 13.800 MRR
+                                          Total ≈ R$ 28.700 MRR
+
+R$ 5.000 MRR:  35 imóveis     → 3–5 meses
+R$ 15.000 MRR: ~105 imóveis   → 9–12 meses
+R$ 50.000 MRR: ~350 imóveis   → exige Ubatuba, São Sebastião e Caraguá
+</code></pre>
+<p>O gargalo aqui não é demanda, é <strong>canal</strong>. Vender de um em um para 1.750 proprietários é inviável sozinho; por isso o caminho é B2B2C: a administradora vende o Caseiro Digital como serviço premium dela e você fica com metade.</p>
+<h4>8. Go-to-market</h4>
+<ol>
+<li>Comece pelo <strong>Caseiro Digital com 5 imóveis de conhecidos</strong>, de graça, por 60 dias. Você precisa das fotos e do histórico mais do que do dinheiro.</li>
+<li>Leve o relatório mensal — impresso, bonito — para 3 administradoras. A conversa é: <em>"seus proprietários receberiam isso todo mês, com sua marca"</em>.</li>
+<li>Aborde a <strong>ALITI</strong> e as imobiliárias de temporada como canal, não como cliente.</li>
+<li>Um argumento decisivo com o proprietário: com a regulamentação de temporada em discussão [FATO], quem tem relatório e histórico organizado atravessa a mudança sem susto.</li>
+</ol>
+<h4>9. Validação de 30 dias</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Marco</th>
+<th>CONTINUAR</th>
+<th>MATAR</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dia 10</td>
+<td>5 imóveis enviando fotos com regularidade</td>
+<td>Caseiro não manda foto → o input não existe</td>
+</tr>
+<tr>
+<td>Dia 20</td>
+<td>≥ 3 proprietários dizem que leriam esse relatório todo mês</td>
+<td>Indiferença → hipótese central falsa</td>
+</tr>
+<tr>
+<td>Dia 30</td>
+<td>≥ 1 administradora quer revender com a marca dela</td>
+<td>Nenhuma → sem canal, o negócio não escala</td>
+</tr>
+</tbody>
+</table></div>
+<h4>10. Pré-mortem</h4>
+<ol>
+<li><strong>O caseiro parou de mandar foto no mês 3.</strong> Sem input, sem produto. → <em>Mitigação:</em> lembrete automático, gamificação simples e — principalmente — pagar uma pequena bonificação ao caseiro. Ele é o sensor.</li>
+<li><strong>Falso positivo destruiu a confiança.</strong> → <em>Mitigação:</em> revisão humana nos primeiros 90 dias; linguagem de "atenção", não de "dano".</li>
+<li><strong>Administradoras viram você como concorrente futuro.</strong> → <em>Mitigação:</em> comprometa-se por contrato a não administrar imóveis. Escolha um lado e fique nele.</li>
+<li><strong>Sazonalidade da administradora.</strong> Ela corta custo em maio. → <em>Mitigação:</em> o Caseiro Digital é <strong>contra-cíclico</strong> — a casa fica fechada justamente na baixa. Venda os dois juntos.</li>
+<li><strong>Uma plataforma global lançou algo parecido.</strong> → <em>Mitigação:</em> o produto delas nunca terá o caseiro brasileiro no WhatsApp e a relação local. Esse é o fosso.</li>
+<li><strong>Preço alto demais para imóvel de R$ 400 mil.</strong> → <em>Mitigação:</em> segmente. O Caseiro Digital é produto de imóvel de alto padrão, e Ilhabela tem muitos.</li>
+<li><strong>Você virou operação, não produto.</strong> Passou o dia atendendo caseiro. → <em>Mitigação:</em> teto rígido de 15 h/mês de operação; acima disso, automatize ou recuse cliente.</li>
+</ol>
+<hr>
+<h3>4️⃣ Aposta 4 — Índice Ilhabela (a camada de dado)</h3>
+<p><em>(D1 + D5 + D8 + G4, notas 80 / 83 / 75 / 79 — o ativo composto)</em></p>
+<h4>1. Tese e hipótese central</h4>
+<p>Ninguém em Ilhabela sabe o que o vizinho cobra, quantos imóveis competem com o dele, ou como a semana que vem se compara à do ano passado. O Observatório municipal existe e é bom [FATO], mas publica agregado e institucional — não o dado acionável que um dono de pousada usa numa terça-feira. A ocupação média do Circuito Litoral Norte foi de 51,46% em 2025 e o ticket médio R$ 505,34 [FATO]; ninguém sabe onde a sua pousada está dentro disso.</p>
+<blockquote>
+<p><strong>Hipótese central:</strong>
+<em>Um dono de pousada paga R$ 300–500 por mês para saber onde está em relação ao mercado.</em></p>
+<p>Se ele achar interessante mas não pagar — resultado muito comum em produto de dado —, o Índice deixa de ser um negócio e vira o que talvez sempre devesse ser: <strong>infraestrutura interna e canal de distribuição</strong> para as outras apostas.</p>
+</blockquote>
+<h4>2. Persona e ICP</h4>
+<p>Pousada de 10–40 quartos com dono operador; imobiliária de temporada; investidor comprando imóvel para renda; e, de graça, imprensa e poder público — que são amplificadores.</p>
+<h4>3. Jobs to be done</h4>
+<p>Precificar a diária da semana que vem. Decidir se abre ou fecha em junho. Saber se a queda foi minha ou do mercado. Convencer o proprietário de que o rendimento está bom.</p>
+<h4>4. Solução e arquitetura</h4>
+<p>Coleta contínua e legítima de sinais públicos → normalização → série histórica por região da ilha, faixa de preço e tipo de imóvel → três produtos:</p>
+<ol>
+<li><strong>Boletim semanal gratuito</strong> (a isca e a mídia — ideia G4/H6)</li>
+<li><strong>Painel de benchmark por assinatura</strong> (o produto pago)</li>
+<li><strong>API e relatórios sob medida</strong> para imobiliária e investidor (o ticket alto)</li>
+</ol>
+<p><strong>Este é o único item do dossiê cujo valor cresce sozinho com o tempo.</strong> Uma série histórica de três anos não é copiável por quem começa hoje — nem com IA, nem com dinheiro. É o fosso mais real disponível.</p>
+<h4>5. Como o Claude Code encurta o caminho</h4>
+<ul>
+<li><strong>1 dia:</strong> coletor + primeira foto do mercado. Um gráfico que ninguém tem.</li>
+<li><strong>1 semana:</strong> série temporal, segmentação por região, primeiro boletim publicado.</li>
+<li><strong>1 mês:</strong> painel com login, assinatura e cobrança recorrente.</li>
+</ul>
+<h4>6. Precificação</h4>
+<p>R$ 297/mês (pousada) · R$ 597/mês (imobiliária) · R$ 1.500–5.000 por relatório sob medida (investidor). Boletim semanal sempre gratuito — ele é o canal.</p>
+<h4>7. Modelo financeiro</h4>
+<pre><code>Custo operacional mensal                 &lt; R$ 600  (é o produto mais barato de operar)
+40 assinantes × R$ 397 (médio)           = R$ 15.880 MRR
+Carga de trabalho após pronto            ~4 h/mês
+</code></pre>
+<p>Não é o maior número do dossiê. <strong>É o melhor lucro por hora.</strong></p>
+<h4>8. Go-to-market</h4>
+<p>Publique primeiro, venda depois — a lógica de H6. O boletim semanal gratuito, com um número que ninguém mais tem, faz o trade te procurar. Em uma cidade de 36 mil habitantes, seis meses de publicação consistente valem mais que qualquer investimento em anúncio.</p>
+<h4>9. Validação de 30 dias</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Marco</th>
+<th>CONTINUAR</th>
+<th>MATAR (como produto)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dia 7</td>
+<td>Coleta estável e defensável juridicamente</td>
+<td>Bloqueio técnico ou jurídico</td>
+</tr>
+<tr>
+<td>Dia 15</td>
+<td>Primeiro boletim publicado; ≥ 50 leitores do trade</td>
+<td>Ninguém abre</td>
+</tr>
+<tr>
+<td>Dia 30</td>
+<td>≥ 3 pessoas perguntam se existe versão paga</td>
+<td>Ninguém pergunta → mantenha como infraestrutura interna e canal, não como produto</td>
+</tr>
+</tbody>
+</table></div>
+<h4>10. Pré-mortem</h4>
+<ol>
+<li><strong>Bloqueio de coleta.</strong> → <em>Mitigação:</em> múltiplas fontes; parcerias de dado com o próprio trade (ideia H5).</li>
+<li><strong>Dado interessante que ninguém compra.</strong> O risco mais provável. → <em>Mitigação:</em> aceite cedo que o valor é canal e fosso, não assinatura.</li>
+<li><strong>A prefeitura publicou de graça</strong> via Observatório [FATO]. → <em>Mitigação:</em> eles publicam agregado institucional; você publica granular e acionável. Coopere, não concorra.</li>
+<li><strong>Virou obrigação de publicar toda semana.</strong> → <em>Mitigação:</em> automatize o boletim inteiro. Se exigir mais de 1 h/semana, está mal construído.</li>
+<li><strong>Acusação de expor preço de concorrente.</strong> → <em>Mitigação:</em> publique agregado, nunca identificado.</li>
+<li><strong>A série quebrou</strong> por mudança de fonte e perdeu comparabilidade. → <em>Mitigação:</em> versionar a metodologia e guardar o dado bruto desde o dia 1.</li>
+<li><strong>Você se apaixonou pelo projeto de mídia</strong> e parou de vender. → <em>Mitigação:</em> teto de horas. O Índice é meio, não fim.</li>
+</ol>
+<hr>
+<h3>5️⃣ Aposta 5 — Camada de Inteligência produtizada (o motor de caixa)</h3>
+<p><em>(A11 + B1 + B3 + H4, notas 76 / 75 / 72 / 73)</em></p>
+<h4>1. Tese e hipótese central</h4>
+<p>Já existe: oferta desenhada, preço ancorado, deck pronto e reutilizável, e um primeiro cliente-alvo real. O trabalho não é inventar — é <strong>transformar uma proposta em uma linha de montagem</strong>.</p>
+<blockquote>
+<p><strong>Hipótese central:</strong>
+<em>O modelo Dojo se replica em outra vertical mantendo margem.</em></p>
+<p>Se cada cliente novo exigir 80% de trabalho sob medida, isso não é produto, é consultoria com nome de produto — e o teto de R$ 300 mil de ARR (⚡3) chega antes e machuca mais.</p>
+</blockquote>
+<h4>2. Persona e ICP</h4>
+<p>Negócio local com receita recorrente ou reserva, faturamento acima de R$ 60 mil/mês, dono presente e decisor, e algum sistema de gestão já instalado. São ~640 empresas endereçáveis na ilha [EST]. Em ordem de facilidade: academias e estúdios → pousadas → clínicas → escolas → restaurantes com delivery → marinas.</p>
+<h4>3. Jobs to be done</h4>
+<p>O dono quer três coisas e nenhuma delas é "ter IA": <strong>não perder venda fora do horário</strong>, <strong>não perder cliente que ia embora em silêncio</strong> e <strong>ter menos coisa pequena para responder</strong>. Venda isso; a tecnologia é detalhe de implementação.</p>
+<h4>4. Solução e arquitetura</h4>
+<p>Um núcleo, muitos conectores. É o que decide entre 40% e 85% de margem:</p>
+<pre><code>┌──────────────── NÚCLEO REUTILIZÁVEL (85% do código) ────────────────┐
+│ WhatsApp · orquestração de agente · base de conhecimento por cliente │
+│ régua de campanhas · painel · cobrança Pix · logging e auditoria      │
+└──────────────────────────────────────────────────────────────────────┘
+        │            │            │             │            │
+     Tecnofit      Stays        Omie        Google Cal    Planilha
+     (academia)   (pousada)    (ERP)        (clínica)    (o resto)
+      ↑ conector de ~200 linhas cada — o único trabalho por vertical
+</code></pre>
+<p><strong>Onde o LLM entra:</strong> conversa, classificação de intenção, redação. <strong>Onde não entra:</strong> regra de cobrança, cálculo de vencimento, decisão sobre dado sensível. E, como está no próprio deck: <strong>caso sensível sempre escala para humano.</strong></p>
+<h4>5. Como o Claude Code encurta o caminho</h4>
+<ul>
+<li><strong>1 dia:</strong> um conector novo para uma vertical nova.</li>
+<li><strong>1 semana:</strong> cliente novo no ar, do contrato ao agente operando.</li>
+<li><strong>1 mês:</strong> três clientes de verticais diferentes, com o núcleo comum consolidado.</li>
+</ul>
+<p>A meta operacional é dura e é a coisa mais importante desta aposta: <strong>implantação em ≤ 20 horas</strong>. Acima disso, a margem some e você virou agência.</p>
+<h4>6. Precificação</h4>
+<p>Mantenha a régua existente — ela está bem calibrada contra o mercado nacional, que cobra R$ 3–5 mil de setup e R$ 1,5–2,5 mil/mês [FATO]:</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th>Essencial</th>
+<th>Completo</th>
+<th>Premium</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mensal</td>
+<td>R$ 397</td>
+<td><strong>R$ 697</strong></td>
+<td>R$ 1.197</td>
+</tr>
+<tr>
+<td>Setup</td>
+<td>R$ 2.500</td>
+<td>R$ 4.500</td>
+<td>R$ 7.500</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Adicione uma quarta porta de entrada (ideia H4): "Temporada" — R$ 2.500/mês, de dezembro a março, sem setup.</strong> É a oferta mais fácil de vender na ilha inteira, porque não pede que o dono acredite em transformação digital: pede que ele resolva janeiro. Boa parte converte para anual depois.</p>
+<h4>7. Modelo financeiro</h4>
+<pre><code>Margem bruta por cliente (R$ 697 − ~R$ 90 de custo variável)  = R$ 607 (87%)
+Implantação: 20 h a R$ 4.500                                  = R$ 225/h
+
+R$ 5.000 MRR:   8 clientes    → 3–4 meses     (muito factível)
+R$ 15.000 MRR:  22 clientes   → 10–14 meses
+R$ 50.000 MRR:  72 clientes   → ⚠️ ultrapassa o SOM local de ~640 empresas
+                                 a 11% de penetração — improvável sozinho
+</code></pre>
+<p>A última linha é o argumento inteiro da Parte 5. <strong>Esta aposta chega confortavelmente a R$ 15 mil por mês e trava.</strong></p>
+<h4>8. Go-to-market</h4>
+<ol>
+<li><strong>Feche o Dojo.</strong> Um caso com números reais vale mais que dez propostas.</li>
+<li><strong>Peça indicação, não referência genérica:</strong> <em>"quem mais na ilha você conhece com esse mesmo problema?"</em> Em cidade pequena, a indicação é o canal — CAC próximo de zero.</li>
+<li><strong>Troque o token do deck</strong> e mande a segunda proposta na mesma semana. O deck já foi feito para isso.</li>
+<li><strong>Fale nas associações</strong> — ACEI, Convention Bureau, Sebrae. Uma palestra de 40 minutos com números locais gera mais reunião que três meses de prospecção.</li>
+<li><strong>Use o diagnóstico pago (B1)</strong> como porta de entrada de quem hesita: R$ 1.500 abatíveis do setup transforma "vou pensar" em cliente.</li>
+</ol>
+<h4>9. Validação de 30 dias</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Marco</th>
+<th>CONTINUAR</th>
+<th>AJUSTAR</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dia 10</td>
+<td>Dojo assinado</td>
+<td>Se não, o problema é a oferta ou o preço — descubra qual antes de mandar a segunda</td>
+</tr>
+<tr>
+<td>Dia 20</td>
+<td>2ª proposta enviada a outra vertical</td>
+<td>Deck não é replicável na prática → conserte o template</td>
+</tr>
+<tr>
+<td>Dia 30</td>
+<td>1 implantação feita em ≤ 20 h</td>
+<td>Acima de 40 h → o núcleo não está reutilizável. <strong>Pare de vender e refatore</strong></td>
+</tr>
+</tbody>
+</table></div>
+<h4>10. Pré-mortem</h4>
+<ol>
+<li><strong>Virou agência.</strong> Cada cliente é um projeto; você trabalha 60 h/semana com margem de agência. → <em>Mitigação:</em> a meta de 20 h e a disciplina de recusar customização que não vira produto.</li>
+<li><strong>Concorrente nacional a R$ 99/mês</strong> [FATO] comeu o mercado por baixo. → <em>Mitigação:</em> nunca venda "agente de WhatsApp". Venda a integração com o sistema que o cliente já usa e a presença local. Nenhum SaaS remoto senta na mesa do dono.</li>
+<li><strong>Churn alto no mês 6.</strong> O cliente não viu resultado. → <em>Mitigação:</em> o resumo semanal do dono, que já está no deck, é a arma anti-churn. Se ele lê o número toda segunda, não cancela.</li>
+<li><strong>Inadimplência.</strong> Pequeno comércio atrasa. → <em>Mitigação:</em> débito recorrente ou Pix automático; suspensão automatizada e sem drama após 10 dias.</li>
+<li><strong>Saturação do mercado local.</strong> Acabaram os 640. → <em>Mitigação:</em> é a razão de existirem as apostas 1 a 4.</li>
+<li><strong>Meta mudou a política ou o preço da API.</strong> → <em>Mitigação:</em> abstraia o canal; mantenha o dado e a lógica do seu lado.</li>
+<li><strong>Um cliente insatisfeito falou mal</strong> — e em cidade de 36 mil habitantes isso circula em uma semana. → <em>Mitigação:</em> política de saída generosa e sem fidelidade, exatamente como já está no deck. Nunca prenda ninguém.</li>
+</ol>
+<hr>
+<h2 id="parte-5-portfolio-e-sequenciamento">Parte 5 — Portfólio e sequenciamento</h2>
+<h3>A pergunta que precisa de resposta antes do cronograma</h3>
+<p><strong>Ilhabela é o mercado, ou é só onde eu moro?</strong></p>
+<p>Os dois lados, com honestidade:</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Ilhabela <strong>é</strong> o mercado</th>
+<th>Ilhabela é <strong>só a base</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Presença física é um fosso real: quem mora fora não senta na mesa do dono da marina</td>
+<td>O SOM local tem teto de ~R$ 300 mil de ARR [EST ⚡3] — bom salário, patrimônio nenhum</td>
+</tr>
+<tr>
+<td>CAC próximo de zero por indicação em cidade pequena</td>
+<td>640 empresas endereçáveis é uma amostra pequena demais para achar padrão de produto</td>
+</tr>
+<tr>
+<td>Acesso a dado que ninguém remoto consegue: conversa de marina, fofoca de trade, número real</td>
+<td>O poder de compra é modesto: salário médio de R$ 3,3 mil [FATO], PIB é ficção [⚡1]</td>
+</tr>
+<tr>
+<td>Ilhabela é laboratório fechado e mensurável — narrativa forte para vender fora (H8)</td>
+<td>Sazonalidade contamina o cliente: em maio ele corta o que você vende</td>
+</tr>
+<tr>
+<td>A restrição do parque força otimização, e otimização é o que você vende</td>
+<td>O maior empregador é a prefeitura [FATO] — e ela quebrou em 2026 [FATO]</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Conclusão, sem meio-termo:</strong> Ilhabela é <strong>campo de provas e fonte de fosso, não é o mercado</strong>. O mercado é o litoral brasileiro inteiro e, para a vertical náutica, o mercado é global. A ilha fornece três coisas que dinheiro não compra — os primeiros clientes, os dados reais e a história — e não fornece a única coisa que importa depois: escala.</p>
+<p>O erro a evitar não é ficar na ilha. É <strong>deixar o conforto do faturamento local adiar a saída</strong>. Por isso o cronograma abaixo tem uma data explícita para o primeiro cliente fora da ilha, e ela não é negociável.</p>
+<h3>A arquitetura do portfólio</h3>
+<pre><code>                        ┌─────────────────────────────┐
+                        │  APOSTA 5 — SERVIÇO         │
+                        │  Camada de Inteligência     │
+                        │  Caixa em 30–60 dias        │
+                        │  Teto: ~R$ 15k MRR          │
+                        └──────────────┬──────────────┘
+                    financia │         │ gera dados, acesso e prova
+                             ▼         ▼
+        ┌────────────────────────┐   ┌──────────────────────────┐
+        │ APOSTA 1 — NÁUTICA     │   │ APOSTA 4 — ÍNDICE        │
+        │ Produto escalável      │◀──│ Dado proprietário        │
+        │ Sai da ilha no mês 9   │   │ Canal + fosso + mídia    │
+        │ Teto: global           │   │ Roda com 4 h/mês         │
+        └────────────────────────┘   └────────────┬─────────────┘
+                                                  │ alimenta
+                                     ┌────────────▼─────────────┐
+                                     │ APOSTA 2 — B2G           │
+                                     │ Success fee              │
+                                     │ Assimétrica: R$ 150–360k │
+                                     │ de UM contrato           │
+                                     └──────────────────────────┘
+
+        APOSTA 3 (temporada) entra no ano 2 — grande, mas mais competida
+</code></pre>
+<p><strong>As sinergias são reais, não retóricas:</strong></p>
+<ul>
+<li>O <strong>serviço</strong> (5) põe você dentro de negócios locais. Cada implantação é uma etnografia paga: você vê o sistema por dentro, descobre a dor seguinte e sai com um caso.</li>
+<li>O <strong>Índice</strong> (4) é construído com os dados que o serviço expõe e publica o que ninguém tem — reduzindo o CAC do serviço a quase zero. É o único item que se retroalimenta.</li>
+<li>A <strong>náutica</strong> (1) é o produto que escapa da ilha, e o Índice fornece a credibilidade de entrada nas marinas de fora.</li>
+<li>O <strong>B2G</strong> (2) usa a mesma coleta do Índice. <strong>O dataset é construído uma vez e vendido três vezes</strong> — ao trade, ao município e a você mesmo.</li>
+</ul>
+<p><strong>Onde está o risco de dispersão — e é grande.</strong> Quatro frentes é demais para uma pessoa. A regra de proteção: <strong>no máximo duas frentes ativas ao mesmo tempo, uma delas sempre sendo o caixa.</strong> As outras ficam em modo de coleta passiva — o coletor do Índice roda sozinho enquanto você vende serviço; ele não pede atenção, só acumula histórico.</p>
+<h3>Cronograma trimestre a trimestre</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Trimestre</th>
+<th>Foco</th>
+<th>Marcos</th>
+<th>🚦 Gate de decisão</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>T1</strong> (mês 1–3)</td>
+<td>Caixa + coleta silenciosa</td>
+<td>Fechar Dojo · 3 clientes de serviço · coletor do Índice no ar · boletim semanal publicado · parecer jurídico sobre coleta</td>
+<td><strong>≥ R$ 5k MRR e implantação ≤ 20 h.</strong> Se a implantação passa de 40 h, pare de vender e refatore o núcleo antes de tudo</td>
+</tr>
+<tr>
+<td><strong>T2</strong> (mês 4–6)</td>
+<td>Descoberta náutica</td>
+<td>15 visitas a marinas · protótipo com dados reais · 2 pilotos gratuitos · SIVI como evento de prospecção · Índice com 3 meses de série</td>
+<td><strong>≥ 2 marinas em piloto e ≥ 1 dizendo um preço.</strong> Se ninguém aceita nem de graça, mate a Aposta 1 e realoque para a Aposta 3</td>
+</tr>
+<tr>
+<td><strong>T3</strong> (mês 7–9)</td>
+<td>Náutica paga + sair da ilha</td>
+<td>3 marinas pagantes · <strong>primeiro cliente fora de Ilhabela até o mês 9</strong> · serviço em ~R$ 12k MRR · abordagem à Fazenda municipal</td>
+<td><strong>Cliente fora da ilha fechado.</strong> Este gate não se negocia: sem ele, você construiu um emprego, não um negócio</td>
+</tr>
+<tr>
+<td><strong>T4</strong> (mês 10–12)</td>
+<td>Consolidar e escolher</td>
+<td>6–8 contas náuticas · Índice com assinantes pagos · contrato B2G assinado ou engavetado com data</td>
+<td><strong>Escolha uma aposta para ser a principal do ano 2.</strong> Manter quatro frentes no ano 2 é a forma mais provável de fracassar</td>
+</tr>
+<tr>
+<td><strong>Ano 2, S1</strong></td>
+<td>Escala geográfica</td>
+<td>Angra, Paraty, Búzios · primeiro contratado (suporte, não código)</td>
+<td><strong>≥ R$ 30k MRR e ≥ 50% vindo de fora de Ilhabela</strong></td>
+</tr>
+<tr>
+<td><strong>Ano 2, S2</strong></td>
+<td>Alavancagem</td>
+<td>Náutica em inglês/espanhol · avaliar Mediterrâneo (G1) · serviço vira canal, não operação</td>
+<td><strong>≥ R$ 50k MRR com ≤ 30 h/semana de operação</strong></td>
+</tr>
+</tbody>
+</table></div>
+<h3>Metas financeiras consolidadas</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Horizonte</th>
+<th style="text-align: right;">MRR</th>
+<th>Composição provável</th>
+<th style="text-align: right;">Horas/semana</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mês 6</td>
+<td style="text-align: right;">R$ 8–12 mil</td>
+<td>90% serviço</td>
+<td style="text-align: right;">45 h</td>
+</tr>
+<tr>
+<td>Mês 12</td>
+<td style="text-align: right;">R$ 20–28 mil</td>
+<td>55% serviço · 35% náutica · 10% dado</td>
+<td style="text-align: right;">45 h</td>
+</tr>
+<tr>
+<td>Mês 18</td>
+<td style="text-align: right;">R$ 35–45 mil</td>
+<td>35% serviço · 50% náutica · 15% dado</td>
+<td style="text-align: right;">40 h</td>
+</tr>
+<tr>
+<td>Mês 24</td>
+<td style="text-align: right;">R$ 50–70 mil</td>
+<td>20% serviço · 60% náutica · 20% dado + B2G</td>
+<td style="text-align: right;">35 h</td>
+</tr>
+</tbody>
+</table></div>
+<p>O padrão que importa não é o número — é a <strong>inversão</strong>: o serviço cai de 90% para 20% da receita enquanto a receita triplica. Se no mês 24 o serviço ainda for maioria, o portfólio falhou mesmo com faturamento bom. Esse é o teste real.</p>
+<hr>
+<h2 id="parte-6-ativos-compostos">Parte 6 — Ativos compostos</h2>
+<p>O que acumular a partir de hoje que fica mais valioso com o tempo e que ninguém copia rápido. Ordenados por quanto compõem.</p>
+<h3>1. Séries históricas proprietárias ⭐ o mais valioso</h3>
+<p>Três séries, todas começando <strong>agora</strong>, porque a única variável que não se compra é tempo:</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Série</th>
+<th>O que registra</th>
+<th>Por que não é copiável</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Preço e ocupação de temporada</strong></td>
+<td>Diária, disponibilidade e reputação por região da ilha, semana a semana</td>
+<td>Quem começar em 2028 nunca terá 2026. A comparação ano-a-ano é o produto</td>
+</tr>
+<tr>
+<td><strong>Histórico por casco</strong></td>
+<td>Toda manutenção, peça e custo por embarcação (HIN)</td>
+<td>Torna a troca de fornecedor dolorosa — o dono perde o prontuário do barco</td>
+</tr>
+<tr>
+<td><strong>Estado de imóvel ao longo do tempo</strong></td>
+<td>Fotos mensais, deterioração, intervenções</td>
+<td>Vira laudo pericial de fato e ativo de seguro</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Comece a coletar antes de saber o que vai vender.</strong> O custo é quase zero e o valor é assimétrico.</p>
+<h3>2. Relacionamentos que funcionam como infraestrutura</h3>
+<p>Em cidade de 36 mil habitantes [FATO], seis relacionamentos substituem um departamento comercial: <strong>ACEI</strong>, <strong>Ilhabela Convention &amp; Visitors Bureau</strong>, <strong>ALITI</strong>, a <strong>maior marina</strong>, o <strong>Observatório de Turismo</strong> e o <strong>Instituto Ilhabela Sustentável</strong>. Meta concreta: uma conversa de qualidade por semana, com registro. Em um ano são 50 pessoas que sabem exatamente o que você faz.</p>
+<h3>3. Autoridade publicada</h3>
+<p>O boletim semanal do Índice (G4/H6) é o ativo de menor custo e maior retorno composto do dossiê. Publicar de graça, toda semana, o número que ninguém tem faz três coisas simultâneas: reduz o CAC a quase zero, cria o hábito de te procurar, e constrói prova de competência sem nenhuma venda. <strong>Cem edições depois, você é a fonte — e fonte não se copia.</strong></p>
+<h3>4. Biblioteca de núcleo reutilizável</h3>
+<p>O ativo técnico não é "código". É a <strong>fronteira certa entre núcleo e conector</strong> (diagrama da Aposta 5). Cada vertical nova deve custar ~200 linhas. Meta explícita: <strong>da assinatura ao agente no ar em ≤ 20 horas, em qualquer vertical.</strong> Cada hora economizada aí é margem no mês seguinte, para sempre.</p>
+<h3>5. Conteúdo indexável e a marca "Ilhabela"</h3>
+<p>Páginas que respondem perguntas reais — "quanto rende um imóvel de temporada em Ilhabela", "quanto custa guardar um barco na ilha" — capturam intenção comercial por anos com custo marginal zero. E o nome do lugar tem peso: <strong>"o sistema que roda nas marinas de Ilhabela"</strong> abre porta em Angra e em Paraty. A ilha é reconhecida no meio náutico nacional pela SIVI, 53 edições [FATO]. Use isso.</p>
+<h3>6. Posição em canal</h3>
+<p>O canal mais valioso da ilha não é digital — é a <strong>pousada que indica</strong> e o <strong>operador que revende</strong>. Uma rede de 20 pousadas que indicam suas soluções é um ativo que nenhum concorrente remoto constrói. Comece pela rede de indicação com comissão rastreada (D3), que já está desenhada no deck do Dojo.</p>
+<hr>
+<h2 id="parte-7-realidade-brasileira">Parte 7 — Realidade brasileira</h2>
+<h3>Formalização e tributação</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Regime</th>
+<th>Quando faz sentido</th>
+<th>Cuidados</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>MEI</strong></td>
+<td>Só nos primeiros meses, faturando pouco</td>
+<td>Limite baixo e vedação de atividades. Você vai ultrapassar rápido</td>
+</tr>
+<tr>
+<td><strong>ME no Simples</strong></td>
+<td>O padrão para este portfólio</td>
+<td>O ponto crítico é o anexo — ver abaixo</td>
+</tr>
+<tr>
+<td><strong>Lucro Presumido</strong></td>
+<td>Acima de ~R$ 1,2 mi/ano com folha baixa</td>
+<td>Vale simular; nem sempre o Simples ganha</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>O Fator R é a decisão fiscal mais relevante do primeiro ano.</strong> Desenvolvimento e licenciamento de software (CNAE 6201-5/01, 6202-3/00) e tratamento de dados e SaaS (6311-9/00) começam no <strong>Anexo V, com alíquota inicial de 15,5%</strong> [FATO]. Se a folha — incluindo pró-labore e encargos — dos últimos 12 meses for <strong>≥ 28% da receita bruta</strong>, a tributação migra para o <strong>Anexo III, iniciando em 6%</strong> [FATO].</p>
+<p>Para um operador solo isso é decisivo e controlável:</p>
+<pre><code>Faturamento anual                        R$ 300.000
+Folha necessária p/ Fator R (28%)        R$ 84.000/ano ≈ R$ 7.000/mês de pró-labore + encargos
+
+Anexo V  (15,5%)  →  R$ 46.500/ano de imposto
+Anexo III ( 6,0%) →  R$ 18.000/ano de imposto
+Diferença                                R$ 28.500/ano   [EST sobre alíquotas iniciais]
+</code></pre>
+<p>Pagar-se um pró-labore maior <strong>reduz</strong> a carga total. É contraintuitivo e muita gente perde dinheiro por não simular. Faça a conta com um contador <strong>antes</strong> de definir o pró-labore — não depois.</p>
+<p><strong>Outros pontos fiscais:</strong>
+- SaaS e licenciamento são tributados por <strong>ISS</strong>, não por ICMS [FATO]. O ISS é do município — e Ilhabela, em crise de arrecadação [FATO], tende a ficar mais atenta a isso, não menos.
+- <strong>Reforma tributária:</strong> a LC nº 214/2025 substitui gradualmente ISS e PIS/COFINS por IBS e CBS [FATO]. Não muda a decisão de hoje, mas exige revisão anual com o contador. Não modele contrato de 5 anos com a alíquota de hoje.
+- <strong>Serviço vs. SaaS:</strong> classificar tudo como "serviço" é mais simples no começo, mas quando o produto virar licença recorrente a classificação muda. Deixe o contador ciente desde o início.</p>
+<h3>LGPD — e aqui não dá para improvisar</h3>
+<p>Este portfólio toca dado pessoal de terceiros em quase todas as apostas: hóspedes, alunos, proprietários, anunciantes. Três regras práticas:</p>
+<ol>
+<li><strong>Você é operador, o cliente é controlador</strong> — na Aposta 5 e na 3. Isso precisa estar escrito no contrato, com finalidade, prazo de retenção e responsabilidade por incidente. Sem esse contrato, a responsabilidade escorrega para você.</li>
+<li><strong>Conversa de WhatsApp é dado pessoal.</strong> Retenção definida, acesso restrito, e nunca use conteúdo de cliente para treinar nada sem previsão contratual explícita.</li>
+<li><strong>A Aposta 2 é a de maior exposição.</strong> Cruzar anúncios com base municipal envolve dado de pessoa identificável. <strong>Não avance um passo sem parecer jurídico</strong> — está listado como gate de morte no dia 5 por esse motivo.</li>
+</ol>
+<h3>Pagamento e inadimplência</h3>
+<p>Pix recorrente ou débito automático via Asaas, Iugu ou Stripe. <strong>Cobre no dia 1, não no dia 30</strong> — pequeno comércio prioriza quem cobra antes. Suspensão automática e sem drama após 10 dias de atraso; a automação evita que a cobrança vire assunto pessoal, o que em cidade pequena é metade do problema. Setup sempre pago à vista ou em duas parcelas: ele filtra cliente e cobre o custo de implantação.</p>
+<p>Na alta temporada, cuidado com o inverso: o cliente tem caixa em janeiro e some em junho. Ofereça <strong>desconto de 15% no anual pago à vista em janeiro</strong> — resolve seu fluxo e o churn de baixa temporada de uma vez.</p>
+<h3>As objeções culturais — e como responder</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Objeção</th>
+<th>O que está por trás</th>
+<th>Resposta que funciona</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>"Meu sobrinho faz de graça"</em></td>
+<td>Não vê diferença entre site e sistema</td>
+<td><em>"Ótimo, ele cuida do Instagram. Eu cuido do dinheiro que vaza quando ninguém responde às 22h de sábado."</em> Nunca ataque o sobrinho</td>
+</tr>
+<tr>
+<td><em>"Tá caro"</em></td>
+<td>Compara com custo, não com retorno</td>
+<td>Traduza em unidade do negócio dele: <em>"é uma vaga e meia de barco"</em>, <em>"são três mensalidades de aluno"</em>. O simulador de ROI do deck já faz isso</td>
+</tr>
+<tr>
+<td><em>"Vou pensar"</em></td>
+<td>Não entendeu, ou não é o decisor</td>
+<td>Ofereça o diagnóstico pago (B1). R$ 1.500 abatíveis transformam hesitação em compromisso</td>
+</tr>
+<tr>
+<td><em>"Isso é pra empresa grande"</em></td>
+<td>Acha que IA é coisa de banco</td>
+<td>Mostre rodando no negócio do vizinho. Prova local vence argumento</td>
+</tr>
+<tr>
+<td><em>"E se der problema com o cliente?"</em></td>
+<td>Medo real e legítimo</td>
+<td>A regra de ouro do deck: <strong>a IA amplifica o toque humano, nunca substitui</strong>; caso sensível vai para humano e toda conversa fica registrada</td>
+</tr>
+<tr>
+<td><em>"Já tentei e não funcionou"</em></td>
+<td>Comprou chatbot genérico</td>
+<td><em>"Aquilo era um robô de menu. Isto lê o seu sistema e sabe o nome, o plano e a frequência de cada cliente."</em> Essa distinção fecha venda</td>
+</tr>
+<tr>
+<td><em>"Deixa pra depois do verão"</em></td>
+<td>A objeção mais cara da ilha</td>
+<td>Inverta: <em>"Depois do verão você já perdeu o verão."</em> Ou venda o plano Temporada (H4), que é exatamente para isso</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2 id="o-que-fazer-na-segunda-feira-de-manha">O que fazer na segunda-feira de manhã</h2>
+<p>Dez ações, em ordem, executáveis em uma semana.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Ação</th>
+<th>Tempo</th>
+<th>Resultado esperado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Mandar a proposta do Dojo e marcar a conversa de 1 hora</strong> com Diego e Janine — ela está pronta há tempo demais</td>
+<td>30 min</td>
+<td>Um contrato em negociação. Sem caixa, nada mais deste documento acontece</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Subir o coletor do Índice Ilhabela</strong> — preço e disponibilidade de temporada, rodando diariamente</td>
+<td>4 h</td>
+<td>A série histórica começa hoje. <strong>É a ação de maior retorno composto da lista</strong> e a única que perde valor a cada dia adiada</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Agendar 5 visitas a marinas</strong> para a mesma semana</td>
+<td>1 h</td>
+<td>Cinco conversas resolvem a maior incerteza do dossiê: marina paga assinatura?</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Falar com um advogado de direito digital</strong> sobre coleta de anúncios e LGPD</td>
+<td>1 h</td>
+<td>Gate de morte da Aposta 2 resolvido no dia 5, não no mês 6</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Simular Fator R com o contador</strong> e ajustar o pró-labore</td>
+<td>1 h</td>
+<td>Até R$ 28,5 mil/ano [EST] de economia fiscal com uma decisão administrativa</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>Extrair o núcleo reutilizável do trabalho do Dojo</strong> e separar do conector Tecnofit</td>
+<td>6 h</td>
+<td>O segundo cliente custa 20 h em vez de 80 h. É a diferença entre produto e agência</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>Publicar a edição nº 1 do boletim</strong> com um número que ninguém tem</td>
+<td>3 h</td>
+<td>O ativo de autoridade começa a compor. Cem edições depois você é a fonte</td>
+</tr>
+<tr>
+<td>8</td>
+<td><strong>Listar 30 empresas endereçáveis da ilha</strong>, com nome, dono, sistema que usa e dor provável</td>
+<td>2 h</td>
+<td>Sai da prospecção genérica. É o pipeline dos próximos 6 meses</td>
+</tr>
+<tr>
+<td>9</td>
+<td><strong>Trocar os tokens do deck e enviar a 2ª proposta</strong> para outra vertical, no mesmo dia</td>
+<td>3 h</td>
+<td>Testa a hipótese central da Aposta 5 — o deck é replicável? — pelo custo de uma tarde</td>
+</tr>
+<tr>
+<td>10</td>
+<td><strong>Bloquear a data da SIVI na agenda</strong> (24/07 a 01/08) e planejar a semana de prospecção náutica</td>
+<td>30 min</td>
+<td>Todos os decisores do setor náutico em um lugar, uma vez por ano [FATO]</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Se só der para fazer três:</strong> 1, 2 e 3. A primeira paga as contas, a segunda começa o único ativo que compõe sozinho, e a terceira testa a maior aposta do documento.</p>
+<hr>
+<h2 id="autocritica">Autocrítica</h2>
+<p>Onde esta análise está mais frágil, sem suavizar.</p>
+<p><strong>1. Quase todos os números de dor são estimativas minhas.</strong> Não existe pesquisa pública que quantifique perda por dor no comércio de Ilhabela. As contas estão visíveis e são defensáveis, mas são minhas — e a margem de erro em várias linhas da tabela de 22 dores é de fácil 2× para mais ou para menos. <strong>Trate a tabela como ordenação de prioridade, não como orçamento.</strong></p>
+<p><strong>2. O estoque náutico — a base da minha aposta nº 1 — é uma extrapolação.</strong> Sei que há 32 instalações em Ilhabela [FATO] e que uma delas guarda 260 barcos [FATO]. Multipliquei por uma média de 150. Se a média real for 60, a economia náutica é um terço do que estimei e a Aposta 1 desce vários degraus. <strong>Cinco visitas resolvem isso, e é por isso que estão na ação nº 3 da segunda-feira.</strong></p>
+<p><strong>3. Não validei em campo se marina compra software.</strong> É a hipótese que mais pode derrubar a análise, e ela está declarada como hipótese, não como fato. Setores ricos e analógicos às vezes são analógicos por escolha, não por falta de oferta.</p>
+<p><strong>4. Não consegui acessar duas fontes primárias importantes.</strong> O portal do IBGE e o dashboard de fluxo de entrada da prefeitura retornaram HTTP 403 durante a pesquisa. Os dados do IBGE vieram de agregadores confiáveis, mas <strong>os números de fluxo mensal — que dariam a curva exata de sazonalidade — não foram obtidos.</strong> A curva sazonal que uso é qualitativa, montada a partir de ocupação de Carnaval (87%) e de baixa (65–70%) [FATO]. Uma visita ao dashboard oficial substituiria essa aproximação por dado real.</p>
+<p><strong>5. Não encontrei o número de domicílios de uso ocasional de Ilhabela no Censo 2022</strong> — o dado que dimensionaria com precisão o mercado de segunda residência, base da Aposta 3. Está disponível no SIDRA e não foi recuperado nesta pesquisa. <strong>É a primeira consulta a fazer se a Aposta 3 subir de prioridade.</strong></p>
+<p><strong>6. A matriz de ranqueamento é sensível aos pesos, e os pesos são uma escolha.</strong> Se "escape da ilha" caísse de 20% para 10% e "mercado local" subisse, a Aposta 3 (temporada) passaria a Aposta 1 (náutica). A matriz não é um oráculo — é uma tese explicitada em números. <strong>Discorde dos pesos antes de discordar do ranking.</strong></p>
+<p><strong>7. Subestimei deliberadamente a concorrência local.</strong> Não consegui mapear quem já vende automação e IA para PMEs em Ilhabela e no Litoral Norte — busquei e encontrei apenas o mercado nacional. Pode haver dois ou três operadores locais já atuando, o que muda o CAC e o preço de todas as ideias da categoria B. <strong>Uma tarde perguntando "quem já te ofereceu isso?" nas primeiras cinco visitas resolve.</strong></p>
+<p><strong>8. O risco social da Aposta 2 pode estar subestimado.</strong> Escrevi que é gerenciável com posicionamento. Em uma cidade de 36 mil habitantes onde sua reputação <strong>é</strong> seu canal de vendas, ser associado à fiscalização de vizinhos pode custar mais do que qualquer contrato paga. Não tenho como quantificar isso, e a decisão é de foro pessoal, não de planilha.</p>
+<p><strong>9. Este documento tem viés de ação.</strong> Ele foi escrito para gerar movimento, e portanto trata cada aposta como executável. A verdade menos animadora é que <strong>uma pessoa não executa cinco apostas</strong> — no máximo duas bem-feitas por vez. A Parte 5 diz isso, mas a extensão do documento contradiz o próprio conselho. Se este dossiê levar a quatro frentes simultâneas, ele terá causado dano, não valor.</p>
+<hr>
+<h2 id="fontes">Fontes</h2>
+<p><strong>Demografia, economia e território</strong>
+- <a href="https://www.ibge.gov.br/cidades-e-estados/sp/ilhabela.html">IBGE — Cidades e Estados: Ilhabela (SP)</a> <em>(retornou HTTP 403 na coleta; dados via agregadores)</em>
+- <a href="https://cidades.ibge.gov.br/brasil/sp/ilhabela/panorama">IBGE Cidades — Panorama Ilhabela</a>
+- <a href="https://divulgardinheiro.com/ibge-divulga-pib-per-capita-de-cidades-do-litoral-paulista-veja-os-numeros/">PIB per capita de Ilhabela — 6º maior do Brasil</a>
+- <a href="https://costanorte.com.br/cidades/ilhabela/censo-ibge-2022-populacao-de-ilhabela-e-de-34934-habitantes-1426281.html">Censo IBGE 2022 — população de Ilhabela (Costa Norte)</a>
+- <a href="https://www.caravela.info/en/regional/ilhabela---sp">Economia de Ilhabela — empresas, MEIs e setores empregadores</a>
+- <a href="https://www.maismei.com.br/mei-microempreendedor-individual-ilhabela-sp">MEI em Ilhabela — MaisMei</a></p>
+<p><strong>Turismo, fluxo e hospedagem</strong>
+- <a href="https://www.ilhabela.sp.gov.br/dashboard-fluxo-de-entrada-na-cidade">Prefeitura de Ilhabela — Dashboard de Fluxo de Entrada na Cidade</a> <em>(HTTP 403 na coleta)</em>
+- <a href="https://www.ilhabela.sp.gov.br/dashboard-ocupacao-hoteleira">Prefeitura de Ilhabela — Índice de Ocupação Hoteleira</a>
+- <a href="https://www.ilhabela.sp.gov.br/observatorio-de-turismo-de-ilhabela">Prefeitura de Ilhabela — Observatório de Turismo</a>
+- <a href="https://brasilturis.com.br/2026/02/09/litoral-norte-de-sao-paulo-fecha-2025-com-alta-de-ocupacao-e-ticket-medio/">Litoral Norte fecha 2025 com alta de ocupação e ticket médio — Brasilturis</a>
+- <a href="https://costanorte.com.br/mundoanimal/temporada-de-avistamento-de-baleias-comeca-em-maio-e-deve-atrair-120-mil-turistas-ao-litoral-norte.html">Temporada de baleias deve atrair 120 mil turistas ao litoral norte — Costa Norte</a>
+- <a href="https://www.band.com.br/band-vale/noticias/balsa-de-ilhabela-horarios-precos-e-tempo-de-espera-para-a-travessia-202512121906">Balsa de Ilhabela: horários, preços e tempo de espera — Band Vale</a>
+- <a href="https://www.ilhabela.com.br/hospedagem/">Hospedagem em Ilhabela — inventário de leitos</a>
+- <a href="http://www.ilhabela.sp.gov.br/portal/noticias/0/3/3005/ilhabela-ja-registra-taxa-de-87-de-ocupacao-hoteleira-para-o-periodo-de-carnaval">Ocupação hoteleira no Carnaval — Prefeitura de Ilhabela</a></p>
+<p><strong>Náutica</strong>
+- <a href="https://sigam.ambiente.sp.gov.br/sigam3/Repositorio/511/Documentos/APAM_LN/APAMLN_Socio_Turismo.pdf">Diagnóstico Técnico APAMLN — Turismo (SIGAM/SP): marinas e garagens náuticas</a>
+- <a href="https://centronauticoilhabela.com.br/">Centro Náutico Ilhabela</a>
+- <a href="https://sivilhabela.com.br/o-evento">SIVI — Semana Internacional de Vela de Ilhabela</a>
+- <a href="https://www.ilhabela.sp.gov.br/53--semana-internacional-de-vela-de-ilhabela">Prefeitura — 53ª Semana Internacional de Vela de Ilhabela</a>
+- <a href="https://esportenewsmundo.com.br/semana-internacional-de-vela-de-ilhabela-reune-mais-de-120-barcos-e-reforca-calendario-da-vela-oceanica-brasileira/">SIVI 2026 reúne mais de 120 barcos — Esporte News Mundo</a>
+- <a href="https://naveguetemporada.com/aluguel-de-barco/ilhabela/">Preços de aluguel de embarcações em Ilhabela — Navegue Temporada</a></p>
+<p><strong>Setor público, fiscal e regulatório</strong>
+- <a href="https://www.ilhabela.sp.gov.br/taxa-de-preservacao-ambiental">Prefeitura de Ilhabela — Taxa de Preservação Ambiental (TPA)</a>
+- <a href="https://www.ilhabela.sp.gov.br/portal/noticias/0/3/17006/tpa--taxa-de-preservacao-ambiental-entra-em-operacao-nesta-terca-feira-31-em-ilhabela">TPA entra em operação em 31/03/2026 — Prefeitura de Ilhabela</a>
+- <a href="https://exame.com/brasil/ilhabela-passa-a-cobrar-taxa-de-acesso-e-valores-podem-chegar-a-r-140/">Ilhabela passa a cobrar taxa de acesso de até R$ 140 — Exame</a>
+- <a href="https://tamoiosnews.com.br/forte-reducao-nos-royalties-impacta-contas-publicas-em-ilhabela/">Forte queda nos royalties impacta contas públicas em Ilhabela — Tamoios News</a>
+- <a href="https://www.cbnvale.com.br/queda-nos-royalties-leva-prefeitura-de-ilhabela-a-adotar-medidas-de-contencao-de-gastos/">Queda nos royalties leva Ilhabela a adotar contenção de gastos — CBN Vale</a>
+- <a href="https://www.ilhabela.sp.gov.br/portal/noticias/0/3/17103/ilhabela-realiza-audiencia-publica-sobre-revisao-de-medidas-orcamentarias-e-alternativas-a-crise-dos-royalties-com-ampla-participacao-popular">Audiência pública sobre revisão orçamentária e crise dos royalties — Prefeitura</a>
+- <a href="https://www.tamoiosnews.com.br/hotelaria/ilhabela-quer-impor-regras-para-sites-de-hospedagem-caseira-que-atuam-na-cidade/">Ilhabela quer impor regras a sites de hospedagem caseira — Tamoios News</a>
+- <a href="https://smastr16.blob.core.windows.net/fundacaoflorestal/2018/07/resumo-executivo.pdf">Parque Estadual de Ilhabela — Plano de Manejo (Fundação Florestal)</a>
+- <a href="https://pt.wikipedia.org/wiki/Parque_Estadual_de_Ilhabela">Parque Estadual de Ilhabela — área e restrições</a></p>
+<p><strong>Comunidades tradicionais</strong>
+- <a href="https://www.ilhabela.sp.gov.br/portal/noticias/0/3/13504/prefeitura-de-ilhabela-investe-nas-comunidades-tradicionais-com-foco-na-qualidade-de-vida-dos-caicaras">Prefeitura investe nas comunidades tradicionais caiçaras</a>
+- <a href="https://www.ilhabela.sp.gov.br/portal/noticias/0/3/14318/mercado-do-peixe-prefeitura-de-ilhabela-reforca-seu-apoio-as-comunidades-caicaras">Mercado do Peixe — apoio às comunidades caiçaras</a>
+- <a href="https://ilhabela.tudoem.com.br/noticia/2025/11/3766/saiba-quais-sao-as-comunidades">Comunidades tradicionais de Ilhabela — Tudo Em Ilhabela</a></p>
+<p><strong>Mercado, preços e tributação</strong>
+- <a href="https://zaptrend.com.br/blog/quanto-custa-agente-ia-atendimento-whatsapp/">Quanto custa um agente de IA para WhatsApp em 2026 — Zap Trend</a>
+- <a href="https://agenciacafeonline.com.br/blog/agencia-de-ia-como-abrir-vender-servicos-2026/">Agência de IA: como abrir e vender serviços em 2026</a>
+- <a href="https://www.wecarehosting.com.br/blog/property-management-airbnb">Property management para imóveis de temporada — taxas de administração</a>
+- <a href="https://contabilidade.com/blog/fator-r-no-simples-nacional-2026-como-calcular-exemplos-praticos-e-quando-servicos-migram-do-anexo-v-para-o-iii/">Fator R no Simples Nacional 2026 — cálculo e migração Anexo V → III</a>
+- <a href="https://www.contabilizei.com.br/contabilidade-online/tributacao-softwares-estados-municipios/">Tributação de software e SaaS — ISS e fim do ICMS (Contabilizei)</a>
+- <a href="https://www.meucontadoronline.com.br/blog/cnae-software-servico-saas-guia-completo/">CNAE para SaaS — guia completo</a>
+- <a href="https://www.trbn.com.br/materia/I121925/donos-de-bares-e-restaurantes-se-queixam-de-falta-de-mao-de-obra-">Falta de mão de obra em bares e restaurantes — TRBN</a></p>
+<hr>
+<p><em>Documento gerado a partir de pesquisa primária em fontes públicas, julho de 2026. Todo número marcado [EST] é estimativa com método visível; todo número marcado [HIP] é hipótese a testar. As fontes acima foram consultadas na elaboração — verifique os dados críticos antes de decisões de capital.</em></p>
+      <footer>
+        Fonte da verdade: <code>pesquisa/ilhabela-negocios-ia.md</code> ·
+        gerado por <code>pesquisa/build.py</code>
+      </footer>
+    </div>
+  </main>
+</div>
+
+<script>
+(function(){
+  var belt = document.querySelector('.belt-fill');
+  var links = Array.prototype.slice.call(document.querySelectorAll('nav.toc a[href^="#"]'));
+  var targets = links.map(function(a){ return document.getElementById(a.getAttribute('href').slice(1)); });
+  var toc = document.querySelector('nav.toc');
+  var btn = document.querySelector('.navtoggle');
+
+  function onScroll(){
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    belt.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+
+    var current = 0;
+    for (var i = 0; i < targets.length; i++){
+      if (targets[i] && targets[i].getBoundingClientRect().top <= 120) current = i;
+    }
+    links.forEach(function(a, i){ a.classList.toggle('on', i === current); });
+  }
+
+  document.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('resize', onScroll);
+  onScroll();
+
+  if (btn){
+    btn.addEventListener('click', function(){ toc.classList.toggle('open'); });
+    links.forEach(function(a){
+      a.addEventListener('click', function(){ toc.classList.remove('open'); });
+    });
+  }
+})();
+</script>
+</body>
+</html>
