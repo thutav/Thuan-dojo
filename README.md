@@ -41,10 +41,22 @@ violaria os termos delas. Então: você cola o texto do post, o parser separa pr
 quartos, suítes, vagas, bairro, características e telefone, você confere e salva. O anúncio
 fica no seu navegador e entra nas buscas, no mapa e nas estatísticas como qualquer outro.
 
+**Alertas.** As buscas que você quer acompanhar ficam em
+[`data/alertas.json`](data/alertas.json). A cada coleta, o que entrar novo ou baixar de preço
+dentro de uma delas vira uma issue no repositório — e o GitHub manda o e-mail. Sem servidor
+de e-mail, sem senha guardada, sem serviço externo. Os favoritos ficam no seu navegador, então
+o alerta acompanha buscas, não favoritos.
+
 Além disso: filtros por preço, área, quartos, suítes, vagas, tipo, características, região e
 bairro; desenho de área à mão sobre o mapa; favoritos; comparador de até 4 imóveis lado a
 lado; painel de mercado com ranking de bairros, distribuição de preços e procedência dos
 dados; estado da busca na URL para compartilhar; instalável como aplicativo no celular.
+
+**Duas decisões que mudam os números.** Terreno e imóvel construído nunca entram na mesma
+mediana de preço por m² — são grandezas diferentes por uma ordem de magnitude, e misturá-las
+faz todo terreno parecer uma pechincha. E a deduplicação exige área ou preço batendo: título
+parecido não basta, porque uma corretora publica dezenas de "Terreno em Ilhabela" sem
+metragem, e juntá-los apagaria imóveis reais.
 
 ---
 
@@ -72,9 +84,13 @@ servidor e sem custo.
 
 | Fonte | Como é lida |
 | --- | --- |
-| Sérgio Hette, Capital Litoral, Capital da Vela, Studio Trilha, Alessandra Bidoia, Ilhabela Imóveis | HTML direto. Tenta JSON-LD (schema.org); sem isso, heurística de vitrine |
-| VivaReal, Zap, Imovelweb | Chromium de verdade — estes portais respondem 403 a requisição simples |
+| Sérgio Hette, Capital Litoral, Studio Trilha, Alessandra Bidoia, Ilhabela Imóveis | HTML direto. Tenta JSON-LD (schema.org); sem isso, heurística de vitrine |
+| Capital da Vela | Chromium: a lista é montada por JavaScript |
+| VivaReal, Zap, Imovelweb, OLX, Chaves na Mão, Lopes, Agente Imóvel, Wimoveis | Chromium de verdade — estes portais respondem 403 a requisição simples |
 | Facebook, WhatsApp, anúncios avulsos | "Colar anúncio", dentro do próprio aplicativo |
+
+Quando a vitrine não diz o bairro — e a maioria não diz, só "Casa em Ilhabela" —, o coletor
+abre a ficha do imóvel e lê de lá, com teto por execução.
 
 Nenhum adapter depende de seletor CSS escrito à mão. O extrator tenta primeiro os dados
 estruturados que o site publica e, quando não há, lê os blocos que repetem "R$" com um link —
@@ -88,12 +104,13 @@ o que sobrevive melhor a redesenho do que uma lista de classes.
 npm install
 
 npm run dev          # aplicativo em desenvolvimento
-npm test             # 58 testes: parsers, geocodificação, deduplicação, estatísticas
+npm test             # 79 testes: parsers, extratores, geocodificação, deduplicação, estatísticas, alertas
 npm run build        # gera ilhabela/ (o que o GitHub Pages publica)
 
 npm run build:geo    # regenera o contorno da ilha e as zonas de bairro
 npm run build:demo   # regenera a semente de demonstração
 npm run ingest       # coleta de verdade — precisa de internet
+npm run alertas      # avalia data/alertas.json contra a última coleta
 npm run verify:ui    # abre o app no Chromium e confere os caminhos principais
 ```
 
