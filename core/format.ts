@@ -29,10 +29,19 @@ export function formatarArea(valor: number | null): string {
   return `${numero.format(valor)} m²`;
 }
 
+const brlCentavos = new Intl.NumberFormat('pt-BR', {
+  style: 'currency',
+  currency: 'BRL',
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
 export function formatarPrecoM2(valor: number | null, finalidade: Finalidade): string {
   if (valor === null || !Number.isFinite(valor) || valor <= 0) return '—';
   const unidade = finalidade === 'venda' ? '/m²' : finalidade === 'aluguel' ? '/m²/mês' : '/m²/noite';
-  return brl.format(valor) + unidade;
+  // Na venda o valor está na casa dos milhares e centavo é ruído; na temporada a diária por
+  // m² fica entre R$ 3 e R$ 8, e arredondar para inteiro apagaria a diferença entre bairros.
+  return (valor >= 100 ? brl.format(valor) : brlCentavos.format(valor)) + unidade;
 }
 
 export function formatarNumero(valor: number | null): string {

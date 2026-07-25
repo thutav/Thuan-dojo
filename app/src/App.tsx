@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from 'react';
 import type { Finalidade, Imovel } from '@core/types';
 import {
   aplicarFiltros,
@@ -17,7 +17,13 @@ import { Painel } from './Painel';
 import { Comparador, FichaImovel } from './Ficha';
 import { ModalFiltros } from './Filtros';
 import { ColarAnuncio } from './Colar';
-import { PainelMercado } from './Mercado';
+
+// O painel de mercado carrega a biblioteca de gráficos, que pesa mais do que todo o resto da
+// tela inicial. Quem abre o aplicativo na fila da balsa quer a busca; os gráficos só chegam
+// quando alguém realmente pede por eles.
+const PainelMercado = lazy(() =>
+  import('./Mercado').then((m) => ({ default: m.PainelMercado })),
+);
 import {
   IconeColar,
   IconeComparar,
@@ -170,22 +176,39 @@ export function App() {
             <IconeCoracao preenchido={filtros.somenteFavoritos} />
             {favoritos.itens.size > 0 && <span className="contador">{favoritos.itens.size}</span>}
           </button>
-          <button className="botao" onClick={() => setModal('comparar')} title="Comparar imóveis">
+          {/* No celular sobra espaço para o ícone e não para a palavra: os rótulos saem, o
+              title e o aria-label continuam dizendo o que cada botão faz. */}
+          <button
+            className="botao"
+            onClick={() => setModal('comparar')}
+            title="Comparar imóveis"
+            aria-label="Comparar imóveis"
+          >
             <IconeComparar />
-            Comparar
+            <span className="rotulo-botao">Comparar</span>
             {comparador.itens.size > 0 && (
               <span className="contador">
                 {comparador.itens.size}/{LIMITE_COMPARACAO}
               </span>
             )}
           </button>
-          <button className="botao" onClick={() => setModal('mercado')}>
+          <button
+            className="botao"
+            onClick={() => setModal('mercado')}
+            title="Painel de mercado"
+            aria-label="Painel de mercado"
+          >
             <IconeGrafico />
-            Mercado
+            <span className="rotulo-botao">Mercado</span>
           </button>
-          <button className="botao primario" onClick={() => setModal('colar')}>
+          <button
+            className="botao primario"
+            onClick={() => setModal('colar')}
+            title="Colar anúncio de Facebook ou WhatsApp"
+            aria-label="Colar anúncio"
+          >
             <IconeColar />
-            Colar anúncio
+            <span className="rotulo-botao">Colar anúncio</span>
           </button>
         </div>
       </header>
@@ -381,14 +404,22 @@ export function App() {
       )}
 
       {modal === 'mercado' && (
-        <PainelMercado
-          dataset={base.dataset}
-          zonas={base.zonas}
-          imoveisDoModo={imoveisDoModo}
-          estatisticas={estatisticas}
-          finalidade={filtros.finalidade}
-          aoFechar={() => setModal('nenhum')}
-        />
+        <Suspense
+          fallback={
+            <div className="fundo-modal">
+              <div className="carregando">abrindo o painel de mercado…</div>
+            </div>
+          }
+        >
+          <PainelMercado
+            dataset={base.dataset}
+            zonas={base.zonas}
+            imoveisDoModo={imoveisDoModo}
+            estatisticas={estatisticas}
+            finalidade={filtros.finalidade}
+            aoFechar={() => setModal('nenhum')}
+          />
+        </Suspense>
       )}
     </div>
   );

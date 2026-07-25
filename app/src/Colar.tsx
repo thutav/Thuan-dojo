@@ -147,9 +147,11 @@ export function ColarAnuncio(props: {
       {lido && (
         <>
           <div className="alerta info" style={{ marginBottom: 14 }}>
-            Confira os campos abaixo antes de salvar. O que o parser encontrou sozinho está
-            marcado como <em>detectado</em>; o resto você completa. O anúncio fica salvo neste
-            navegador e entra nos filtros, no mapa e nas estatísticas.
+            <span>
+              Confira os campos abaixo antes de salvar. O que o parser encontrou sozinho está
+              marcado como <em>detectado</em>; o resto você completa. O anúncio fica salvo neste
+              navegador e entra nos filtros, no mapa e nas estatísticas.
+            </span>
           </div>
 
           <div className="grade-campos">

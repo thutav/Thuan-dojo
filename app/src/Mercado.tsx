@@ -206,8 +206,12 @@ export function PainelMercado(props: {
     >
       {dataset.demo && (
         <div className="alerta atencao" style={{ marginBottom: 14 }}>
-          Estes números vêm da base de <strong>demonstração</strong>. Não são o mercado de
-          Ilhabela — servem só para conferir o aplicativo antes da primeira coleta real.
+          {/* O texto vai dentro de um span porque .alerta é flex: texto solto e <strong>
+              virariam itens de flex separados, quebrando a frase. */}
+          <span>
+            Estes números vêm da base de <strong>demonstração</strong>. Não são o mercado de
+            Ilhabela — servem só para conferir o aplicativo antes da primeira coleta real.
+          </span>
         </div>
       )}
 
