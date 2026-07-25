@@ -156,6 +156,20 @@ export function extrairJsonLd(html: string, urlBase: string): AnuncioBruto[] {
 
 const RE_PRECO_NO_TEXTO = /r\$\s*[\d.,]+/i;
 
+const MAX_TEXTO_CARTAO = 900;
+const MAX_PRECOS_NO_CARTAO = 2;
+
+/**
+ * Um card de imóvel é curto e fala de um imóvel só. Sem esta checagem, o link de uma migalha
+ * de pão sobe até o container da página inteira — que tem preço e link — e vira um "imóvel"
+ * com o título da página e o preço do primeiro anúncio da lista. Foi o que colocou
+ * "Imóveis à venda - Ilhabela, SP" na base, repetido dezessete vezes.
+ */
+function ehCartaoPlausivel(texto: string): boolean {
+  if (texto.length > MAX_TEXTO_CARTAO) return false;
+  return (texto.match(/r\$/gi)?.length ?? 0) <= MAX_PRECOS_NO_CARTAO;
+}
+
 /** Sobe na árvore até o menor bloco que tem preço e link — o "card" do anúncio. */
 function acharCartao($: cheerio.CheerioAPI, elemento: AnyNode): cheerio.Cheerio<AnyNode> | null {
   let atual = $(elemento);
@@ -164,9 +178,42 @@ function acharCartao($: cheerio.CheerioAPI, elemento: AnyNode): cheerio.Cheerio<
     if (!pai.length || pai.is('body, html')) break;
     atual = pai;
     const t = atual.text();
-    if (RE_PRECO_NO_TEXTO.test(t) && atual.find('a[href]').length) return atual;
+    if (RE_PRECO_NO_TEXTO.test(t) && atual.find('a[href]').length) {
+      return ehCartaoPlausivel(t.replace(/\s+/g, ' ').trim()) ? atual : null;
+    }
   }
   return null;
+}
+
+const PARAMS_DE_NAVEGACAO = /^(page|pagina|p|o|offset|start|sort|ordem|order|view|limit|utm_\w+)$/i;
+
+/**
+ * Paginação, ordenação e migalhas de pão apontam para a própria listagem ou para um nível
+ * acima dela — nunca para um imóvel.
+ */
+export function ehLinkDeNavegacao(href: string, urlBase: string): boolean {
+  let alvo: URL;
+  let base: URL;
+  try {
+    alvo = new URL(href, urlBase);
+    base = new URL(urlBase);
+  } catch {
+    return false;
+  }
+  if (alvo.host !== base.host) return false;
+
+  const caminho = alvo.pathname.replace(/\/$/, '');
+  const caminhoBase = base.pathname.replace(/\/$/, '');
+
+  // Migalha de pão: um nível acima da própria listagem.
+  if (caminho !== caminhoBase && caminhoBase.startsWith(caminho + '/')) return true;
+
+  // Mesma página: só é navegação quando o que muda é paginação ou ordenação.
+  if (caminho === caminhoBase) {
+    const chaves = [...alvo.searchParams.keys()];
+    return chaves.length === 0 || chaves.every((c) => PARAMS_DE_NAVEGACAO.test(c));
+  }
+  return false;
 }
 
 /**
@@ -252,6 +299,7 @@ export function extrairPorHeuristica(html: string, urlBase: string): AnuncioBrut
     if (!href || href.startsWith('#') || href.startsWith('javascript:') || href.startsWith('mailto:')) {
       return;
     }
+    if (ehLinkDeNavegacao(href, urlBase)) return;
 
     const cartao = acharCartao($, el);
     if (!cartao) return;

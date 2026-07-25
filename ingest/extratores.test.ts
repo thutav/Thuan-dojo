@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { decodificar } from './http';
 import {
   acharProximaPagina,
+  ehLinkDeNavegacao,
   extrair,
   extrairJsonLd,
   extrairPorHeuristica,
@@ -87,6 +88,50 @@ describe('extrairPorHeuristica', () => {
   it('ignora o bloco "Os mais Acessados", que agrupa anúncios e não é um imóvel', () => {
     const titulos = extrairPorHeuristica(html, BASE).map((a) => a.titulo);
     expect(titulos.some((t) => /mais Acessados/i.test(t))).toBe(false);
+  });
+});
+
+describe('ehLinkDeNavegacao', () => {
+  const listagem = 'https://www.olx.com.br/imoveis/venda/estado-sp/vale/ilhabela';
+
+  it('reconhece migalha de pão', () => {
+    expect(ehLinkDeNavegacao('https://www.olx.com.br/imoveis/venda', listagem)).toBe(true);
+    expect(ehLinkDeNavegacao('https://www.olx.com.br/imoveis/venda/estado-sp', listagem)).toBe(true);
+  });
+
+  it('reconhece paginação e ordenação da própria listagem', () => {
+    expect(ehLinkDeNavegacao(`${listagem}?o=2`, listagem)).toBe(true);
+    expect(ehLinkDeNavegacao(`${listagem}?page=3`, listagem)).toBe(true);
+    expect(ehLinkDeNavegacao(listagem, listagem)).toBe(true);
+  });
+
+  it('não confunde a ficha de um imóvel com navegação', () => {
+    expect(ehLinkDeNavegacao('https://www.olx.com.br/imovel/casa-curral-123', listagem)).toBe(false);
+    expect(ehLinkDeNavegacao('https://www.olx.com.br/imoveis/vendas-especiais', listagem)).toBe(false);
+  });
+
+  it('ignora link para outro site', () => {
+    expect(ehLinkDeNavegacao('https://facebook.com/pagina', listagem)).toBe(false);
+  });
+});
+
+describe('proteção contra card falso', () => {
+  it('não transforma migalha de pão em imóvel', () => {
+    const anuncios = extrairPorHeuristica(ler('vitrine-html.html'), BASE);
+    const urls = anuncios.map((a) => a.url);
+    expect(urls.some((u) => u.endsWith('/venda'))).toBe(false);
+    expect(urls.some((u) => u.includes('ordem=preco'))).toBe(false);
+  });
+
+  it('rejeita bloco que contém a lista inteira em vez de um imóvel', () => {
+    // O link sobe até o container da página, que tem preço e link: sem a checagem de
+    // tamanho, ele vira um "imóvel" com o título da página e o preço do primeiro anúncio.
+    const paginaInteira = `<html><body><div id="tudo">
+      <a href="/outra-secao">Ver tudo</a>
+      ${Array.from({ length: 6 }, (_, i) => `<p>Casa ${i} com 120 m² por R$ ${900 + i}.000,00 em Ilhabela, bairro Curral, com piscina e vista para o mar</p>`).join('')}
+    </div></body></html>`;
+    const anuncios = extrairPorHeuristica(paginaInteira, BASE);
+    expect(anuncios).toHaveLength(0);
   });
 });
 
