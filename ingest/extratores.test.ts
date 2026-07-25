@@ -2,12 +2,14 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
+import { decodificar } from './http';
 import {
   acharProximaPagina,
   extrair,
   extrairJsonLd,
   extrairPorHeuristica,
   pareceAnuncioDeIlhabela,
+  textoVisivel,
 } from './extratores';
 
 const aqui = fileURLToPath(new URL('.', import.meta.url));
@@ -70,6 +72,40 @@ describe('extrairPorHeuristica', () => {
   it('ignora links de navegação sem preço', () => {
     const urls = extrairPorHeuristica(html, BASE).map((a) => a.url);
     expect(urls.some((u) => u.endsWith('/contato'))).toBe(false);
+  });
+
+  it('ignora o bloco "Os mais Acessados", que agrupa anúncios e não é um imóvel', () => {
+    const titulos = extrairPorHeuristica(html, BASE).map((a) => a.titulo);
+    expect(titulos.some((t) => /mais Acessados/i.test(t))).toBe(false);
+  });
+});
+
+describe('textoVisivel', () => {
+  it('devolve o texto da ficha sem script nem estilo', () => {
+    const texto = textoVisivel(ler('ficha-imovel.html'));
+    expect(texto).toContain('Feiticeira');
+    expect(texto).toContain('IL2291');
+    expect(texto).not.toContain('rastreio');
+    expect(texto).not.toContain('display: none');
+  });
+});
+
+describe('decodificar', () => {
+  const bytes = (texto: string, codificacao: 'latin1' | 'utf8') =>
+    new Uint8Array(Buffer.from(texto, codificacao)).buffer;
+
+  it('lê página em ISO-8859-1 declarada no cabeçalho', () => {
+    const html = decodificar(bytes('bairro Armação', 'latin1'), 'text/html; charset=iso-8859-1');
+    expect(html).toContain('Armação');
+  });
+
+  it('lê página em ISO-8859-1 declarada só no meta da página', () => {
+    const pagina = '<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><p>Armação</p>';
+    expect(decodificar(bytes(pagina, 'latin1'), 'text/html')).toContain('Armação');
+  });
+
+  it('mantém UTF-8 quando é o caso', () => {
+    expect(decodificar(bytes('Perequê', 'utf8'), 'text/html; charset=utf-8')).toContain('Perequê');
   });
 });
 

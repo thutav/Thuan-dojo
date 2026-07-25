@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { criarIndiceGeo } from '../core/geocode';
 import type { AnuncioBruto, Gazetteer, Imovel, ZonesFile } from '../core/types';
-import { aplicarHistorico, normalizarAnuncio } from './pipeline';
+import { aplicarHistorico, enriquecerBairros, normalizarAnuncio } from './pipeline';
 
 const raiz = fileURLToPath(new URL('..', import.meta.url));
 const gaz = JSON.parse(readFileSync(path.join(raiz, 'data/gazetteer.json'), 'utf8')) as Gazetteer;
@@ -100,6 +100,74 @@ describe('normalizarAnuncio', () => {
     if (!('imovel' in r)) throw new Error('deveria normalizar');
     expect(r.imovel.precisaoGeo).toBe('exata');
     expect(r.imovel.bairroId).toBe('pereque');
+  });
+});
+
+describe('enriquecerBairros', () => {
+  const fichaComBairro = readFileSync(path.join(raiz, 'ingest/fixtures/ficha-imovel.html'), 'utf8');
+
+  function contextoFalso(paginas: Record<string, string>) {
+    const pedidas: string[] = [];
+    return {
+      pedidas,
+      ctx: {
+        maxPaginas: 8,
+        registrar: () => {},
+        async buscarHtml(url: string) {
+          pedidas.push(url);
+          const html = paginas[url];
+          if (!html) throw new Error('HTTP 404');
+          return html;
+        },
+        async buscarComNavegador() {
+          throw new Error('não usado');
+        },
+      },
+    };
+  }
+
+  it('abre a ficha e acha o bairro que a vitrine não mostrava', async () => {
+    const orfao = bruto({
+      titulo: 'Casa de Condomínio em Ilhabela com 3 dormitórios',
+      bairroTexto: 'Casa de Condomínio em Ilhabela com 3 dormitórios R$ 2.100.000',
+      url: 'https://exemplo.com.br/imoveis/2291',
+    });
+    const { ctx, pedidas } = contextoFalso({ 'https://exemplo.com.br/imoveis/2291': fichaComBairro });
+
+    const r = await enriquecerBairros([orfao], ctx, ix, 10);
+    expect(r.tentativas).toBe(1);
+    expect(r.resolvidos).toBe(1);
+    expect(pedidas).toEqual(['https://exemplo.com.br/imoveis/2291']);
+
+    const normalizado = normalizarAnuncio(orfao, ix, HOJE);
+    if (!('imovel' in normalizado)) throw new Error('deveria normalizar após o enriquecimento');
+    expect(normalizado.imovel.bairroId).toBe('feiticeira');
+  });
+
+  it('não abre ficha de anúncio que já tem bairro', async () => {
+    const { ctx, pedidas } = contextoFalso({});
+    const r = await enriquecerBairros([bruto()], ctx, ix, 10);
+    expect(r.tentativas).toBe(0);
+    expect(pedidas).toHaveLength(0);
+  });
+
+  it('respeita o teto de fichas por execução', async () => {
+    const orfaos = Array.from({ length: 5 }, (_, i) =>
+      bruto({ titulo: 'Casa em Ilhabela', bairroTexto: 'Casa em Ilhabela', url: `https://exemplo.com.br/i/${i}` }),
+    );
+    const { ctx, pedidas } = contextoFalso({});
+    const r = await enriquecerBairros(orfaos, ctx, ix, 2);
+    expect(r.tentativas).toBe(2);
+    expect(pedidas).toHaveLength(2);
+  });
+
+  it('ficha fora do ar não interrompe a coleta', async () => {
+    const orfao = bruto({ titulo: 'Casa em Ilhabela', bairroTexto: 'Casa em Ilhabela' });
+    const { ctx } = contextoFalso({});
+    await expect(enriquecerBairros([orfao], ctx, ix, 5)).resolves.toEqual({
+      tentativas: 1,
+      resolvidos: 0,
+    });
   });
 });
 
