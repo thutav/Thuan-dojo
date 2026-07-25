@@ -34,6 +34,28 @@ export function calcularPrecoM2(preco: number | null, area: number | null): numb
   return v >= 100 ? Math.round(v) : Math.round(v * 100) / 100;
 }
 
+const MEDIDA = '(?:m2|m²|metros(?:\\s+quadrados)?)';
+
+export const ROTULO_TERRENO = 'terreno|lote|area do terreno';
+export const ROTULO_CONSTRUIDO = 'area (?:util|construida)|area de construcao|construidos|construcao';
+
+/**
+ * Procura uma metragem pelo rótulo, nas duas ordens em que as pessoas escrevem:
+ * "180 m² de área construída" e "área construída de 180 m²". Olhar só uma ordem faz o
+ * rótulo capturar o número do vizinho — em "180 m² de área construída em terreno de 450 m²",
+ * a busca por "área construída …" acharia 450.
+ *
+ * O conectivo aceito antes do rótulo é só "de": em "180 m² em terreno de 450 m²", o "em
+ * terreno" diz onde a casa está, e o número do terreno é o que vem depois.
+ */
+export function acharAreaRotulada(texto: string, rotulo: string): number | null {
+  const t = normalizar(texto);
+  const antesDoRotulo = new RegExp(`(\\d[\\d.,]*)\\s*${MEDIDA}\\s*(?:de\\s+)?(?:${rotulo})`);
+  const depoisDoRotulo = new RegExp(`(?:${rotulo})[^\\d]{0,20}(\\d[\\d.,]*)\\s*${MEDIDA}`);
+  const m = t.match(antesDoRotulo) ?? t.match(depoisDoRotulo);
+  return m ? parseArea(`${m[1]} m2`) : null;
+}
+
 /** Área em m². Aceita "120 m²", "120m2", "1.200 metros quadrados", "120,5 m²". */
 export function parseArea(bruto: string | null | undefined): number | null {
   if (!bruto) return null;

@@ -74,6 +74,16 @@ describe('extrairPorHeuristica', () => {
     expect(urls.some((u) => u.endsWith('/contato'))).toBe(false);
   });
 
+  it('acha a foto carregada de forma preguiçosa e descarta o logo', () => {
+    const vila = extrairPorHeuristica(html, BASE).find((a) => a.url.endsWith('/1203'));
+    expect(vila?.fotos).toEqual(['https://exemplo-imobiliaria.com.br/img/1203.jpg']);
+  });
+
+  it('lê a foto do anúncio quando ela vem no src normal', () => {
+    const itaguacu = extrairPorHeuristica(html, BASE).find((a) => a.url.endsWith('/1201'));
+    expect(itaguacu?.fotos?.[0]).toBe('https://exemplo-imobiliaria.com.br/img/1201.jpg');
+  });
+
   it('ignora o bloco "Os mais Acessados", que agrupa anúncios e não é um imóvel', () => {
     const titulos = extrairPorHeuristica(html, BASE).map((a) => a.titulo);
     expect(titulos.some((t) => /mais Acessados/i.test(t))).toBe(false);

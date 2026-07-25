@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { EstatisticaZona } from '@core/stats';
 import { dealScore, estatisticaDaZona, grupoDe } from '@core/stats';
 import {
@@ -13,6 +13,7 @@ import {
 } from '@core/format';
 import type { Imovel } from '@core/types';
 import { IconeAlerta, IconeComparar, IconeCoracao, IconeFechar, IconeLink } from './icones';
+import { Foto } from './Foto';
 
 /** Fecha no Esc e devolve o foco a quem abriu — o modal é usado no teclado o tempo todo. */
 export function Modal(props: {
@@ -65,6 +66,37 @@ export function Modal(props: {
         <div className="conteudo-modal">{props.children}</div>
         {props.rodape && <footer className="rodape-modal">{props.rodape}</footer>}
       </div>
+    </div>
+  );
+}
+
+/** Galeria simples: a foto grande e as miniaturas que trocam a foto grande. */
+function Galeria({ fotos, titulo }: { fotos: string[]; titulo: string }) {
+  const [atual, setAtual] = useState(0);
+  useEffect(() => setAtual(0), [titulo]);
+
+  if (!fotos.length) return null;
+
+  return (
+    <div className="galeria">
+      <div className="galeria-principal">
+        <Foto src={fotos[Math.min(atual, fotos.length - 1)]} alt={`Foto de ${titulo}`} eager tamanhoIcone={40} />
+      </div>
+      {fotos.length > 1 && (
+        <div className="galeria-tiras" role="group" aria-label="Outras fotos">
+          {fotos.map((foto, i) => (
+            <button
+              key={foto}
+              className={`galeria-tira${i === atual ? ' ativa' : ''}`}
+              aria-label={`Ver foto ${i + 1} de ${fotos.length}`}
+              aria-pressed={i === atual}
+              onClick={() => setAtual(i)}
+            >
+              <Foto src={foto} alt="" tamanhoIcone={16} />
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -131,6 +163,8 @@ export function FichaImovel(props: {
     >
       <div className="ficha">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <Galeria fotos={imovel.fotos} titulo={imovel.titulo} />
+
           {imovel.demo && (
             <div className="alerta atencao">
               <IconeAlerta />
