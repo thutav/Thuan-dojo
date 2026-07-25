@@ -1,0 +1,206 @@
+import { createHash } from 'node:crypto';
+import type {
+  AnuncioBruto,
+  Dataset,
+  Finalidade,
+  Imovel,
+  StatusFonte,
+  TipoImovel,
+} from '../core/types';
+import { criarIndiceGeo, posicionar, resolverBairro, type IndiceGeo } from '../core/geocode';
+import {
+  calcularPrecoM2,
+  completarPorTexto,
+  detectCaracteristicas,
+  parseArea,
+} from '../core/normalize';
+import { deduplicar } from '../core/dedupe';
+import { pareceAnuncioDeIlhabela } from './extratores';
+import type { Adapter, ContextoColeta } from './tipos';
+
+/** Id estável a partir da URL: o mesmo anúncio mantém o mesmo id entre coletas. */
+function idDoAnuncio(bruto: AnuncioBruto): string {
+  const semente = bruto.url || `${bruto.fonte}:${bruto.titulo}`;
+  return createHash('sha1').update(semente).digest('hex').slice(0, 12);
+}
+
+/**
+ * Converte o anúncio cru em um imóvel do dataset. Devolve `null` quando falta o mínimo para
+ * o registro servir para alguma coisa — sem preço ou sem bairro ele não entra em mapa nenhum,
+ * e entulhar a base com registros vazios só estragaria as medianas.
+ */
+export function normalizarAnuncio(
+  bruto: AnuncioBruto,
+  ix: IndiceGeo,
+  hoje: string,
+): { imovel: Imovel } | { descarte: string } {
+  const completo = completarPorTexto(bruto);
+  const preco = completo.preco ?? null;
+  if (!preco || preco <= 0) return { descarte: 'sem preço' };
+
+  // Antes de olhar o bairro: "Centro" existe em Caraguatatuba, em São Sebastião e em
+  // Ilhabela. Sem esta checagem, um anúncio do continente vira imóvel da Vila e entra na
+  // mediana do bairro. A checagem também roda nos adapters; aqui ela protege qualquer
+  // entrada — inclusive um anúncio colado à mão.
+  if (!pareceAnuncioDeIlhabela(completo)) return { descarte: 'município vizinho' };
+
+  const bairro =
+    resolverBairro(completo.bairroTexto, ix) ??
+    resolverBairro(completo.titulo, ix) ??
+    resolverBairro(completo.descricao, ix) ??
+    resolverBairro(completo.url, ix);
+  if (!bairro) return { descarte: 'bairro não reconhecido' };
+
+  const finalidade: Finalidade = completo.finalidade ?? 'venda';
+  const tipo: TipoImovel = completo.tipo ?? 'outro';
+  const areaUtil = parseArea(completo.areaUtilTexto);
+  const areaTerreno = parseArea(completo.areaTerrenoTexto);
+
+  // Aluguel anunciado com preço de venda (e vice-versa) contamina a mediana do bairro
+  // inteiro; é melhor descartar do que publicar um número absurdo.
+  if (finalidade === 'venda' && preco < 30_000) return { descarte: 'preço baixo demais para venda' };
+  if (finalidade === 'aluguel' && preco > 200_000) return { descarte: 'preço alto demais para aluguel' };
+  if (finalidade === 'temporada' && preco > 100_000) return { descarte: 'preço alto demais para diária' };
+
+  const id = idDoAnuncio(completo);
+  const pos = posicionar(id, bairro, ix, { lat: completo.lat, lon: completo.lon });
+  const texto = `${completo.titulo} ${completo.descricao ?? ''}`;
+
+  return {
+    imovel: {
+      id,
+      titulo: completo.titulo.trim().slice(0, 160),
+      finalidade,
+      tipo,
+      bairroId: pos.bairroId,
+      bairro: pos.bairro,
+      setor: pos.setor,
+      preco,
+      precoM2: calcularPrecoM2(preco, areaUtil),
+      condominio: null,
+      iptu: null,
+      areaUtil,
+      areaTerreno,
+      quartos: completo.quartos ?? null,
+      suites: completo.suites ?? null,
+      banheiros: completo.banheiros ?? null,
+      vagas: completo.vagas ?? null,
+      caracteristicas: detectCaracteristicas(texto),
+      descricao: (completo.descricao ?? '').trim().slice(0, 2000),
+      fotos: (completo.fotos ?? []).slice(0, 6),
+      lat: pos.lat,
+      lon: pos.lon,
+      precisaoGeo: pos.precisao,
+      fontes: [
+        {
+          fonte: completo.fonte,
+          nomeFonte: completo.nomeFonte,
+          url: completo.url,
+          codigo: completo.codigo,
+          preco,
+          coletadoEm: hoje,
+        },
+      ],
+      atualizadoEm: hoje,
+    },
+  };
+}
+
+/**
+ * Compara com a coleta anterior para marcar o que baixou de preço e o que é novidade — que
+ * é a informação que ninguém consegue extrair olhando os sites um a um.
+ */
+export function aplicarHistorico(imoveis: Imovel[], anterior: Imovel[] | null, hoje: string): Imovel[] {
+  if (!anterior?.length) return imoveis.map((i) => ({ ...i, novo: false, variacaoPreco: null }));
+
+  const antes = new Map(anterior.map((i) => [i.id, i]));
+  return imoveis.map((imovel) => {
+    const velho = antes.get(imovel.id);
+    if (!velho) return { ...imovel, novo: true, variacaoPreco: null };
+
+    const mudou = velho.preco > 0 && velho.preco !== imovel.preco;
+    return {
+      ...imovel,
+      novo: false,
+      // Mantém a data de referência da mudança anterior enquanto o preço não mudar de novo.
+      variacaoPreco: mudou
+        ? { pct: Math.round(((imovel.preco - velho.preco) / velho.preco) * 100) / 100, desde: velho.atualizadoEm }
+        : (velho.variacaoPreco ?? null),
+      atualizadoEm: mudou ? hoje : velho.atualizadoEm,
+    };
+  });
+}
+
+export interface ResultadoColeta {
+  dataset: Dataset;
+  descartes: Record<string, number>;
+}
+
+export async function coletar(
+  adapters: Adapter[],
+  ctx: ContextoColeta,
+  ix: IndiceGeo,
+  anterior: Imovel[] | null,
+): Promise<ResultadoColeta> {
+  const hoje = new Date().toISOString().slice(0, 10);
+  const status: StatusFonte[] = [];
+  const brutos: AnuncioBruto[] = [];
+
+  for (const adapter of adapters) {
+    const inicio = Date.now();
+    try {
+      const anuncios = await adapter.coletar(ctx);
+      brutos.push(...anuncios);
+      status.push({
+        fonte: adapter.id,
+        nome: adapter.nome,
+        status: anuncios.length ? 'ok' : 'vazio',
+        quantidade: anuncios.length,
+        duracaoMs: Date.now() - inicio,
+        mensagem: anuncios.length ? undefined : 'nenhum anúncio encontrado nesta execução',
+      });
+    } catch (e) {
+      // Uma fonte fora do ar não pode levar as outras junto.
+      status.push({
+        fonte: adapter.id,
+        nome: adapter.nome,
+        status: 'falha',
+        quantidade: 0,
+        duracaoMs: Date.now() - inicio,
+        mensagem: (e as Error).message.slice(0, 200),
+      });
+    }
+  }
+
+  const descartes: Record<string, number> = {};
+  const imoveis: Imovel[] = [];
+  for (const bruto of brutos) {
+    const resultado = normalizarAnuncio(bruto, ix, hoje);
+    if ('descarte' in resultado) {
+      descartes[resultado.descarte] = (descartes[resultado.descarte] ?? 0) + 1;
+      continue;
+    }
+    imoveis.push(resultado.imovel);
+  }
+
+  const unicos = aplicarHistorico(deduplicar(imoveis), anterior, hoje);
+
+  return {
+    dataset: {
+      _leiame:
+        'Dataset agregado dos anúncios de Ilhabela. Gerado pelo coletor (ingest/) — não editar à mão.',
+      geradoEm: hoje,
+      demo: false,
+      imoveis: unicos,
+      relatorio: {
+        executadoEm: new Date().toISOString(),
+        fontes: status,
+        totalBruto: brutos.length,
+        totalAposDedupe: unicos.length,
+      },
+    },
+    descartes,
+  };
+}
+
+export { criarIndiceGeo };
